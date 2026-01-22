@@ -50,14 +50,15 @@
             margin-left: -50vw;
             margin-right: -50vw;
             margin-bottom: 0;
+            margin-top: 0;
             padding: 0;
             overflow: hidden;
         }
 
         .hero-container {
             position: relative;
-            height: 70vh;
-            min-height: 500px;
+            height: calc(100vh - 64px - 100px); /* 100vh - tinggi navbar - tinggi footer (estimasi) */
+            min-height: 400px;
             width: 100%;
             overflow: hidden;
         }
@@ -77,7 +78,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.25); /* Dikurangi dari 0.55 menjadi 0.25 */
+            background-color: rgba(0, 0, 0, 0.25);
         }
 
         .hero-content {
@@ -99,7 +100,7 @@
             letter-spacing: -0.025em;
             margin-bottom: 1rem;
             filter: drop-shadow(0 25px 25px rgb(0 0 0 / 0.5));
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7); /* Tambahan shadow untuk tetap readable */
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
         }
 
         @media (min-width: 640px) {
@@ -145,33 +146,25 @@
                     document.body.removeEventListener('click', once);
                 }, { once: true });
             }
+
+            // Dynamic height adjustment
+            function adjustHeroHeight() {
+                const navbar = document.querySelector('nav');
+                const footer = document.querySelector('footer');
+                const heroContainer = document.querySelector('.hero-container');
+                
+                if (navbar && footer && heroContainer) {
+                    const navbarHeight = navbar.offsetHeight;
+                    const footerHeight = footer.offsetHeight;
+                    const availableHeight = window.innerHeight - navbarHeight - footerHeight;
+                    heroContainer.style.height = availableHeight + 'px';
+                }
+            }
+
+            adjustHeroHeight();
+            window.addEventListener('resize', adjustHeroHeight);
         });
     </script>
     @endpush
-
-    <!-- Footer -->
-    <footer class="bg-[#001f3f] text-white" style="margin: 0; padding-top: 0;">
-        <div class="h-1.5 bg-blue-500 w-full"></div>
-        <div class="py-6 px-6">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-                <div class="flex items-center space-x-4">
-                    <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Logo_Kementerian_Pendidikan_dan_Kebudayaan_Indonesia.svg/512px-Logo_Kementerian_Pendidikan_dan_Kebudayaan_Indonesia.svg.png" 
-                        alt="Logo Kemendikbud" 
-                        class="h-12 w-12 object-contain"
-                    />
-                    <div>
-                        <h3 class="text-lg md:text-xl font-bold tracking-wide">
-                            Direktorat Penelitian dan Pengabdian kepada Masyarakat
-                        </h3>
-                        <p class="text-sm text-gray-300 mt-1">
-                            2026 · Sistem Informasi Pariwisata
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </footer>
 
 </x-app-layout>
