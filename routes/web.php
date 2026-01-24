@@ -40,6 +40,32 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// ... route frontend tetap
+
+// Admin Routes (protected)
+Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('backend.dashboard');
+    })->name('dashboard');
+
+    // Destinasi Admin
+    Route::resource('destinasi', \App\Http\Controllers\Admin\DestinasiController::class);
+
+    // Event Admin
+    Route::resource('event', \App\Http\Controllers\Admin\EventController::class);
+
+    // Panduan Admin
+    Route::resource('panduan', \App\Http\Controllers\Admin\PanduanController::class);
+
+    // Berita Admin
+    Route::resource('berita', \App\Http\Controllers\Admin\BeritaController::class);
+
+    // Kontak (hanya index + show + update status)
+    Route::get('kontak', [\App\Http\Controllers\Admin\KontakController::class, 'index'])->name('kontak.index');
+    Route::get('kontak/{pesanKontak}', [\App\Http\Controllers\Admin\KontakController::class, 'show'])->name('kontak.show');
+    Route::patch('kontak/{pesanKontak}', [\App\Http\Controllers\Admin\KontakController::class, 'updateStatus'])->name('kontak.updateStatus');
+});
+
 // Route Profile (perlu login)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -73,16 +73,8 @@
                                         <span class="text-orange-300 font-medium hidden lg:inline text-sm">
                                             {{ Auth::user()->name }}
                                         </span>
-                                        <a href="{{ route('dashboard') }}" 
-                                           class="text-white hover:text-orange-300 transition text-xs md:text-sm whitespace-nowrap">
-                                            Dashboard
-                                        </a>
-                                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                                            @csrf
-                                            <button type="submit" class="text-white hover:text-orange-300 transition text-xs md:text-sm whitespace-nowrap">
-                                                Logout
-                                            </button>
-                                        </form>
+                                       
+                                       
                                     </div>
                                 @else
                                     
