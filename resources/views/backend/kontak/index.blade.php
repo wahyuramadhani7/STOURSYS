@@ -18,25 +18,35 @@
             </thead>
             <tbody class="divide-y divide-gray-200">
                 @forelse ($pesans as $pesan)
-                    <tr>
-                        <td class="px-6 py-4">{{ $pesan->nama }}</td>
-                        <td class="px-6 py-4">{{ $pesan->email }}</td>
-                        <td class="px-6 py-4">{{ $pesan->subjek ?? '-' }}</td>
-                        <td class="px-6 py-4">
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $pesan->nama }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $pesan->email }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $pesan->subjek ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 py-1 rounded text-xs font-medium
-                                {{ $pesan->status == 'baru' ? 'bg-yellow-100 text-yellow-800' :
-                                   $pesan->status == 'dibaca' ? 'bg-blue-100 text-blue-800' :
-                                   'bg-green-100 text-green-800' }}">
+                                @class([
+                                    'bg-yellow-100 text-yellow-800' => $pesan->status == 'baru',
+                                    'bg-blue-100 text-blue-800'     => $pesan->status == 'dibaca',
+                                    'bg-green-100 text-green-800'   => $pesan->status == 'ditanggapi',
+                                    'bg-gray-100 text-gray-800'     => true,
+                                ])">
                                 {{ ucfirst($pesan->status) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4">{{ $pesan->created_at->format('d/m/Y H:i') }}</td>
-                        <td class="px-6 py-4 text-sm">
-                            <a href="{{ route('admin.kontak.show', $pesan) }}" class="text-indigo-600 hover:text-indigo-900">Lihat</a>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {{ $pesan->created_at->format('d/m/Y H:i') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <a href="{{ route('admin.kontak.show', $pesan) }}" 
+                               class="text-indigo-600 hover:text-indigo-900">Lihat Detail</a>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Belum ada pesan masuk</td></tr>
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-500 text-lg">
+                            Belum ada pesan masuk dari pengguna.
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
