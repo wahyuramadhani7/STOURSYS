@@ -92,6 +92,7 @@
             text-align: center;
             color: white;
             padding: 1rem 1.5rem;
+            padding-bottom: 8%; /* Mendorong konten sedikit ke atas */
         }
 
         .hero-title {
@@ -109,12 +110,16 @@
             }
             .hero-content {
                 padding: 1.5rem;
+                padding-bottom: 8%;
             }
         }
 
         @media (min-width: 768px) {
             .hero-title {
                 font-size: 3.75rem;
+            }
+            .hero-content {
+                padding-bottom: 10%;
             }
         }
 
@@ -124,6 +129,7 @@
             }
             .hero-content {
                 padding: 2rem;
+                padding-bottom: 10%;
             }
         }
     </style>
