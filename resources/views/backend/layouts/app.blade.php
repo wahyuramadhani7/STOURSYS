@@ -9,17 +9,18 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Premium Admin Styles -->
+    <!-- White Orange Premium Styles -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
         :root {
-            --navy-dark: #0a1929;
-            --navy: #001f3f;
-            --navy-light: #1e3a5f;
-            --orange: #f97316;
-            --orange-light: #fb923c;
-            --orange-dark: #ea580c;
+            --white: #ffffff;
+            --white-dark: #f8f9fa;
+            --gray-light: #f1f3f5;
+            --gray: #e9ecef;
+            --orange: #ff6b00;
+            --orange-light: #ff8533;
+            --orange-dark: #cc5500;
         }
         
         * {
@@ -27,31 +28,51 @@
         }
         
         body { 
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
             background-attachment: fixed;
         }
         
-        /* Glassmorphism Sidebar */
+        /* Premium White Sidebar */
         .sidebar { 
-            background: rgba(10, 25, 41, 0.95);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(249, 115, 22, 0.1);
+            background: linear-gradient(180deg, #ffffff 0%, #fefefe 100%);
+            border-right: 3px solid #ff6b00;
             box-shadow: 
-                0 0 40px rgba(0, 0, 0, 0.3),
-                inset 0 0 100px rgba(249, 115, 22, 0.02);
+                4px 0 30px rgba(255, 107, 0, 0.15),
+                inset -3px 0 20px rgba(255, 107, 0, 0.05);
+            position: relative;
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                #ff6b00 0%,
+                #ff8533 50%,
+                #ff6b00 100%);
+            animation: borderFlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes borderFlow {
+            0%, 100% { opacity: 0.6; transform: scaleY(1); }
+            50% { opacity: 1; transform: scaleY(0.95); }
         }
         
         /* Animated Header */
         .sidebar-header {
             background: linear-gradient(135deg, 
-                rgba(249, 115, 22, 0.2) 0%, 
-                rgba(251, 146, 60, 0.1) 50%,
-                rgba(249, 115, 22, 0.2) 100%);
+                #ff6b00 0%, 
+                #ff8533 50%,
+                #ff6b00 100%);
             background-size: 200% 200%;
-            animation: gradientShift 8s ease infinite;
-            border-bottom: 2px solid rgba(249, 115, 22, 0.3);
+            animation: gradientShift 6s ease infinite;
+            border-bottom: none;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 4px 20px rgba(255, 107, 0, 0.3);
         }
         
         .sidebar-header::before {
@@ -61,8 +82,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            animation: rotate 15s linear infinite;
         }
         
         @keyframes gradientShift {
@@ -76,44 +97,43 @@
         }
         
         .logo-text {
-            background: linear-gradient(135deg, #f97316 0%, #fbbf24 50%, #f97316 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 3s linear infinite;
+            color: #ffffff;
             position: relative;
             z-index: 1;
-            text-shadow: 0 0 30px rgba(249, 115, 22, 0.3);
-        }
-        
-        @keyframes shimmer {
-            to { background-position: 200% center; }
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            font-weight: 800;
         }
         
         .subtitle {
-            color: #cbd5e1;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 600;
+            letter-spacing: 1px;
             position: relative;
             z-index: 1;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         /* Premium Navigation */
         .sidebar nav {
-            padding: 0 12px;
+            padding: 0 20px;
         }
         
         .sidebar a { 
             position: relative;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 12px;
-            margin-bottom: 6px;
+            border-radius: 14px;
+            margin-bottom: 12px;
             overflow: hidden;
             display: flex;
             align-items: center;
             font-weight: 500;
             letter-spacing: 0.3px;
+            color: #495057;
+            border: 2px solid transparent;
+            background: #ffffff;
+            padding: 14px 16px;
         }
         
         .sidebar a::before {
@@ -122,8 +142,8 @@
             left: 0;
             top: 0;
             height: 100%;
-            width: 4px;
-            background: linear-gradient(180deg, #f97316 0%, #fb923c 100%);
+            width: 5px;
+            background: linear-gradient(180deg, #ff6b00 0%, #ff8533 100%);
             transform: scaleY(0);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 0 4px 4px 0;
@@ -134,77 +154,83 @@
         }
         
         .sidebar a.active { 
-            background: linear-gradient(90deg, 
-                rgba(249, 115, 22, 0.25) 0%, 
-                rgba(249, 115, 22, 0.15) 50%,
-                rgba(249, 115, 22, 0.05) 100%);
-            color: #fff;
-            font-weight: 600;
+            background: linear-gradient(135deg, 
+                #fff5ed 0%, 
+                #ffffff 100%);
+            color: #ff6b00;
+            font-weight: 700;
+            border: 2px solid #ff6b00;
             box-shadow: 
-                0 4px 20px rgba(249, 115, 22, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                0 4px 20px rgba(255, 107, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
         }
         
         .sidebar a.active .nav-icon {
-            color: #f97316;
-            filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.5));
+            color: #ff6b00;
+            filter: drop-shadow(0 2px 8px rgba(255, 107, 0, 0.4));
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
         }
         
         .sidebar a:hover:not(.active) { 
-            background: rgba(249, 115, 22, 0.1);
-            transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+            background: linear-gradient(135deg, #fff5ed 0%, #ffffff 100%);
+            color: #ff6b00;
+            transform: translateX(8px);
+            border: 2px solid rgba(255, 107, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 107, 0, 0.15);
         }
         
         .sidebar a:hover .nav-icon {
-            transform: scale(1.1);
-            color: #fb923c;
+            transform: scale(1.15) rotate(5deg);
+            color: #ff8533;
         }
         
         .nav-icon {
-            width: 22px;
-            height: 22px;
-            margin-right: 14px;
+            width: 24px;
+            height: 24px;
+            margin-right: 16px;
             transition: all 0.3s ease;
             flex-shrink: 0;
         }
         
         /* Premium Header */
         .header-gradient {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            border-bottom: 3px solid #ff6b00;
             box-shadow: 
-                0 4px 30px rgba(0, 0, 0, 0.05),
-                0 1px 0 rgba(249, 115, 22, 0.1);
+                0 4px 20px rgba(255, 107, 0, 0.1),
+                inset 0 -3px 0 rgba(255, 107, 0, 0.1);
         }
         
         .page-title {
-            background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 700;
+            color: #ff6b00;
+            font-weight: 800;
             letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(255, 107, 0, 0.2);
         }
         
         /* User Badge Premium */
         .user-badge {
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
+            background: linear-gradient(135deg, #ff6b00 0%, #ff8533 100%);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 30px;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 700;
             box-shadow: 
-                0 4px 15px rgba(249, 115, 22, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                0 4px 20px rgba(255, 107, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
         
         .user-badge::before {
@@ -216,9 +242,9 @@
             height: 100%;
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(255, 255, 255, 0.2), 
+                rgba(255, 255, 255, 0.3), 
                 transparent);
-            transition: left 0.5s;
+            transition: left 0.6s;
         }
         
         .user-badge:hover::before {
@@ -226,21 +252,20 @@
         }
         
         .user-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 25px rgba(255, 107, 0, 0.5);
         }
         
         /* Logout Button */
         .logout-section {
-            padding: 0 12px;
-            margin-top: 20px;
+            padding: 0 20px;
+            margin-top: 40px;
+            margin-bottom: 20px;
         }
         
         .logout-btn {
-            background: linear-gradient(135deg, 
-                rgba(239, 68, 68, 0.15) 0%, 
-                rgba(220, 38, 38, 0.15) 100%);
-            padding: 12px 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+            padding: 14px 20px;
             border-radius: 12px;
             transition: all 0.3s ease;
             display: flex;
@@ -248,30 +273,45 @@
             justify-content: center;
             gap: 10px;
             width: 100%;
-            font-weight: 600;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            font-weight: 700;
+            border: 2px solid #ef4444;
+            color: #dc2626;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.15);
         }
         
         .logout-btn:hover {
-            background: linear-gradient(135deg, 
-                rgba(239, 68, 68, 0.25) 0%, 
-                rgba(220, 38, 38, 0.25) 100%);
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
-            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+            border-color: #dc2626;
+            color: #b91c1c;
         }
         
         /* Content Area */
         .content-area {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             border-radius: 20px 0 0 0;
+            position: relative;
+        }
+        
+        .content-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%,
+                #ff6b00 50%,
+                transparent 100%);
         }
         
         /* Animations */
         @keyframes slideInLeft {
             from {
                 opacity: 0;
-                transform: translateX(-20px);
+                transform: translateX(-30px);
             }
             to {
                 opacity: 1;
@@ -280,7 +320,7 @@
         }
         
         .sidebar nav li {
-            animation: slideInLeft 0.5s ease forwards;
+            animation: slideInLeft 0.6s ease forwards;
             opacity: 0;
         }
         
@@ -293,20 +333,22 @@
         
         /* Scrollbar Styling */
         .sidebar::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
         
         .sidebar::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
+            background: #f8f9fa;
         }
         
         .sidebar::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+            background: linear-gradient(180deg, #ff6b00 0%, #ff8533 100%);
             border-radius: 10px;
+            border: 2px solid #ffffff;
         }
         
         .sidebar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #fb923c 0%, #f97316 100%);
+            background: linear-gradient(180deg, #ff8533 0%, #ffaa00 100%);
+            box-shadow: 0 0 10px rgba(255, 107, 0, 0.4);
         }
         
         /* Glow Effects */
@@ -320,31 +362,68 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(249, 115, 22, 0.2) 0%, transparent 70%);
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(255, 107, 0, 0.2) 0%, transparent 70%);
             filter: blur(20px);
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: -1;
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); }
+            50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.1); }
         }
         
         .sidebar a.active.glow::after {
             opacity: 1;
         }
+
+        /* Additional Orange Accents */
+        ::selection {
+            background: #ff6b00;
+            color: #ffffff;
+        }
+
+        /* Subtle patterns */
+        .sidebar {
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 107, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 107, 0, 0.02) 0%, transparent 50%);
+        }
+
+        /* Shadow layers for depth */
+        .sidebar a.active {
+            position: relative;
+        }
+
+        .sidebar a.active::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            padding: 2px;
+            background: linear-gradient(135deg, #ff6b00, #ff8533);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body class="h-full font-sans antialiased">
     <div class="flex h-screen overflow-hidden">
-        <!-- Premium Sidebar -->
-        <aside class="sidebar w-64 flex-shrink-0 overflow-y-auto text-white">
+        <!-- Premium White-Orange Sidebar -->
+        <aside class="sidebar w-64 flex-shrink-0 overflow-y-auto">
             <div class="sidebar-header p-6">
                 <h1 class="text-2xl font-bold logo-text">Admin STourSys</h1>
                 <p class="subtitle text-sm mt-2">Kawasan Wisata Borobudur</p>
             </div>
 
-            <nav class="mt-8">
-                <ul class="space-y-2">
+            <nav class="mt-10">
+                <ul class="space-y-3">
                     <li>
                         <a href="{{ route('admin.dashboard') }}" 
                            class="px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'active glow' : '' }}">
@@ -405,7 +484,7 @@
                 <div class="logout-section">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="logout-btn text-red-300 hover:text-red-100">
+                        <button type="submit" class="logout-btn">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                             </svg>
