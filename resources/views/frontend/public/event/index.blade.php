@@ -2,20 +2,256 @@
 
 @section('title', 'Event & Kegiatan - STOURSYS')
 
+@push('styles')
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+    /* Floating animation */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-12px); }
+    }
+    
+    /* Pulse glow animation */
+    @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); }
+        50% { box-shadow: 0 0 30px rgba(249, 115, 22, 0.6); }
+    }
+    
+    /* Shimmer effect */
+    @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+    }
+    
+    /* Gradient animation */
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    /* Status badge pulse */
+    @keyframes badgePulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    /* Bounce subtle */
+    @keyframes bounceSubtle {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .animate-pulse-glow {
+        animation: pulseGlow 2s ease-in-out infinite;
+    }
+    
+    .shimmer-effect {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite;
+    }
+    
+    .animate-gradient {
+        background-size: 200% 200%;
+        animation: gradientShift 3s ease infinite;
+    }
+    
+    .badge-pulse {
+        animation: badgePulse 2s ease-in-out infinite;
+    }
+    
+    /* Event card hover effects */
+    .event-card {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+    
+    .event-card::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        background: linear-gradient(45deg, #f97316, #fb923c, #fdba74);
+        border-radius: 1rem;
+        opacity: 0;
+        transition: opacity 0.4s;
+        z-index: -1;
+        filter: blur(10px);
+    }
+    
+    .event-card:hover::before {
+        opacity: 0.5;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-12px) scale(1.02);
+    }
+    
+    /* Image zoom with perspective */
+    .image-container {
+        perspective: 1000px;
+    }
+    
+    .image-zoom {
+        transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .event-card:hover .image-zoom {
+        transform: scale(1.15) rotateZ(2deg);
+    }
+    
+    /* Status badge animation */
+    .status-badge {
+        transition: all 0.3s ease;
+    }
+    
+    .event-card:hover .status-badge {
+        transform: scale(1.15) rotate(5deg);
+    }
+    
+    /* Info icon effects */
+    .info-icon {
+        transition: all 0.3s ease;
+    }
+    
+    .info-item:hover .info-icon {
+        transform: scale(1.2) rotate(10deg);
+    }
+    
+    .info-item {
+        transition: all 0.3s ease;
+    }
+    
+    .info-item:hover {
+        color: #f97316;
+        transform: translateX(3px);
+    }
+    
+    /* Button hover effect */
+    .detail-button {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .detail-button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .detail-button:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    /* Search input focus effect */
+    .search-input {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+        transform: scale(1.02);
+    }
+    
+    /* Empty state animation */
+    .empty-icon {
+        animation: bounceSubtle 2s ease-in-out infinite;
+    }
+    
+    /* Date display animation */
+    .date-display {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .date-display::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #f97316, #fb923c);
+        transition: width 0.3s ease;
+    }
+    
+    .info-item:hover .date-display::after {
+        width: 100%;
+    }
+    
+    /* Location pin animation */
+    .location-pin {
+        transition: all 0.3s ease;
+    }
+    
+    .info-item:hover .location-pin {
+        animation: float 1s ease-in-out;
+    }
+    
+    /* Stagger delays */
+    .stagger-1 { animation-delay: 0.1s; }
+    .stagger-2 { animation-delay: 0.2s; }
+    .stagger-3 { animation-delay: 0.3s; }
+    
+    /* Title hover gradient */
+    .event-title {
+        background: linear-gradient(90deg, #1e293b, #1e293b);
+        background-clip: text;
+        -webkit-background-clip: text;
+        transition: all 0.4s ease;
+    }
+    
+    .event-card:hover .event-title {
+        background: linear-gradient(90deg, #f97316, #fb923c);
+        -webkit-text-fill-color: transparent;
+    }
+    
+    /* Card glow effect for ongoing events */
+    .glow-green {
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    }
+    
+    .glow-blue {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Pagination hover */
+    .pagination-link {
+        transition: all 0.3s ease;
+    }
+    
+    .pagination-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+</style>
+@endpush
+
 @section('content')
     <!-- Header -->
-    <section class="py-16 bg-gradient-to-r from-orange-50 via-white to-blue-50">
+    <section class="py-16 bg-gradient-to-r from-orange-50 via-white to-blue-50 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                <div class="flex-1">
-                    <div class="inline-block mb-3 px-4 py-2 bg-orange-100 rounded-full border border-orange-200">
+                <div class="flex-1" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="inline-block mb-3 px-4 py-2 bg-orange-100 rounded-full border border-orange-200 animate-pulse-glow">
                         <span class="text-orange-600 text-sm font-semibold">Event & Kegiatan</span>
                     </div>
                     <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-3 tracking-tight">
-                        Event & Kegiatan <span class="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">Kawasan Borobudur</span>
+                        Event & Kegiatan <span class="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 bg-clip-text text-transparent animate-gradient">Kawasan Borobudur</span>
                     </h1>
                 </div>
-                <div class="flex-shrink-0 md:max-w-md">
+                <div class="flex-shrink-0 md:max-w-md" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
                     <p class="text-gray-600 text-base md:text-lg leading-relaxed">
                         Ikuti berbagai acara budaya, festival, dan kegiatan menarik di sekitar Borobudur
                     </p>
@@ -29,7 +265,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <!-- Search Bar (ukuran compact) -->
-            <div class="mb-8">
+            <div class="mb-8" data-aos="fade-up" data-aos-duration="800">
                 <form method="GET" action="{{ route('event.index') }}" class="max-w-md mx-auto">
                     <div class="relative flex items-center">
                         <input 
@@ -37,10 +273,10 @@
                             name="search" 
                             value="{{ request('search') }}" 
                             placeholder="Cari event atau lokasi..." 
-                            class="w-full px-5 py-3 pr-28 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 shadow-sm text-base transition-all"
+                            class="search-input w-full px-5 py-3 pr-28 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 shadow-sm text-base transition-all hover:shadow-md"
                         >
                         <div class="absolute right-2 flex items-center gap-2">
-                            <button type="submit" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-5 py-2.5 rounded-full font-medium hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg flex items-center gap-1.5 text-sm">
+                            <button type="submit" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-5 py-2.5 rounded-full font-medium hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg flex items-center gap-1.5 text-sm transform hover:scale-105 active:scale-95">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
@@ -48,7 +284,7 @@
                             </button>
                             @if(request('search'))
                                 <a href="{{ route('event.index') }}" 
-                                   class="text-gray-600 hover:text-orange-600 transition-colors px-3 py-2.5 text-sm">
+                                   class="text-gray-600 hover:text-orange-600 transition-all px-3 py-2.5 text-sm transform hover:scale-110">
                                     Reset
                                 </a>
                             @endif
@@ -57,7 +293,7 @@
                 </form>
 
                 @if(request('search'))
-                    <p class="text-center mt-3 text-gray-600 text-sm">
+                    <p class="text-center mt-3 text-gray-600 text-sm" data-aos="fade-in" data-aos-delay="200">
                         Hasil untuk <strong class="text-orange-600">"{{ request('search') }}"</strong> 
                         ({{ $events->total() }} event)
                     </p>
@@ -66,41 +302,52 @@
 
             <!-- Grid Event -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @forelse ($events as $event)
+                @forelse ($events as $index => $event)
                     @php
                         $statusClass = match ($event->status) {
                             'Sedang Berlangsung' => 'bg-green-500 text-white',
                             'Akan Datang' => 'bg-blue-500 text-white',
                             default => 'bg-gray-500 text-white',
                         };
+                        
+                        $cardGlow = match ($event->status) {
+                            'Sedang Berlangsung' => 'glow-green',
+                            'Akan Datang' => 'glow-blue',
+                            default => '',
+                        };
                     @endphp
 
-                    <div class="group relative bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-200/50">
+                    <div class="event-card {{ $cardGlow }} group relative bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-200/50"
+                         data-aos="fade-up" 
+                         data-aos-duration="800" 
+                         data-aos-delay="{{ $index * 100 }}">
                         <!-- Gambar -->
-                        <div class="relative h-64 overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
+                        <div class="image-container relative h-64 overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
                             @if($event->gambar_utama)
                                 <img 
                                     src="{{ Storage::url($event->gambar_utama) }}" 
                                     alt="{{ $event->judul }}" 
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                    class="image-zoom w-full h-full object-cover"
                                 >
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0"></div>
+                                <!-- Shimmer effect on hover -->
+                                <div class="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                             @else
                                 <div class="w-full h-full bg-gradient-to-br from-slate-800 via-blue-900 to-orange-900 flex items-center justify-center">
-                                    <svg class="w-20 h-20 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-20 h-20 text-white/20 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
                             @endif
                             
-                            <div class="absolute top-4 right-4 {{ $statusClass }} px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                            <div class="status-badge absolute top-4 right-4 {{ $statusClass }} px-3 py-1 rounded-full text-xs font-bold shadow-lg {{ $event->status === 'Sedang Berlangsung' ? 'badge-pulse' : '' }}">
                                 {{ $event->status }}
                             </div>
                         </div>
 
                         <!-- Konten -->
                         <div class="p-6">
-                            <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-orange-600 transition-colors leading-tight">
+                            <h3 class="event-title text-2xl font-bold text-slate-900 mb-3 transition-colors leading-tight">
                                 {{ $event->judul }}
                             </h3>
                             
@@ -110,11 +357,11 @@
 
                             <!-- Info Event -->
                             <div class="mb-6 space-y-2 text-sm text-gray-600">
-                                <div class="flex items-start gap-2">
-                                    <svg class="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="info-item flex items-start gap-2">
+                                    <svg class="info-icon w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <span>
+                                    <span class="date-display">
                                         {{ $event->tanggal_mulai->format('d M Y') }}
                                         @if ($event->tanggal_selesai)
                                             - {{ $event->tanggal_selesai->format('d M Y') }}
@@ -123,8 +370,8 @@
                                 </div>
 
                                 @if ($event->lokasi)
-                                    <div class="flex items-start gap-2">
-                                        <svg class="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="info-item flex items-start gap-2">
+                                        <svg class="info-icon location-pin w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         </svg>
@@ -134,18 +381,18 @@
                             </div>
 
                             <a href="{{ route('event.show', $event->id) }}"
-                               class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 group/btn text-sm">
-                                <span>Detail Event</span>
-                                <svg class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                               class="detail-button inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 group/btn text-sm relative overflow-hidden transform active:scale-95">
+                                <span class="relative z-10">Detail Event</span>
+                                <svg class="relative z-10 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                                 </svg>
                             </a>
                         </div>
                     </div>
                 @empty
-                    <div class="col-span-full text-center py-20">
+                    <div class="col-span-full text-center py-20" data-aos="fade-up" data-aos-duration="1000">
                         <div class="max-w-md mx-auto">
-                            <div class="w-24 h-24 bg-gradient-to-br from-orange-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div class="w-24 h-24 bg-gradient-to-br from-orange-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 empty-icon">
                                 <span class="text-5xl">📅</span>
                             </div>
                             
@@ -167,7 +414,7 @@
 
                             @if(request('search'))
                                 <a href="{{ route('event.index') }}" 
-                                   class="inline-block bg-orange-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-700 transition-all shadow-lg">
+                                   class="inline-block bg-orange-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-700 transition-all shadow-lg transform hover:scale-105 active:scale-95">
                                     Lihat Semua Event
                                 </a>
                             @endif
@@ -178,10 +425,64 @@
 
             <!-- Pagination -->
             @if($events->hasPages())
-                <div class="mt-12 flex justify-center">
+                <div class="mt-12 flex justify-center" data-aos="fade-up" data-aos-duration="800">
                     {{ $events->links('pagination::tailwind') }}
                 </div>
             @endif
         </div>
     </section>
 @endsection
+
+@push('scripts')
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Initialize AOS
+    AOS.init({
+        once: true,
+        mirror: false,
+        duration: 800,
+        easing: 'ease-out-cubic',
+    });
+    
+    // Add dynamic countdown for ongoing events
+    document.querySelectorAll('.event-card').forEach(card => {
+        const statusBadge = card.querySelector('.status-badge');
+        if (statusBadge && statusBadge.textContent.includes('Sedang Berlangsung')) {
+            // Add extra visual emphasis for ongoing events
+            card.style.borderColor = 'rgba(34, 197, 94, 0.3)';
+        }
+    });
+    
+    // Smooth scroll for pagination
+    document.querySelectorAll('.pagination-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Add hover sound effect or haptic feedback (optional)
+    const cards = document.querySelectorAll('.event-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.zIndex = '10';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.zIndex = '1';
+        });
+    });
+    
+    // Detect if event date is approaching (within 7 days)
+    const eventCards = document.querySelectorAll('.event-card');
+    eventCards.forEach(card => {
+        const dateElement = card.querySelector('.date-display');
+        if (dateElement) {
+            const dateText = dateElement.textContent.trim();
+            // You can add logic here to highlight upcoming events
+        }
+    });
+</script>
+@endpush

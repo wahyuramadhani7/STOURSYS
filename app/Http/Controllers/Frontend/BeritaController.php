@@ -18,21 +18,21 @@ class BeritaController extends Controller
             ->orderBy('tanggal_publikasi', 'desc')
             ->orderBy('created_at', 'desc');
 
-        // Tambahkan fitur pencarian (judul atau excerpt/konten singkat)
+        // ✅ Fitur pencarian (judul, ringkasan, isi)
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
+
             $query->where(function ($q) use ($search) {
                 $q->where('judul', 'like', "%{$search}%")
-                  ->orWhere('excerpt', 'like', "%{$search}%");
-                // Opsional: jika ingin cari di konten lengkap juga
-                // ->orWhere('konten', 'like', "%{$search}%");
+                  ->orWhere('ringkasan', 'like', "%{$search}%")
+                  ->orWhere('isi', 'like', "%{$search}%");
             });
         }
 
-        // Pagination: 9 item per halaman (cocok grid 3 kolom)
+        // Pagination: 9 item per halaman
         $beritas = $query->paginate(9);
 
-        // Pertahankan parameter search di link pagination
+        // Pertahankan parameter search di pagination
         $beritas->appends($request->query());
 
         return view('frontend.public.berita.index', compact('beritas'));

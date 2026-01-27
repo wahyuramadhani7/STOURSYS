@@ -12,6 +12,15 @@ class Destinasi extends Model
     use HasFactory;
 
     /**
+     * Gunakan slug untuk route model binding
+     * contoh: /destinasi/candi-borobudur
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -27,7 +36,6 @@ class Destinasi extends Model
         'gambar_utama',
         'galeri',
         'is_active',
-        // tambahkan field lain jika ada, misal: 'views', 'category_id', dll
     ];
 
     /**
@@ -51,25 +59,32 @@ class Destinasi extends Model
      */
     protected $attributes = [
         'is_active' => true,
-        'galeri'    => '[]', // array kosong sebagai default
+        'galeri'    => '[]',
     ];
 
-    // Accessor: URL gambar utama (modern style dengan Attribute)
+    /**
+     * Accessor: URL gambar utama
+     * Bisa dipanggil: $destinasi->gambar_utama_url
+     */
     protected function gambarUtamaUrl(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value = null) => $this->gambar_utama
+            get: fn () => $this->gambar_utama
                 ? Storage::url($this->gambar_utama)
                 : null,
         );
     }
 
-    // Accessor: Daftar URL semua gambar galeri
+    /**
+     * Accessor: URL semua galeri
+     * Bisa dipanggil: $destinasi->galeri_urls
+     */
     protected function galeriUrls(): Attribute
     {
         return Attribute::make(
-            get: function (?array $value = null): array {
+            get: function (): array {
                 $paths = $this->galeri ?? [];
+
                 return collect($paths)
                     ->map(fn ($path) => $path ? Storage::url($path) : null)
                     ->filter()
@@ -79,7 +94,9 @@ class Destinasi extends Model
         );
     }
 
-    // Optional: Mutator untuk memastikan galeri selalu array sebelum disimpan
+    /**
+     * Mutator: pastikan galeri selalu array saat disimpan
+     */
     protected function galeri(): Attribute
     {
         return Attribute::make(
@@ -87,13 +104,17 @@ class Destinasi extends Model
         );
     }
 
-    // Scope: hanya destinasi aktif (untuk frontend)
+    /**
+     * Scope: hanya destinasi aktif
+     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    // Scope: urutkan berdasarkan terbaru atau views terbanyak, dll
+    /**
+     * Scope: destinasi populer
+     */
     public function scopePopular($query)
     {
         return $query->orderByDesc('views')->active();

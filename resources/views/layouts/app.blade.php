@@ -67,18 +67,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Tombol Login atau User Info -->
-                                @auth
-                                    <div class="flex items-center gap-2 md:gap-3 flex-shrink-0">
-                                        <span class="text-orange-300 font-medium hidden lg:inline text-sm">
-                                            {{ Auth::user()->name }}
-                                        </span>
-                                       
-                                       
-                                    </div>
-                                @else
-                                    
-                                @endauth
+                            
                             </div>
                         </div>
                     </div>
