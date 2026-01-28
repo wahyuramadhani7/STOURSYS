@@ -44,12 +44,12 @@ class Destinasi extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'galeri'     => 'array',
         'is_active'  => 'boolean',
         'latitude'   => 'float',
         'longitude'  => 'float',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        // 'galeri' DIHAPUS dari casts karena kolom TEXT, bukan JSON
     ];
 
     /**
@@ -59,12 +59,11 @@ class Destinasi extends Model
      */
     protected $attributes = [
         'is_active' => true,
-        'galeri'    => '[]',
+        'galeri'    => '[]',  // tetap default JSON kosong sebagai string
     ];
 
     /**
      * Accessor: URL gambar utama
-     * Bisa dipanggil: $destinasi->gambar_utama_url
      */
     protected function gambarUtamaUrl(): Attribute
     {
@@ -77,13 +76,14 @@ class Destinasi extends Model
 
     /**
      * Accessor: URL semua galeri
-     * Bisa dipanggil: $destinasi->galeri_urls
+     * Karena galeri disimpan sebagai JSON string di TEXT, kita decode dulu
      */
     protected function galeriUrls(): Attribute
     {
         return Attribute::make(
             get: function (): array {
-                $paths = $this->galeri ?? [];
+                // Decode JSON string dari kolom TEXT
+                $paths = json_decode($this->galeri ?? '[]', true) ?? [];
 
                 return collect($paths)
                     ->map(fn ($path) => $path ? Storage::url($path) : null)
@@ -91,16 +91,6 @@ class Destinasi extends Model
                     ->values()
                     ->all();
             }
-        );
-    }
-
-    /**
-     * Mutator: pastikan galeri selalu array saat disimpan
-     */
-    protected function galeri(): Attribute
-    {
-        return Attribute::make(
-            set: fn ($value) => is_array($value) ? $value : (array) $value,
         );
     }
 
@@ -114,6 +104,7 @@ class Destinasi extends Model
 
     /**
      * Scope: destinasi populer
+     * (asumsi ada kolom views, jika belum ada bisa dihapus scope ini)
      */
     public function scopePopular($query)
     {

@@ -114,7 +114,8 @@
                                 <input type="file" name="gambar_utama" 
                                        class="file-input @error('gambar_utama') is-invalid @enderror" 
                                        accept="image/jpeg,image/png,image/jpg"
-                                       id="gambar_utama">
+                                       id="gambar_utama"
+                                       onchange="previewImage(this, 'preview-utama')">
                                 <label for="gambar_utama" class="upload-label">
                                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -125,6 +126,9 @@
                                     <small>JPG, PNG atau JPEG (Max. 2MB)</small>
                                 </label>
                             </div>
+                            
+                            <div id="preview-utama" class="preview-box"></div>
+                            
                             @error('gambar_utama')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -137,7 +141,8 @@
                                        class="file-input" 
                                        multiple 
                                        accept="image/jpeg,image/png,image/jpg"
-                                       id="galeri">
+                                       id="galeri"
+                                       onchange="previewGallery(this)">
                                 <label for="galeri" class="upload-label">
                                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -148,6 +153,8 @@
                                     <small>Bisa pilih banyak foto sekaligus (Max. 2MB per foto)</small>
                                 </label>
                             </div>
+                            
+                            <div id="preview-galeri" class="gallery-preview"></div>
                         </div>
 
                     </div>
@@ -328,6 +335,50 @@ textarea.input-custom {
     color: #6b7280;
 }
 
+.preview-box {
+    margin-top: 12px;
+}
+
+.preview-box img {
+    max-width: 300px;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+}
+
+.preview-box .status {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-top: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.preview-box .status.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.preview-box .status.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.gallery-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.gallery-preview img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+}
+
 .form-actions {
     display: flex;
     gap: 12px;
@@ -390,4 +441,54 @@ textarea.input-custom {
     }
 }
 </style>
+
+<script>
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    const file = input.files[0];
+    
+    if (file) {
+        // Cek ukuran
+        if (file.size > 2048000) {
+            preview.innerHTML = '<div class="status error">❌ Gagal: Ukuran file melebihi 2MB</div>';
+            input.value = '';
+            return;
+        }
+        
+        // Preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <img src="${e.target.result}" alt="Preview">
+                <div class="status success">✅ ${file.name} siap diupload</div>
+            `;
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function previewGallery(input) {
+    const preview = document.getElementById('preview-galeri');
+    preview.innerHTML = '';
+    
+    Array.from(input.files).forEach(file => {
+        if (file.size > 2048000) {
+            preview.innerHTML += `<div class="status error">❌ ${file.name} melebihi 2MB</div>`;
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            preview.appendChild(img);
+        }
+        reader.readAsDataURL(file);
+    });
+    
+    if (input.files.length > 0) {
+        preview.innerHTML += `<div class="status success" style="grid-column: 1/-1;">✅ ${input.files.length} foto siap diupload</div>`;
+    }
+}
+</script>
 @endsection

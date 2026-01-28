@@ -7,6 +7,7 @@ use App\Models\Destinasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class DestinasiController extends Controller
 {
@@ -34,28 +35,52 @@ class DestinasiController extends Controller
             'galeri.*'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Upload gambar utama
-        if ($request->hasFile('gambar_utama')) {
-            $validated['gambar_utama'] = $request->file('gambar_utama')
-                ->store('destinasi', 'public');
-        }
-
-        // Upload multiple galeri
-        if ($request->hasFile('galeri')) {
-            $galeriPaths = [];
-            foreach ($request->file('galeri') as $file) {
-                $galeriPaths[] = $file->store('destinasi/galeri', 'public');
+        try {
+            // Upload gambar utama
+            if ($request->hasFile('gambar_utama') && $request->file('gambar_utama')->isValid()) {
+                $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi', 'public');
             }
-            $validated['galeri'] = $galeriPaths; // akan di-json oleh model jika cast json
+
+            // Upload galeri
+            $galeriPaths = [];
+            if ($request->hasFile('galeri') && is_array($request->file('galeri'))) {
+                foreach ($request->file('galeri') as $file) {
+                    if ($file->isValid()) {
+                        $galeriPaths[] = $file->store('destinasi/galeri', 'public');
+                    }
+                }
+            }
+
+            // Karena kolom TEXT, encode manual jadi JSON string
+            $validated['galeri'] = json_encode($galeriPaths);
+
+            // Slug unik
+            $slug = Str::slug($validated['nama']);
+            $originalSlug = $slug;
+            $count = 1;
+            while (Destinasi::where('slug', $slug)->exists()) {
+                $slug = $originalSlug . '-' . $count++;
+            }
+            $validated['slug'] = $slug;
+
+            Destinasi::create($validated);
+
+            return redirect()
+                ->route('admin.destinasi.index')
+                ->with('success', 'Destinasi berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            Log::error('Gagal menyimpan destinasi baru', [
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+                'data'    => $request->except(['_token', 'gambar_utama', 'galeri']),
+                'galeri_paths' => $galeriPaths ?? [],
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Gagal menyimpan destinasi. Cek log untuk detail.');
         }
-
-        $validated['slug'] = Str::slug($validated['nama']);
-
-        Destinasi::create($validated);
-
-        return redirect()
-            ->route('admin.destinasi.index')
-            ->with('success', 'Destinasi berhasil ditambahkan.');
     }
 
     public function show(Destinasi $destinasi)
@@ -81,58 +106,94 @@ class DestinasiController extends Controller
             'galeri.*'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Update slug jika nama berubah
-        if ($request->filled('nama') && $destinasi->nama !== $validated['nama']) {
-            $validated['slug'] = Str::slug($validated['nama']);
-        }
-
-        // Ganti gambar utama (hapus yang lama jika ada file baru)
-        if ($request->hasFile('gambar_utama')) {
-            if ($destinasi->gambar_utama && Storage::disk('public')->exists($destinasi->gambar_utama)) {
-                Storage::disk('public')->delete($destinasi->gambar_utama);
+        try {
+            // Slug jika nama berubah
+            if ($request->filled('nama') && $destinasi->nama !== $validated['nama']) {
+                $slug = Str::slug($validated['nama']);
+                $originalSlug = $slug;
+                $count = 1;
+                while (Destinasi::where('slug', $slug)->where('id', '!=', $destinasi->id)->exists()) {
+                    $slug = $originalSlug . '-' . $count++;
+                }
+                $validated['slug'] = $slug;
             }
-            $validated['gambar_utama'] = $request->file('gambar_utama')
-                ->store('destinasi', 'public');
-        }
 
-        // Tambah galeri baru (append, tidak replace)
-        if ($request->hasFile('galeri')) {
+            // Ganti gambar utama
+            if ($request->hasFile('gambar_utama') && $request->file('gambar_utama')->isValid()) {
+                if ($destinasi->gambar_utama && Storage::disk('public')->exists($destinasi->gambar_utama)) {
+                    Storage::disk('public')->delete($destinasi->gambar_utama);
+                }
+                $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi', 'public');
+            }
+
+            // Galeri baru (append)
             $galeriBaru = [];
-            foreach ($request->file('galeri') as $file) {
-                $galeriBaru[] = $file->store('destinasi/galeri', 'public');
+            if ($request->hasFile('galeri') && is_array($request->file('galeri'))) {
+                foreach ($request->file('galeri') as $file) {
+                    if ($file->isValid()) {
+                        $galeriBaru[] = $file->store('destinasi/galeri', 'public');
+                    }
+                }
             }
 
-            $galeriLama = $destinasi->galeri ?? [];
-            $validated['galeri'] = array_merge($galeriLama, $galeriBaru);
+            // Decode galeri lama dari JSON string (karena kolom TEXT)
+            $galeriLamaJson = $destinasi->galeri ?? '[]';
+            $galeriLama = json_decode($galeriLamaJson, true) ?? [];
+
+            // Merge dan encode kembali
+            $galeriFinal = array_merge($galeriLama, $galeriBaru);
+            $validated['galeri'] = json_encode($galeriFinal);
+
+            $destinasi->update($validated);
+
+            return redirect()
+                ->route('admin.destinasi.index')
+                ->with('success', 'Destinasi berhasil diperbarui.');
+        } catch (\Exception $e) {
+            Log::error('Gagal update destinasi', [
+                'id'       => $destinasi->id,
+                'error'    => $e->getMessage(),
+                'trace'    => $e->getTraceAsString(),
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Gagal memperbarui destinasi. Cek log.');
         }
-
-        $destinasi->update($validated);
-
-        return redirect()
-            ->route('admin.destinasi.index')
-            ->with('success', 'Destinasi berhasil diperbarui.');
     }
 
     public function destroy(Destinasi $destinasi)
     {
-        // Hapus gambar utama
-        if ($destinasi->gambar_utama && Storage::disk('public')->exists($destinasi->gambar_utama)) {
-            Storage::disk('public')->delete($destinasi->gambar_utama);
-        }
+        try {
+            // Hapus gambar utama
+            if ($destinasi->gambar_utama && Storage::disk('public')->exists($destinasi->gambar_utama)) {
+                Storage::disk('public')->delete($destinasi->gambar_utama);
+            }
 
-        // Hapus semua gambar di galeri
-        if (!empty($destinasi->galeri)) {
-            foreach ($destinasi->galeri as $path) {
+            // Hapus galeri
+            $galeriJson = $destinasi->galeri ?? '[]';
+            $galeri = json_decode($galeriJson, true) ?? [];
+            foreach ($galeri as $path) {
                 if (Storage::disk('public')->exists($path)) {
                     Storage::disk('public')->delete($path);
                 }
             }
+
+            $destinasi->delete();
+
+            return redirect()
+                ->route('admin.destinasi.index')
+                ->with('success', 'Destinasi berhasil dihapus.');
+        } catch (\Exception $e) {
+            Log::error('Gagal hapus destinasi', [
+                'id'    => $destinasi->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('admin.destinasi.index')
+                ->with('error', 'Gagal menghapus destinasi.');
         }
-
-        $destinasi->delete();
-
-        return redirect()
-            ->route('admin.destinasi.index')
-            ->with('success', 'Destinasi berhasil dihapus.');
     }
 }

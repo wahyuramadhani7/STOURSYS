@@ -254,6 +254,44 @@
     .prose-animate {
         animation: fadeSlideUp 0.8s ease-out forwards;
     }
+
+    /* Full image display styles */
+    .full-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .full-image-container:hover {
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        transform: translateY(-5px);
+    }
+    
+    .full-image-container img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.6s ease;
+    }
+    
+    .full-image-container:hover img {
+        transform: scale(1.05);
+    }
+    
+    .full-image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+        opacity: 0;
+        transition: opacity 0.4s;
+        pointer-events: none;
+    }
+    
+    .full-image-container:hover .full-image-overlay {
+        opacity: 1;
+    }
 </style>
 @endpush
 
@@ -396,6 +434,35 @@
                             @if($event->jam_mulai) Mulai pukul <strong class="text-orange-600">{{ $event->jam_mulai }}</strong> @endif
                             @if($event->jam_selesai) s/d <strong class="text-orange-600">{{ $event->jam_selesai }}</strong> @endif
                         </div>
+                    </div>
+                    @endif
+
+                    <!-- Gambar Utama Full Display -->
+                    @if($event->gambar_utama)
+                    <div class="my-10"
+                         data-aos="fade-up"
+                         data-aos-duration="800"
+                         data-aos-delay="400">
+                        <h3 class="text-2xl md:text-3xl font-bold mb-6 text-slate-900 relative inline-block">
+                            Foto Event
+                            <span class="absolute bottom-0 left-0 w-20 h-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></span>
+                        </h3>
+                        <a href="{{ Storage::url($event->gambar_utama) }}" 
+                           class="full-image-container glightbox block">
+                            <img 
+                                src="{{ Storage::url($event->gambar_utama) }}" 
+                                alt="{{ $event->judul }}"
+                                class="w-full h-auto"
+                            >
+                            <div class="full-image-overlay">
+                                <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+                                    </svg>
+                                    <span class="text-sm font-semibold text-slate-700">Klik untuk memperbesar</span>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                     @endif
                 </div>
