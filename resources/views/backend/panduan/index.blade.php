@@ -2,148 +2,325 @@
 
 @section('title', 'Daftar Panduan')
 
+@section('breadcrumb')
+    <a href="{{ route('admin.dashboard') }}" class="hover:text-orange-600">Dashboard</a>
+    <span class="separator">/</span>
+    <span class="text-gray-700 font-medium">Panduan</span>
+@endsection
+
 @section('content')
 <div class="space-y-6">
-    <!-- Header Section -->
-    <div class="relative overflow-hidden bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 rounded-2xl p-8 text-white shadow-2xl">
-        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-64 h-64 bg-white rounded-full opacity-10 blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 -mb-4 -ml-4 w-48 h-48 bg-orange-400 rounded-full opacity-20 blur-3xl"></div>
+    <!-- Header Section - Redesigned -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-teal-50 via-teal-100 to-cyan-50 rounded-3xl p-8 border border-teal-200/50 shadow-xl">
+        <!-- Decorative elements -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-teal-300/20 to-cyan-300/20 rounded-full blur-3xl -mr-48 -mt-48"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-teal-200/30 to-emerald-200/30 rounded-full blur-3xl -ml-32 -mb-32"></div>
+        
+        <!-- Pattern overlay -->
+        <div class="absolute inset-0 opacity-5">
+            <svg width="100%" height="100%">
+                <pattern id="pattern-guides" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <circle cx="20" cy="20" r="1" fill="currentColor" class="text-teal-600"/>
+                </pattern>
+                <rect width="100%" height="100%" fill="url(#pattern-guides)"/>
+            </svg>
+        </div>
         
         <div class="relative z-10">
-            <div class="flex items-center justify-between flex-wrap gap-4">
-                <div>
-                    <h1 class="text-3xl font-bold mb-2 text-black">Daftar Panduan Pengguna</h1>
-                    <p class="text-black text-lg">Kelola semua panduan dan tutorial untuk pengguna</p>
+            <div class="flex items-center justify-between flex-wrap gap-6">
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gradient-to-br from-teal-500 to-teal-600 p-3 rounded-2xl shadow-lg">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                                Daftar Panduan Pengguna
+                            </h1>
+                            <p class="text-gray-600 text-sm font-medium mt-1">Kelola semua panduan dan tutorial untuk pengguna</p>
+                        </div>
+                    </div>
                 </div>
+                
                 <a href="{{ route('admin.panduan.create') }}" 
-                   class="bg-white text-orange-600 px-6 py-3 rounded-xl hover:bg-orange-50 transition-all font-semibold shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="group relative bg-gradient-to-r from-teal-500 to-teal-600 text-white px-6 py-3 rounded-2xl hover:from-teal-600 hover:to-teal-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2 overflow-hidden">
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    <svg class="w-5 h-5 relative z-10 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    Tambah Panduan Baru
+                    <span class="relative z-10">Tambah Panduan Baru</span>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-gray-100 hover:border-orange-200 transition-all hover:-translate-y-1">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-black font-medium mb-1">Total Panduan</p>
-                    <p class="text-3xl font-bold text-black">{{ $panduans->count() }}</p>
+    <!-- Statistics Cards (3 Cards) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Total Panduan -->
+        <div class="group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-teal-300">
+            <div class="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-teal-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="p-6 relative">
+                <div class="flex items-start justify-between mb-5">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-teal-500 blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                        <div class="relative bg-gradient-to-br from-teal-500 to-teal-600 p-3.5 rounded-2xl shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-teal-600 bg-teal-100 px-3 py-1.5 rounded-full">Total</span>
                 </div>
-                <div class="bg-gradient-to-br from-orange-500 to-orange-600 p-3 rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
+                
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Panduan</h3>
+                    <p class="text-5xl font-black text-gray-800 group-hover:text-teal-600 transition-colors tabular-nums">
+                        {{ $panduans->count() }}
+                    </p>
+                    <div class="flex items-center gap-2 text-sm pt-2">
+                        <div class="flex items-center gap-1 text-teal-600 bg-teal-50 px-2 py-1 rounded-lg">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                            </svg>
+                            <span class="font-semibold">Guides</span>
+                        </div>
+                        <span class="text-gray-600">Semua panduan</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-gray-100 hover:border-purple-200 transition-all hover:-translate-y-1">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-black font-medium mb-1">Dengan Gambar</p>
-                    <p class="text-3xl font-bold text-black">{{ $panduans->whereNotNull('gambar')->count() }}</p>
+        <!-- Dengan Gambar -->
+        <div class="group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-cyan-300">
+            <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-cyan-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="p-6 relative">
+                <div class="flex items-start justify-between mb-5">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-cyan-500 blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                        <div class="relative bg-gradient-to-br from-cyan-500 to-cyan-600 p-3.5 rounded-2xl shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-cyan-600 bg-cyan-100 px-3 py-1.5 rounded-full">Media</span>
                 </div>
-                <div class="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
+                
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Dengan Gambar</h3>
+                    <p class="text-5xl font-black text-gray-800 group-hover:text-cyan-600 transition-colors tabular-nums">
+                        {{ $panduans->whereNotNull('gambar')->count() }}
+                    </p>
+                    <div class="flex items-center gap-2 text-sm pt-2">
+                        <div class="flex items-center gap-1 text-cyan-600 bg-cyan-50 px-2 py-1 rounded-lg">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="font-semibold">Visual</span>
+                        </div>
+                        <span class="text-gray-600">Panduan bergambar</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg p-6 border-2 border-gray-100 hover:border-blue-200 transition-all hover:-translate-y-1">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-black font-medium mb-1">Total Database</p>
-                    <p class="text-3xl font-bold text-black">{{ \App\Models\Panduan::count() }}</p>
+        <!-- Total Database -->
+        <div class="group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-emerald-300">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-emerald-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="p-6 relative">
+                <div class="flex items-start justify-between mb-5">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-emerald-500 blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                        <div class="relative bg-gradient-to-br from-emerald-500 to-emerald-600 p-3.5 rounded-2xl shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-emerald-600 bg-emerald-100 px-3 py-1.5 rounded-full">Database</span>
                 </div>
-                <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
+                
+                <div class="space-y-2">
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Database</h3>
+                    <p class="text-5xl font-black text-gray-800 group-hover:text-emerald-600 transition-colors tabular-nums">
+                        {{ \App\Models\Panduan::count() }}
+                    </p>
+                    <div class="flex items-center gap-2 text-sm pt-2">
+                        <div class="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="font-semibold">Records</span>
+                        </div>
+                        <span class="text-gray-600">Total records</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Table Section -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-gray-100">
+    <!-- Table Section - Redesigned -->
+    <div class="bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100">
+        <!-- Table Header -->
+        <div class="bg-gradient-to-r from-gray-50 to-gray-100/50 px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    Data Panduan
+                </h2>
+                <div class="text-sm text-gray-500 font-medium">
+                    Total: <span class="text-teal-600 font-bold">{{ $panduans->count() }}</span> panduan
+                </div>
+            </div>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gradient-to-r from-orange-500 to-orange-600">
+                <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-black uppercase tracking-wider">No Urut</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-black uppercase tracking-wider">Judul Panduan</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-black uppercase tracking-wider">Slug</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-black uppercase tracking-wider">Gambar Sampul</th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-black uppercase tracking-wider">Aksi</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                                </svg>
+                                No Urut
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                </svg>
+                                Judul Panduan
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                </svg>
+                                Slug
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Gambar Sampul
+                            </div>
+                        </th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            <div class="flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                                </svg>
+                                Aksi
+                            </div>
+                        </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white divide-y divide-gray-100">
                     @forelse ($panduans as $panduan)
-                        <tr class="hover:bg-orange-50 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <div class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg">
-                                    <span class="text-white font-bold text-sm">{{ $panduan->urutan }}</span>
+                        <tr class="hover:bg-teal-50/50 transition-colors group">
+                            <td class="px-6 py-4 text-center">
+                                <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl shadow-md group-hover:scale-110 transition-transform">
+                                    <span class="text-white font-bold text-lg tabular-nums">{{ $panduan->urutan }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                                        </svg>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                            </svg>
+                                        </div>
                                     </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-bold text-black">{{ $panduan->judul }}</div>
-                                        <div class="text-xs text-black mt-1">
-                                            {{ Str::limit(strip_tags($panduan->isi), 60) }}
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-semibold text-gray-800 group-hover:text-teal-600 transition-colors">
+                                            {{ $panduan->judul }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-1 line-clamp-2">
+                                            {{ Str::limit(strip_tags($panduan->isi), 80) }}
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-black font-mono bg-gray-100 px-2 py-1 rounded inline-block">
-                                    {{ $panduan->slug }}
+                            <td class="px-6 py-4">
+                                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 border border-gray-200">
+                                    <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                    </svg>
+                                    <code class="text-sm text-gray-700 font-mono">{{ $panduan->slug }}</code>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($panduan->gambar)
-                                    <img src="{{ Storage::url($panduan->gambar) }}" 
-                                         alt="Sampul" 
-                                         class="h-16 w-16 object-cover rounded-lg border-2 border-orange-200 shadow-md hover:scale-110 transition-transform">
-                                @else
-                                    <div class="h-16 w-16 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-200">
-                                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                    </div>
-                                @endif
+                            <td class="px-6 py-4">
+                                <div class="flex justify-center">
+                                    @if($panduan->gambar)
+                                        <div class="relative group/img">
+                                            <img src="{{ Storage::url($panduan->gambar) }}" 
+                                                 alt="Sampul Panduan" 
+                                                 class="h-16 w-16 object-cover rounded-xl border-2 border-teal-200 shadow-md group-hover/img:scale-110 transition-transform cursor-pointer">
+                                            <div class="absolute inset-0 bg-teal-600/20 rounded-xl opacity-0 group-hover/img:opacity-100 transition-opacity"></div>
+                                        </div>
+                                    @else
+                                        <div class="h-16 w-16 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-gray-200">
+                                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                <div class="flex items-center justify-center gap-2">
-                                    <a href="{{ route('admin.panduan.edit', $panduan->id) }}" 
-                                       class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg inline-flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                        Edit
+                            <td class="px-6 py-4">
+                                <div class="flex justify-center gap-2">
+                                    <!-- View Button -->
+                                    <a href="{{ route('admin.panduan.show', $panduan->id) }}"
+                                       class="group/btn relative bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all overflow-hidden">
+                                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
+                                        <div class="relative flex items-center gap-1.5">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                            Lihat
+                                        </div>
                                     </a>
+
+                                    <!-- Edit Button -->
+                                    <a href="{{ route('admin.panduan.edit', $panduan->id) }}"
+                                       class="group/btn relative bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all overflow-hidden">
+                                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
+                                        <div class="relative flex items-center gap-1.5">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                            Edit
+                                        </div>
+                                    </a>
+
+                                    <!-- Delete Button -->
                                     <form action="{{ route('admin.panduan.destroy', $panduan->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
-                                                class="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md hover:shadow-lg inline-flex items-center gap-1" 
-                                                onclick="return confirm('Yakin ingin menghapus panduan ini?')">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                            </svg>
-                                            Hapus
+                                        <button type="submit"
+                                            onclick="return confirm('⚠️ Yakin ingin menghapus panduan \"{{ $panduan->judul }}\"?\n\nData yang dihapus tidak dapat dikembalikan!')"
+                                            class="group/btn relative bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all overflow-hidden">
+                                            <div class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
+                                            <div class="relative flex items-center gap-1.5">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                                Hapus
+                                            </div>
                                         </button>
                                     </form>
                                 </div>
@@ -151,17 +328,17 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-12 text-center">
-                                <div class="flex flex-col items-center justify-center">
-                                    <div class="bg-orange-100 p-4 rounded-full mb-4">
-                                        <svg class="w-12 h-12 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <td colspan="5" class="px-6 py-16">
+                                <div class="text-center">
+                                    <div class="inline-flex items-center justify-center w-16 h-16 bg-teal-100 rounded-full mb-4">
+                                        <svg class="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                                         </svg>
                                     </div>
-                                    <p class="text-black font-semibold text-lg mb-2">Belum ada panduan</p>
-                                    <p class="text-black text-sm mb-4">Mulai tambahkan panduan untuk membantu pengguna</p>
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Belum ada panduan</h3>
+                                    <p class="text-gray-500 mb-6">Mulai tambahkan panduan untuk membantu pengguna</p>
                                     <a href="{{ route('admin.panduan.create') }}" 
-                                       class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all font-semibold shadow-lg hover:shadow-xl inline-flex items-center gap-2">
+                                       class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white px-6 py-3 rounded-xl hover:from-teal-600 hover:to-teal-700 transition-all font-semibold shadow-lg hover:shadow-xl">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                         </svg>
@@ -178,9 +355,42 @@
         <!-- Footer Info -->
         @if($panduans->isNotEmpty())
         <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
-            <p class="text-sm text-black">Menampilkan {{ $panduans->count() }} dari {{ \App\Models\Panduan::count() }} panduan</p>
+            <div class="flex items-center justify-between text-sm text-gray-600">
+                <span>Menampilkan <span class="font-semibold text-gray-800">{{ $panduans->count() }}</span> panduan</span>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-cyan-500 rounded-full"></div>
+                        <span class="text-xs">Dengan Gambar: <span class="font-semibold">{{ $panduans->whereNotNull('gambar')->count() }}</span></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                        <span class="text-xs">Total Database: <span class="font-semibold">{{ \App\Models\Panduan::count() }}</span></span>
+                    </div>
+                </div>
+            </div>
         </div>
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    // Add animation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach((row, index) => {
+            setTimeout(() => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(10px)';
+                row.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, 50);
+            }, index * 50);
+        });
+    });
+</script>
+@endpush
 @endsection

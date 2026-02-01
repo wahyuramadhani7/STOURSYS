@@ -8,7 +8,7 @@
             <!-- Header -->
             <div class="page-header mb-4">
                 <h2 class="page-title">Tambah Destinasi Baru</h2>
-                <p class="page-subtitle">Lengkapi informasi destinasi wisata dengan detail</p>
+                <p class="page-subtitle">Lengkapi informasi destinasi wisata kawasan Borobudur dengan lengkap dan akurat</p>
             </div>
 
             <form action="{{ route('admin.destinasi.store') }}" method="POST" enctype="multipart/form-data">
@@ -26,8 +26,40 @@
                             <input type="text" name="nama" 
                                    class="input-custom @error('nama') is-invalid @enderror" 
                                    value="{{ old('nama') }}" 
-                                   placeholder="Masukkan nama destinasi" required>
+                                   placeholder="Contoh: Candi Borobudur, Balkondes Karangrejo, Punthuk Setumbu" 
+                                   required autofocus>
                             @error('nama')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label>Slug (opsional)</label>
+                            <input type="text" name="slug" 
+                                   class="input-custom @error('slug') is-invalid @enderror" 
+                                   value="{{ old('slug') }}" 
+                                   placeholder="otomatis-dibuat-jika-kosong">
+                            <small class="input-hint">Akan dibuat otomatis dari nama jika dikosongkan (contoh: candi-borobudur)</small>
+                            @error('slug')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label>Kategori <span class="required">*</span></label>
+                            <select name="kategori" 
+                                    class="input-custom @error('kategori') is-invalid @enderror" 
+                                    required>
+                                <option value="">-- Pilih Kategori --</option>
+                                <option value="candi" {{ old('kategori') == 'candi' ? 'selected' : '' }}>Destinasi Candi</option>
+                                <option value="balkondes" {{ old('kategori') == 'balkondes' ? 'selected' : '' }}>Balkondes</option>
+                                <option value="kuliner" {{ old('kategori') == 'kuliner' ? 'selected' : '' }}>Kuliner</option>
+                                <option value="alam" {{ old('kategori') == 'alam' ? 'selected' : '' }}>Destinasi Alam</option>
+                                <option value="budaya" {{ old('kategori') == 'budaya' ? 'selected' : '' }}>Destinasi Budaya</option>
+                                <option value="religi" {{ old('kategori') == 'religi' ? 'selected' : '' }}>Destinasi Religi</option>
+                                <option value="desa_wisata" {{ old('kategori') == 'desa_wisata' ? 'selected' : '' }}>Desa Wisata</option>
+                            </select>
+                            @error('kategori')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
@@ -36,8 +68,8 @@
                             <label>Deskripsi Singkat <span class="required">*</span></label>
                             <textarea name="deskripsi" 
                                       class="input-custom @error('deskripsi') is-invalid @enderror" 
-                                      rows="3" 
-                                      placeholder="Tulis deskripsi singkat yang menarik" 
+                                      rows="4" 
+                                      placeholder="Deskripsi singkat yang muncul di halaman daftar (ideal 100-160 karakter)" 
                                       required>{{ old('deskripsi') }}</textarea>
                             @error('deskripsi')
                                 <span class="error-message">{{ $message }}</span>
@@ -48,56 +80,174 @@
                             <label>Deskripsi Lengkap</label>
                             <textarea name="deskripsi_panjang" 
                                       class="input-custom @error('deskripsi_panjang') is-invalid @enderror" 
-                                      rows="5" 
-                                      placeholder="Ceritakan lebih detail tentang destinasi ini">{{ old('deskripsi_panjang') }}</textarea>
-                            <small class="input-hint">Anda bisa menggunakan HTML sederhana</small>
+                                      rows="10" 
+                                      placeholder="Informasi lengkap: sejarah, fasilitas, jam operasional, harga tiket, cara menuju lokasi, tips kunjungan, dll.">{{ old('deskripsi_panjang') }}</textarea>
+                            <small class="input-hint">Boleh menggunakan tag HTML sederhana seperti &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;li&gt;</small>
+                            @error('deskripsi_panjang')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
                         </div>
 
+                    </div>
+                </div>
+
+                <!-- Card Jam Operasional & Fasilitas (baru + diganti) -->
+                <div class="form-card mb-4">
+                    <div class="form-card-header">
+                        <h5>⏰ Jam Operasional & Fasilitas</h5>
+                    </div>
+                    <div class="form-card-body">
+                        
+                        <div class="form-group-custom">
+                            <label>Jam Operasional <small class="text-muted">(opsional, tapi sangat disarankan)</small></label>
+                            <input type="text" name="jam_operasional" 
+                                   class="input-custom @error('jam_operasional') is-invalid @enderror" 
+                                   value="{{ old('jam_operasional') }}" 
+                                   placeholder="Contoh: Setiap hari 06:00 - 18:00 WIB (loket tutup 17:00)">
+                            <small class="input-hint">Tulis bebas, termasuk hari libur/khusus jika berbeda (misal: Naik Candi 09:00-17:00, Balkondes 07:00-22:00)</small>
+                            @error('jam_operasional')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label>Fasilitas yang Tersedia <small class="text-muted">(opsional)</small></label>
+                            <textarea name="fasilitas" 
+                                      class="input-custom @error('fasilitas') is-invalid @enderror" 
+                                      rows="5" 
+                                      placeholder="Tulis fasilitas yang ada, pisah dengan koma atau baris baru. Contoh: Toilet bersih, Mushola, Parkir bus & mobil luas, Warung makan halal, Spot foto instagramable, Area bermain anak, Akses difabel, WiFi gratis, Toko souvenir">{{ old('fasilitas') }}</textarea>
+                            <small class="input-hint">Input bebas agar fleksibel untuk setiap destinasi (tidak perlu centang fixed). Di frontend bisa ditampilkan sebagai list.</small>
+                            @error('fasilitas')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Card Harga Tiket -->
+                <div class="form-card mb-4">
+                    <div class="form-card-header">
+                        <h5>💰 Harga Tiket & Informasi Tiket</h5>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group-custom">
+                                    <label>Harga Tiket Dewasa WNI (Rp)</label>
+                                    <input type="number" name="harga_dewasa_wni" 
+                                           class="input-custom @error('harga_dewasa_wni') is-invalid @enderror" 
+                                           value="{{ old('harga_dewasa_wni') }}" 
+                                           placeholder="Contoh: 50000" min="0">
+                                    @error('harga_dewasa_wni')
+                                        <span class="error-message">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group-custom">
+                                    <label>Harga Tiket Dewasa WNA (Rp)</label>
+                                    <input type="number" name="harga_dewasa_wna" 
+                                           class="input-custom @error('harga_dewasa_wna') is-invalid @enderror" 
+                                           value="{{ old('harga_dewasa_wna') }}" 
+                                           placeholder="Contoh: 375000" min="0">
+                                    @error('harga_dewasa_wna')
+                                        <span class="error-message">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group-custom">
+                                    <label>Harga Tiket Anak WNI (Rp)</label>
+                                    <input type="number" name="harga_anak_wni" 
+                                           class="input-custom @error('harga_anak_wni') is-invalid @enderror" 
+                                           value="{{ old('harga_anak_wni') }}" 
+                                           placeholder="0 jika sama dengan dewasa atau gratis" min="0">
+                                    @error('harga_anak_wni')
+                                        <span class="error-message">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group-custom">
+                                    <label>Harga Tiket Anak WNA (Rp)</label>
+                                    <input type="number" name="harga_anak_wna" 
+                                           class="input-custom @error('harga_anak_wna') is-invalid @enderror" 
+                                           value="{{ old('harga_anak_wna') }}" 
+                                           placeholder="0 jika sama atau gratis" min="0">
+                                    @error('harga_anak_wna')
+                                        <span class="error-message">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-custom mt-4">
+                            <label>Catatan Harga / Informasi Tambahan Tiket</label>
+                            <textarea name="info_tiket" 
+                                      class="input-custom @error('info_tiket') is-invalid @enderror" 
+                                      rows="3" 
+                                      placeholder="Contoh: Gratis untuk anak di bawah 3 tahun, tiket kombo Candi + Museum Rp 75.000, dll.">{{ old('info_tiket') }}</textarea>
+                            @error('info_tiket')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
                 <!-- Card Lokasi -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
-                        <h5>📍 Lokasi & Koordinat</h5>
+                        <h5>📍 Lokasi</h5>
                     </div>
                     <div class="form-card-body">
                         
                         <div class="form-group-custom">
-                            <label>Alamat Lokasi</label>
+                            <label>Alamat / Deskripsi Lokasi</label>
                             <input type="text" name="lokasi" 
                                    class="input-custom @error('lokasi') is-invalid @enderror" 
                                    value="{{ old('lokasi') }}" 
-                                   placeholder="Contoh: Kuta, Bali">
+                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah">
+                            <small class="input-hint">Bisa ditambahkan info desa, kecamatan, atau landmark terdekat</small>
+                            @error('lokasi')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
                         </div>
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-group-custom">
-                                    <label>Latitude</label>
-                                    <input type="number" step="any" name="latitude" 
-                                           class="input-custom @error('latitude') is-invalid @enderror" 
-                                           value="{{ old('latitude') }}" 
-                                           placeholder="-8.509294">
-                                    @error('latitude')
-                                        <span class="error-message">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group-custom">
-                                    <label>Longitude</label>
-                                    <input type="number" step="any" name="longitude" 
-                                           class="input-custom @error('longitude') is-invalid @enderror" 
-                                           value="{{ old('longitude') }}" 
-                                           placeholder="115.262271">
-                                    @error('longitude')
-                                        <span class="error-message">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
+                <!-- Card Peta -->
+                <div class="form-card mb-4">
+                    <div class="form-card-header">
+                        <h5>🗺️ Peta Lokasi (Google Maps Embed)</h5>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="form-group-custom">
+                            <label>Embed URL Google Maps (iframe src)</label>
+                            <input type="url" name="peta_embed" 
+                                   class="input-custom @error('peta_embed') is-invalid @enderror" 
+                                   value="{{ old('peta_embed') }}" 
+                                   placeholder="https://www.google.com/maps/embed?pb=...">
+                            <small class="input-hint d-block mb-2">
+                                Cara mendapatkan: Buka Google Maps → Share → Embed a map → Copy bagian src saja<br>
+                                Contoh: https://www.google.com/maps/embed?pb=!1m18!1m12!...
+                            </small>
+
+                            @if(old('peta_embed'))
+                                <div class="mt-3">
+                                    <label>Preview:</label>
+                                    <iframe class="w-100" height="300" style="border:0;" 
+                                            loading="lazy" allowfullscreen 
+                                            src="{{ old('peta_embed') }}"></iframe>
+                                </div>
+                            @endif
+
+                            @error('peta_embed')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
@@ -109,25 +259,26 @@
                     <div class="form-card-body">
                         
                         <div class="form-group-custom">
-                            <label>Gambar Utama</label>
+                            <label>Gambar Utama <span class="required">*</span></label>
                             <div class="upload-area">
                                 <input type="file" name="gambar_utama" 
                                        class="file-input @error('gambar_utama') is-invalid @enderror" 
-                                       accept="image/jpeg,image/png,image/jpg"
+                                       accept="image/jpeg,image/png,image/jpg,image/webp"
                                        id="gambar_utama"
-                                       onchange="previewImage(this, 'preview-utama')">
+                                       onchange="previewImage(this, 'preview-utama')"
+                                       required>
                                 <label for="gambar_utama" class="upload-label">
                                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                         <polyline points="17 8 12 3 7 8"></polyline>
                                         <line x1="12" y1="3" x2="12" y2="15"></line>
                                     </svg>
-                                    <span>Klik untuk upload gambar utama</span>
-                                    <small>JPG, PNG atau JPEG (Max. 2MB)</small>
+                                    <span>Klik atau drag gambar utama</span>
+                                    <small>JPG, PNG, WEBP • Maks. 2MB • Rasio ideal 4:3 atau 16:9</small>
                                 </label>
                             </div>
                             
-                            <div id="preview-utama" class="preview-box"></div>
+                            <div id="preview-utama" class="preview-box mt-3"></div>
                             
                             @error('gambar_utama')
                                 <span class="error-message">{{ $message }}</span>
@@ -135,12 +286,12 @@
                         </div>
 
                         <div class="form-group-custom">
-                            <label>Galeri Foto</label>
+                            <label>Galeri Foto Tambahan</label>
                             <div class="upload-area">
                                 <input type="file" name="galeri[]" 
                                        class="file-input" 
                                        multiple 
-                                       accept="image/jpeg,image/png,image/jpg"
+                                       accept="image/jpeg,image/png,image/jpg,image/webp"
                                        id="galeri"
                                        onchange="previewGallery(this)">
                                 <label for="galeri" class="upload-label">
@@ -150,23 +301,23 @@
                                         <polyline points="21 15 16 10 5 21"></polyline>
                                     </svg>
                                     <span>Klik untuk upload beberapa foto</span>
-                                    <small>Bisa pilih banyak foto sekaligus (Max. 2MB per foto)</small>
+                                    <small>Bisa pilih banyak sekaligus • Maks. 2MB per foto</small>
                                 </label>
                             </div>
                             
-                            <div id="preview-galeri" class="gallery-preview"></div>
+                            <div id="preview-galeri" class="gallery-preview mt-3"></div>
                         </div>
 
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="form-actions">
-                    <a href="{{ route('admin.destinasi.index') }}" class="btn-secondary">
+                <div class="form-actions d-flex gap-3 justify-content-end mt-5">
+                    <a href="{{ route('admin.destinasi.index') }}" class="btn btn-secondary px-5 py-3">
                         Batal
                     </a>
-                    <button type="submit" class="btn-primary">
-                        Simpan Destinasi
+                    <button type="submit" class="btn btn-primary px-5 py-3">
+                        <i class="fas fa-save me-2"></i> Simpan Destinasi
                     </button>
                 </div>
 
@@ -176,318 +327,165 @@
     </div>
 </div>
 
+<!-- Style dan Script tetap sama seperti sebelumnya -->
 <style>
-* {
-    box-sizing: border-box;
-}
+    /* ============== Style asli + sedikit penyesuaian ============== */
+    * { box-sizing: border-box; }
 
-.page-header {
-    margin-bottom: 2rem;
-}
+    .page-header { margin-bottom: 2.5rem; }
+    .page-title { font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.5rem; }
+    .page-subtitle { font-size: 1rem; color: #6b7280; }
 
-.page-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0 0 8px 0;
-}
-
-.page-subtitle {
-    font-size: 15px;
-    color: #6b7280;
-    margin: 0;
-}
-
-.form-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.form-card-header {
-    background: #f9fafb;
-    padding: 20px 24px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.form-card-header h5 {
-    margin: 0;
-    font-size: 17px;
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.form-card-body {
-    padding: 24px;
-}
-
-.form-group-custom {
-    margin-bottom: 24px;
-}
-
-.form-group-custom:last-child {
-    margin-bottom: 0;
-}
-
-.form-group-custom label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
-}
-
-.required {
-    color: #ef4444;
-}
-
-.input-custom {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 15px;
-    color: #1f2937;
-    background: #ffffff;
-    border: 1.5px solid #d1d5db;
-    border-radius: 8px;
-    transition: all 0.2s;
-}
-
-.input-custom:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.input-custom.is-invalid {
-    border-color: #ef4444;
-}
-
-.input-custom::placeholder {
-    color: #9ca3af;
-}
-
-textarea.input-custom {
-    resize: vertical;
-    font-family: inherit;
-    line-height: 1.6;
-}
-
-.input-hint {
-    display: block;
-    margin-top: 6px;
-    font-size: 13px;
-    color: #6b7280;
-}
-
-.error-message {
-    display: block;
-    margin-top: 6px;
-    font-size: 13px;
-    color: #ef4444;
-}
-
-.upload-area {
-    position: relative;
-}
-
-.file-input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    overflow: hidden;
-}
-
-.upload-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    border: 2px dashed #d1d5db;
-    border-radius: 8px;
-    background: #f9fafb;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin: 0;
-}
-
-.upload-label:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
-}
-
-.upload-label svg {
-    color: #9ca3af;
-    margin-bottom: 12px;
-}
-
-.upload-label span {
-    font-size: 15px;
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 4px;
-}
-
-.upload-label small {
-    font-size: 13px;
-    color: #6b7280;
-}
-
-.preview-box {
-    margin-top: 12px;
-}
-
-.preview-box img {
-    max-width: 300px;
-    border-radius: 8px;
-    border: 2px solid #e5e7eb;
-}
-
-.preview-box .status {
-    display: inline-block;
-    padding: 6px 12px;
-    margin-top: 8px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.preview-box .status.success {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.preview-box .status.error {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.gallery-preview {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
-    margin-top: 12px;
-}
-
-.gallery-preview img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid #e5e7eb;
-}
-
-.form-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    padding-top: 8px;
-}
-
-.btn-primary,
-.btn-secondary {
-    padding: 12px 32px;
-    font-size: 15px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.btn-primary {
-    background: #3b82f6;
-    color: #ffffff;
-}
-
-.btn-primary:hover {
-    background: #2563eb;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.btn-secondary {
-    background: #ffffff;
-    color: #374151;
-    border: 1.5px solid #d1d5db;
-}
-
-.btn-secondary:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
-}
-
-@media (max-width: 768px) {
-    .page-title {
-        font-size: 24px;
+    .form-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
-    
-    .form-card-body {
-        padding: 20px;
+    .form-card-header {
+        background: #f9fafb;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
     }
-    
-    .form-actions {
-        flex-direction: column-reverse;
+    .form-card-header h5 { margin: 0; font-size: 1.125rem; font-weight: 600; }
+
+    .form-card-body { padding: 1.5rem; }
+
+    .form-group-custom { margin-bottom: 1.75rem; }
+    .form-group-custom label {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
     }
-    
-    .btn-primary,
-    .btn-secondary {
+    .required { color: #ef4444; }
+
+    .input-custom {
         width: 100%;
-        text-align: center;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        transition: all 0.2s;
     }
-}
+    .input-custom:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        outline: none;
+    }
+    .input-custom.is-invalid { border-color: #ef4444; }
+
+    textarea.input-custom { resize: vertical; min-height: 100px; }
+
+    .input-hint {
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin-top: 0.35rem;
+        display: block;
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.8rem;
+        margin-top: 0.35rem;
+        display: block;
+    }
+
+    .upload-area { position: relative; }
+    .file-input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .upload-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 1.5rem;
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .upload-label:hover {
+        border-color: #3b82f6;
+        background: #eff6ff;
+    }
+
+    .preview-box img, .gallery-preview img {
+        max-width: 100%;
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        margin-bottom: 0.75rem;
+    }
+    .gallery-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+
+    .form-check-input:checked {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    .form-actions { margin-top: 2rem; }
+
+    @media (max-width: 768px) {
+        .form-actions { flex-direction: column-reverse; gap: 1rem; }
+        .btn-primary, .btn-secondary { width: 100%; }
+    }
 </style>
 
 <script>
 function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);
+    preview.innerHTML = '';
     const file = input.files[0];
     
-    if (file) {
-        // Cek ukuran
-        if (file.size > 2048000) {
-            preview.innerHTML = '<div class="status error">❌ Gagal: Ukuran file melebihi 2MB</div>';
-            input.value = '';
-            return;
-        }
-        
-        // Preview
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.innerHTML = `
-                <img src="${e.target.result}" alt="Preview">
-                <div class="status success">✅ ${file.name} siap diupload</div>
-            `;
-        }
-        reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > 2048000) {
+        preview.innerHTML = '<div class="status error">File terlalu besar (maks 2MB)</div>';
+        input.value = '';
+        return;
     }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        preview.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <div class="status success mt-2">✓ ${file.name}</div>
+        `;
+    };
+    reader.readAsDataURL(file);
 }
 
 function previewGallery(input) {
     const preview = document.getElementById('preview-galeri');
     preview.innerHTML = '';
-    
-    Array.from(input.files).forEach(file => {
+
+    Array.from(input.files).forEach((file, index) => {
         if (file.size > 2048000) {
-            preview.innerHTML += `<div class="status error">❌ ${file.name} melebihi 2MB</div>`;
+            preview.innerHTML += `<div class="status error">❌ ${file.name} > 2MB</div>`;
             return;
         }
-        
+
         const reader = new FileReader();
         reader.onload = function(e) {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            preview.appendChild(img);
-        }
+            const div = document.createElement('div');
+            div.innerHTML = `<img src="${e.target.result}" alt="Galeri ${index+1}">`;
+            preview.appendChild(div);
+        };
         reader.readAsDataURL(file);
     });
-    
+
     if (input.files.length > 0) {
-        preview.innerHTML += `<div class="status success" style="grid-column: 1/-1;">✅ ${input.files.length} foto siap diupload</div>`;
+        const summary = document.createElement('div');
+        summary.className = 'status success mt-3';
+        summary.style.gridColumn = '1 / -1';
+        summary.textContent = `✓ ${input.files.length} foto dipilih`;
+        preview.appendChild(summary);
     }
 }
 </script>

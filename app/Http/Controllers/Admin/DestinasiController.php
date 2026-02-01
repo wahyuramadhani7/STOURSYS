@@ -11,37 +11,52 @@ use Illuminate\Support\Facades\Log;
 
 class DestinasiController extends Controller
 {
+    /**
+     * Display a listing of the destinations.
+     */
     public function index()
     {
         $destinasi = Destinasi::latest()->get();
         return view('backend.destinasi.index', compact('destinasi'));
     }
 
+    /**
+     * Show the form for creating a new destination.
+     */
     public function create()
     {
         return view('backend.destinasi.create');
     }
 
+    /**
+     * Store a newly created destination in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'nama'              => 'required|string|max:255',
+            'slug'              => 'nullable|string|max:255|unique:destinasis,slug',
+            'kategori'          => 'required|string|max:50|in:candi,balkondes,kuliner,alam,budaya,religi,desa_wisata',
             'deskripsi'         => 'required|string',
             'deskripsi_panjang' => 'nullable|string',
             'lokasi'            => 'nullable|string|max:255',
-            'latitude'          => 'nullable|numeric|between:-90,90',
-            'longitude'         => 'nullable|numeric|between:-180,180',
-            'gambar_utama'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'galeri.*'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'jam_operasional'   => 'nullable|string|max:255',
+            'fasilitas'         => 'nullable|string',
+            'harga_dewasa_wni'  => 'nullable|integer|min:0',
+            'harga_dewasa_wna'  => 'nullable|integer|min:0',
+            'harga_anak_wni'    => 'nullable|integer|min:0',
+            'harga_anak_wna'    => 'nullable|integer|min:0',
+            'info_tiket'        => 'nullable|string',
+            'peta_embed'        => 'nullable|url|max:500',
+            'gambar_utama'      => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'galeri.*'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         try {
-            // Upload gambar utama
-            if ($request->hasFile('gambar_utama') && $request->file('gambar_utama')->isValid()) {
-                $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi', 'public');
-            }
+            // Upload gambar utama (wajib)
+            $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi/utama', 'public');
 
-            // Upload galeri
+            // Upload multiple galeri (opsional)
             $galeriPaths = [];
             if ($request->hasFile('galeri') && is_array($request->file('galeri'))) {
                 foreach ($request->file('galeri') as $file) {
@@ -50,18 +65,18 @@ class DestinasiController extends Controller
                     }
                 }
             }
-
-            // Karena kolom TEXT, encode manual jadi JSON string
             $validated['galeri'] = json_encode($galeriPaths);
 
-            // Slug unik
-            $slug = Str::slug($validated['nama']);
-            $originalSlug = $slug;
-            $count = 1;
-            while (Destinasi::where('slug', $slug)->exists()) {
-                $slug = $originalSlug . '-' . $count++;
+            // Generate slug unik jika kosong
+            if (empty($validated['slug'])) {
+                $slug = Str::slug($validated['nama']);
+                $originalSlug = $slug;
+                $count = 1;
+                while (Destinasi::where('slug', $slug)->exists()) {
+                    $slug = $originalSlug . '-' . $count++;
+                }
+                $validated['slug'] = $slug;
             }
-            $validated['slug'] = $slug;
 
             Destinasi::create($validated);
 
@@ -70,63 +85,83 @@ class DestinasiController extends Controller
                 ->with('success', 'Destinasi berhasil ditambahkan.');
         } catch (\Exception $e) {
             Log::error('Gagal menyimpan destinasi baru', [
-                'error'   => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'data'    => $request->except(['_token', 'gambar_utama', 'galeri']),
-                'galeri_paths' => $galeriPaths ?? [],
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'data'  => $request->except(['_token', 'gambar_utama', 'galeri']),
             ]);
 
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'Gagal menyimpan destinasi. Cek log untuk detail.');
+                ->with('error', 'Gagal menyimpan destinasi. Silakan coba lagi.');
         }
     }
 
+    /**
+     * Display the specified destination.
+     */
     public function show(Destinasi $destinasi)
     {
         return view('backend.destinasi.show', compact('destinasi'));
     }
 
+    /**
+     * Show the form for editing the specified destination.
+     */
     public function edit(Destinasi $destinasi)
     {
         return view('backend.destinasi.edit', compact('destinasi'));
     }
 
+    /**
+     * Update the specified destination in storage.
+     */
     public function update(Request $request, Destinasi $destinasi)
     {
         $validated = $request->validate([
             'nama'              => 'required|string|max:255',
+            'slug'              => 'nullable|string|max:255|unique:destinasis,slug,' . $destinasi->id,
+            'kategori'          => 'required|string|max:50|in:candi,balkondes,kuliner,alam,budaya,religi,desa_wisata',
             'deskripsi'         => 'required|string',
             'deskripsi_panjang' => 'nullable|string',
             'lokasi'            => 'nullable|string|max:255',
-            'latitude'          => 'nullable|numeric|between:-90,90',
-            'longitude'         => 'nullable|numeric|between:-180,180',
-            'gambar_utama'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'galeri.*'          => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'jam_operasional'   => 'nullable|string|max:255',
+            'fasilitas'         => 'nullable|string',
+            'harga_dewasa_wni'  => 'nullable|integer|min:0',
+            'harga_dewasa_wna'  => 'nullable|integer|min:0',
+            'harga_anak_wni'    => 'nullable|integer|min:0',
+            'harga_anak_wna'    => 'nullable|integer|min:0',
+            'info_tiket'        => 'nullable|string',
+            'peta_embed'        => 'nullable|url|max:500',
+            'gambar_utama'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'galeri.*'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         try {
-            // Slug jika nama berubah
+            // Update slug jika nama berubah dan slug kosong/diganti
             if ($request->filled('nama') && $destinasi->nama !== $validated['nama']) {
-                $slug = Str::slug($validated['nama']);
-                $originalSlug = $slug;
-                $count = 1;
-                while (Destinasi::where('slug', $slug)->where('id', '!=', $destinasi->id)->exists()) {
-                    $slug = $originalSlug . '-' . $count++;
+                if (empty($validated['slug'])) {
+                    $slug = Str::slug($validated['nama']);
+                    $originalSlug = $slug;
+                    $count = 1;
+                    while (Destinasi::where('slug', $slug)->where('id', '!=', $destinasi->id)->exists()) {
+                        $slug = $originalSlug . '-' . $count++;
+                    }
+                    $validated['slug'] = $slug;
                 }
-                $validated['slug'] = $slug;
             }
 
-            // Ganti gambar utama
+            // Ganti gambar utama jika diupload baru (hapus lama)
             if ($request->hasFile('gambar_utama') && $request->file('gambar_utama')->isValid()) {
                 if ($destinasi->gambar_utama && Storage::disk('public')->exists($destinasi->gambar_utama)) {
                     Storage::disk('public')->delete($destinasi->gambar_utama);
                 }
-                $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi', 'public');
+                $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi/utama', 'public');
+            } else {
+                $validated['gambar_utama'] = $destinasi->gambar_utama; // Pertahankan lama
             }
 
-            // Galeri baru (append)
+            // Tambah galeri baru (append, tidak replace)
             $galeriBaru = [];
             if ($request->hasFile('galeri') && is_array($request->file('galeri'))) {
                 foreach ($request->file('galeri') as $file) {
@@ -136,11 +171,7 @@ class DestinasiController extends Controller
                 }
             }
 
-            // Decode galeri lama dari JSON string (karena kolom TEXT)
-            $galeriLamaJson = $destinasi->galeri ?? '[]';
-            $galeriLama = json_decode($galeriLamaJson, true) ?? [];
-
-            // Merge dan encode kembali
+            $galeriLama = json_decode($destinasi->galeri ?? '[]', true) ?? [];
             $galeriFinal = array_merge($galeriLama, $galeriBaru);
             $validated['galeri'] = json_encode($galeriFinal);
 
@@ -151,18 +182,21 @@ class DestinasiController extends Controller
                 ->with('success', 'Destinasi berhasil diperbarui.');
         } catch (\Exception $e) {
             Log::error('Gagal update destinasi', [
-                'id'       => $destinasi->id,
-                'error'    => $e->getMessage(),
-                'trace'    => $e->getTraceAsString(),
+                'id'    => $destinasi->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'Gagal memperbarui destinasi. Cek log.');
+                ->with('error', 'Gagal memperbarui destinasi.');
         }
     }
 
+    /**
+     * Remove the specified destination from storage.
+     */
     public function destroy(Destinasi $destinasi)
     {
         try {
@@ -171,9 +205,8 @@ class DestinasiController extends Controller
                 Storage::disk('public')->delete($destinasi->gambar_utama);
             }
 
-            // Hapus galeri
-            $galeriJson = $destinasi->galeri ?? '[]';
-            $galeri = json_decode($galeriJson, true) ?? [];
+            // Hapus semua gambar galeri
+            $galeri = json_decode($destinasi->galeri ?? '[]', true) ?? [];
             foreach ($galeri as $path) {
                 if (Storage::disk('public')->exists($path)) {
                     Storage::disk('public')->delete($path);
@@ -186,7 +219,7 @@ class DestinasiController extends Controller
                 ->route('admin.destinasi.index')
                 ->with('success', 'Destinasi berhasil dihapus.');
         } catch (\Exception $e) {
-            Log::error('Gagal hapus destinasi', [
+            Log::error('Gagal menghapus destinasi', [
                 'id'    => $destinasi->id,
                 'error' => $e->getMessage(),
             ]);
