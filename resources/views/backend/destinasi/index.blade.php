@@ -10,7 +10,7 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Header Section - Redesigned -->
+    <!-- Header Section -->
     <div class="relative overflow-hidden bg-gradient-to-r from-orange-50 via-orange-100 to-amber-50 rounded-3xl p-8 border border-orange-200/50 shadow-xl">
         <!-- Decorative elements -->
         <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-300/20 to-amber-300/20 rounded-full blur-3xl -mr-48 -mt-48"></div>
@@ -105,11 +105,11 @@
         </div>
     </div>
 
-    <!-- Table Section - Redesigned -->
+    <!-- Table Section -->
     <div class="bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100">
         <!-- Table Header -->
         <div class="bg-gradient-to-r from-gray-50 to-gray-100/50 px-6 py-4 border-b border-gray-200">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-4">
                 <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
                     <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
@@ -126,62 +126,45 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                                </svg>
-                                Nama Destinasi
-                            </div>
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                </svg>
-                                Lokasi
-                            </div>
-                        </th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                                Views
-                            </div>
-                        </th>
-                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
-                            <div class="flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
-                                </svg>
-                                Aksi
-                            </div>
-                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Destinasi</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Kategori</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Lokasi</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Harga Tiket</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Views</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
                     @forelse ($destinasi as $item)
                         <tr class="hover:bg-orange-50/50 transition-colors group">
                             <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-2 h-2 bg-orange-500 rounded-full group-hover:scale-150 transition-transform"></div>
-                                    <div>
-                                        <div class="font-semibold text-gray-800 group-hover:text-orange-600 transition-colors">
-                                            {{ $item->nama }}
-                                        </div>
-                                        <div class="text-xs text-gray-500 mt-0.5">{{ $item->slug }}</div>
-                                    </div>
+                                <div class="font-semibold text-gray-800 group-hover:text-orange-600 transition-colors">
+                                    {{ $item->nama }}
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">
+                                    ID: {{ $item->id }}
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="flex items-center gap-2 text-gray-700">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                    </svg>
-                                    <span>{{ $item->lokasi ?? '-' }}</span>
-                                </div>
+                                @if($item->kategori)
+                                    <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
+                                        {{ $item->kategori_nama ?? ucfirst($item->kategori) }}
+                                    </span>
+                                @else
+                                    <span class="text-gray-500 text-sm">—</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-gray-700">
+                                {{ $item->lokasi ?? '—' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($item->harga_tiket_formatted && $item->harga_tiket_formatted !== 'Informasi harga tidak tersedia')
+                                    <span class="inline-flex px-3 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800 border border-amber-300">
+                                        {{ $item->harga_tiket_formatted }}
+                                    </span>
+                                @else
+                                    <span class="text-gray-500 text-sm">—</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4">
                                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-100 to-orange-200/50 border border-orange-200">
@@ -192,23 +175,9 @@
                                     <span class="text-orange-700 font-bold text-sm tabular-nums">{{ number_format($item->views ?? 0) }}</span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4">
-                                <div class="flex justify-center gap-2">
-                                    <!-- View Button -->
-                                    <a href="{{ route('admin.destinasi.show', $item->slug) }}"
-                                       class="group/btn relative bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all overflow-hidden">
-                                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
-                                        <div class="relative flex items-center gap-1.5">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                            </svg>
-                                            Lihat
-                                        </div>
-                                    </a>
-
-                                    <!-- Edit Button -->
-                                    <a href="{{ route('admin.destinasi.edit', $item->slug) }}"
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex justify-center gap-2 flex-wrap">
+                                    <a href="{{ route('admin.destinasi.edit', $item) }}"
                                        class="group/btn relative bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all overflow-hidden">
                                         <div class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
                                         <div class="relative flex items-center gap-1.5">
@@ -219,13 +188,13 @@
                                         </div>
                                     </a>
 
-                                    <!-- Delete Button -->
-                                    <form action="{{ route('admin.destinasi.destroy', $item->slug) }}" method="POST" class="inline">
+                                    <form action="{{ route('admin.destinasi.destroy', $item) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit"
-                                            onclick="return confirm('⚠️ Yakin ingin menghapus destinasi \"{{ $item->nama }}\"?\n\nData yang dihapus tidak dapat dikembalikan!')"
-                                            class="group/btn relative bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all overflow-hidden">
+                                        <button type="button"
+                                                class="group/btn relative bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all overflow-hidden delete-btn"
+                                                data-id="{{ $item->id }}"
+                                                data-name="{{ addslashes($item->nama) }}">
                                             <div class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
                                             <div class="relative flex items-center gap-1.5">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,11 +209,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-16">
+                            <td colspan="6" class="px-6 py-16">
                                 <div class="text-center">
                                     <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                                         <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                         </svg>
                                     </div>
                                     <h3 class="text-lg font-semibold text-gray-700 mb-2">Belum ada data destinasi</h3>
@@ -264,35 +233,92 @@
             </table>
         </div>
 
-        <!-- Pagination (if needed) -->
+        <!-- Pagination & Info -->
         @if($destinasi->count() > 0)
-        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center flex-wrap gap-4">
             <div class="text-sm text-gray-600">
-                Menampilkan <span class="font-semibold text-gray-800">{{ $destinasi->count() }}</span> destinasi
+                Menampilkan <span class="font-semibold text-gray-800">{{ $destinasi->count() }}</span> dari total {{ $destinasi->total() }} destinasi
+            </div>
+            <div>
+                {{ $destinasi->links('pagination::tailwind') }}
             </div>
         </div>
         @endif
     </div>
 </div>
 
+<!-- SweetAlert2 CSS & JS -->
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
+
 @push('scripts')
-<script>
-    // Add animation on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const rows = document.querySelectorAll('tbody tr');
-        rows.forEach((row, index) => {
-            setTimeout(() => {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Success message (create/update)
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3500,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                },
+                background: '#fefce8',
+                color: '#713200',
+                iconColor: '#ca8a04',
+                customClass: {
+                    popup: 'border border-yellow-400/30 shadow-xl'
+                }
+            });
+        @endif
+
+        // Delete confirmation
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const form = this.closest('form');
+                    const name = this.getAttribute('data-name');
+
+                    Swal.fire({
+                        title: 'Yakin hapus destinasi?',
+                        html: `Anda akan menghapus <strong>"${name}"</strong><br><br>Data yang dihapus <b>tidak dapat dikembalikan</b>!`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc2626',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        focusCancel: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            // Row fade-in animation (tetap dipertahankan)
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach((row, index) => {
                 row.style.opacity = '0';
-                row.style.transform = 'translateY(10px)';
-                row.style.transition = 'all 0.3s ease';
+                row.style.transform = 'translateY(12px)';
+                row.style.transition = 'all 0.4s ease';
                 
                 setTimeout(() => {
                     row.style.opacity = '1';
                     row.style.transform = 'translateY(0)';
-                }, 50);
-            }, index * 50);
+                }, index * 60);
+            });
         });
-    });
-</script>
+    </script>
 @endpush
 @endsection

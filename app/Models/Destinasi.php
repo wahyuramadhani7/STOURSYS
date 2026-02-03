@@ -13,13 +13,10 @@ class Destinasi extends Model
     use HasFactory;
 
     /**
-     * Gunakan slug untuk route model binding
-     * Contoh: /destinasi/candi-borobudur
+     * Gunakan 'id' sebagai default route model binding
+     * (karena slug sudah dihapus)
      */
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
+    // public function getRouteKeyName()  ← tidak perlu override lagi, default ke 'id'
 
     /**
      * The attributes that are mass assignable.
@@ -28,17 +25,12 @@ class Destinasi extends Model
      */
     protected $fillable = [
         'nama',
-        'slug',
         'kategori',
         'deskripsi',
-        'deskripsi_panjang',
         'lokasi',
         'jam_operasional',
         'fasilitas',
-        'harga_dewasa_wni',
-        'harga_dewasa_wna',
-        'harga_anak_wni',
-        'harga_anak_wna',
+        'harga_tiket',       // ← kolom baru (string)
         'info_tiket',
         'peta_embed',
         'gambar_utama',
@@ -53,14 +45,11 @@ class Destinasi extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'is_active'         => 'boolean',
-        'views'             => 'integer',
-        'harga_dewasa_wni'  => 'integer',
-        'harga_dewasa_wna'  => 'integer',
-        'harga_anak_wni'    => 'integer',
-        'harga_anak_wna'    => 'integer',
-        'created_at'        => 'datetime',
-        'updated_at'        => 'datetime',
+        'is_active'    => 'boolean',
+        'views'        => 'integer',
+        'galeri'       => 'array',     // lebih aman daripada json langsung
+        'created_at'   => 'datetime',
+        'updated_at'   => 'datetime',
     ];
 
     /**
@@ -69,17 +58,14 @@ class Destinasi extends Model
      * @var array
      */
     protected $attributes = [
-        'is_active'         => true,
-        'views'             => 0,
-        'galeri'            => '[]',          // JSON string kosong
-        'fasilitas'         => null,
-        'jam_operasional'   => null,
-        'peta_embed'        => null,
-        'info_tiket'        => null,
-        'harga_dewasa_wni'  => null,
-        'harga_dewasa_wna'  => null,
-        'harga_anak_wni'    => null,
-        'harga_anak_wna'    => null,
+        'is_active'      => true,
+        'views'          => 0,
+        'galeri'         => '[]',       // JSON string kosong
+        'fasilitas'      => null,
+        'jam_operasional'=> null,
+        'peta_embed'     => null,
+        'info_tiket'     => null,
+        'harga_tiket'    => null,
     ];
 
     // =======================================
@@ -94,7 +80,7 @@ class Destinasi extends Model
         return Attribute::make(
             get: fn () => $this->gambar_utama
                 ? Storage::url($this->gambar_utama)
-                : asset('images/placeholder-destinasi.jpg'), // fallback jika kosong
+                : asset('images/placeholder-destinasi.jpg'),
         );
     }
 
@@ -105,12 +91,7 @@ class Destinasi extends Model
     {
         return Attribute::make(
             get: function (): array {
-                $raw = $this->galeri ?? '[]';
-                $paths = json_decode($raw, true);
-
-                if (json_last_error() !== JSON_ERROR_NONE || !is_array($paths)) {
-                    return [];
-                }
+                $paths = $this->galeri ?? [];
 
                 return collect($paths)
                     ->map(fn ($path) => $path ? Storage::url($path) : null)
@@ -132,7 +113,6 @@ class Destinasi extends Model
                     return [];
                 }
 
-                // Pisah berdasarkan koma, titik koma, atau baris baru
                 $items = preg_split('/[\r\n]+|[,;]\s*/', trim($this->fasilitas), -1, PREG_SPLIT_NO_EMPTY);
 
                 return array_map(fn ($item) => ucfirst(trim($item)), $items);
@@ -153,19 +133,20 @@ class Destinasi extends Model
     }
 
     /**
-     * Accessor: Format harga tiket dewasa WNI (contoh: Rp 50.000)
+     * Accessor: Harga tiket yang sudah diformat (karena sekarang string bebas)
+     * Menampilkan apa adanya, atau fallback jika kosong
      */
-    protected function hargaDewasaWniFormatted(): Attribute
+    protected function hargaTiketFormatted(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->harga_dewasa_wni !== null
-                ? 'Rp ' . number_format($this->harga_dewasa_wni, 0, ',', '.')
-                : 'Gratis / Tidak tersedia',
+            get: fn () => $this->harga_tiket
+                ? $this->harga_tiket
+                : 'Informasi harga tidak tersedia',
         );
     }
 
     /**
-     * Accessor: Embed peta yang aman (bisa langsung digunakan di iframe src)
+     * Accessor: Embed peta yang aman (hanya jika berasal dari Google Maps embed)
      */
     protected function petaEmbedSafe(): Attribute
     {
@@ -208,18 +189,7 @@ class Destinasi extends Model
     }
 
     /**
-     * Scope: Destinasi dengan harga terjangkau untuk WNI (dewasa < 100.000)
-     */
-    public function scopeTerjangkauWni($query)
-    {
-        return $query->where(function ($q) {
-            $q->where('harga_dewasa_wni', '<=', 100000)
-              ->orWhereNull('harga_dewasa_wni');
-        })->active();
-    }
-
-    /**
-     * Scope: Cari berdasarkan nama atau lokasi (untuk search sederhana)
+     * Scope: Cari berdasarkan nama atau lokasi atau deskripsi
      */
     public function scopeSearch($query, string $search)
     {

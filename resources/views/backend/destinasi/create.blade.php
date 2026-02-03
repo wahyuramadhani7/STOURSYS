@@ -34,18 +34,6 @@
                         </div>
 
                         <div class="form-group-custom">
-                            <label>Slug (opsional)</label>
-                            <input type="text" name="slug" 
-                                   class="input-custom @error('slug') is-invalid @enderror" 
-                                   value="{{ old('slug') }}" 
-                                   placeholder="otomatis-dibuat-jika-kosong">
-                            <small class="input-hint">Akan dibuat otomatis dari nama jika dikosongkan (contoh: candi-borobudur)</small>
-                            @error('slug')
-                                <span class="error-message">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-group-custom">
                             <label>Kategori <span class="required">*</span></label>
                             <select name="kategori" 
                                     class="input-custom @error('kategori') is-invalid @enderror" 
@@ -65,25 +53,13 @@
                         </div>
 
                         <div class="form-group-custom">
-                            <label>Deskripsi Singkat <span class="required">*</span></label>
+                            <label>Deskripsi <span class="required">*</span></label>
                             <textarea name="deskripsi" 
                                       class="input-custom @error('deskripsi') is-invalid @enderror" 
-                                      rows="4" 
-                                      placeholder="Deskripsi singkat yang muncul di halaman daftar (ideal 100-160 karakter)" 
+                                      rows="6" 
+                                      placeholder="Deskripsi utama destinasi (muncul di halaman daftar & detail). Ideal 100–300 karakter untuk SEO dan keterbacaan." 
                                       required>{{ old('deskripsi') }}</textarea>
                             @error('deskripsi')
-                                <span class="error-message">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-group-custom">
-                            <label>Deskripsi Lengkap</label>
-                            <textarea name="deskripsi_panjang" 
-                                      class="input-custom @error('deskripsi_panjang') is-invalid @enderror" 
-                                      rows="10" 
-                                      placeholder="Informasi lengkap: sejarah, fasilitas, jam operasional, harga tiket, cara menuju lokasi, tips kunjungan, dll.">{{ old('deskripsi_panjang') }}</textarea>
-                            <small class="input-hint">Boleh menggunakan tag HTML sederhana seperti &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;li&gt;</small>
-                            @error('deskripsi_panjang')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
@@ -91,7 +67,7 @@
                     </div>
                 </div>
 
-                <!-- Card Jam Operasional & Fasilitas (baru + diganti) -->
+                <!-- Card Jam Operasional & Fasilitas -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>⏰ Jam Operasional & Fasilitas</h5>
@@ -99,12 +75,12 @@
                     <div class="form-card-body">
                         
                         <div class="form-group-custom">
-                            <label>Jam Operasional <small class="text-muted">(opsional, tapi sangat disarankan)</small></label>
+                            <label>Jam Operasional <small class="text-muted">(sangat disarankan)</small></label>
                             <input type="text" name="jam_operasional" 
                                    class="input-custom @error('jam_operasional') is-invalid @enderror" 
                                    value="{{ old('jam_operasional') }}" 
-                                   placeholder="Contoh: Setiap hari 06:00 - 18:00 WIB (loket tutup 17:00)">
-                            <small class="input-hint">Tulis bebas, termasuk hari libur/khusus jika berbeda (misal: Naik Candi 09:00-17:00, Balkondes 07:00-22:00)</small>
+                                   placeholder="Contoh: Setiap hari 06:00 - 17:00 WIB (loket tutup 16:30)">
+                            <small class="input-hint">Bisa berbeda per hari atau musim (misal: Naik Candi pukul 04:30–09:00)</small>
                             @error('jam_operasional')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -115,8 +91,8 @@
                             <textarea name="fasilitas" 
                                       class="input-custom @error('fasilitas') is-invalid @enderror" 
                                       rows="5" 
-                                      placeholder="Tulis fasilitas yang ada, pisah dengan koma atau baris baru. Contoh: Toilet bersih, Mushola, Parkir bus & mobil luas, Warung makan halal, Spot foto instagramable, Area bermain anak, Akses difabel, WiFi gratis, Toko souvenir">{{ old('fasilitas') }}</textarea>
-                            <small class="input-hint">Input bebas agar fleksibel untuk setiap destinasi (tidak perlu centang fixed). Di frontend bisa ditampilkan sebagai list.</small>
+                                      placeholder="Pisah dengan koma atau enter. Contoh: Toilet bersih, Mushola, Parkir luas, Warung makan halal, Spot foto, Area bermain anak, Akses kursi roda, WiFi, Toko souvenir">{{ old('fasilitas') }}</textarea>
+                            <small class="input-hint">Akan ditampilkan sebagai daftar bullet di halaman detail</small>
                             @error('fasilitas')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -125,74 +101,38 @@
                     </div>
                 </div>
 
-                <!-- Card Harga Tiket -->
+                <!-- Card Harga Tiket (diperbarui: satu field fleksibel) -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
-                        <h5>💰 Harga Tiket & Informasi Tiket</h5>
+                        <h5>💰 Harga Tiket & Catatan</h5>
                     </div>
                     <div class="form-card-body">
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <div class="form-group-custom">
-                                    <label>Harga Tiket Dewasa WNI (Rp)</label>
-                                    <input type="number" name="harga_dewasa_wni" 
-                                           class="input-custom @error('harga_dewasa_wni') is-invalid @enderror" 
-                                           value="{{ old('harga_dewasa_wni') }}" 
-                                           placeholder="Contoh: 50000" min="0">
-                                    @error('harga_dewasa_wni')
-                                        <span class="error-message">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group-custom">
-                                    <label>Harga Tiket Dewasa WNA (Rp)</label>
-                                    <input type="number" name="harga_dewasa_wna" 
-                                           class="input-custom @error('harga_dewasa_wna') is-invalid @enderror" 
-                                           value="{{ old('harga_dewasa_wna') }}" 
-                                           placeholder="Contoh: 375000" min="0">
-                                    @error('harga_dewasa_wna')
-                                        <span class="error-message">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group-custom">
-                                    <label>Harga Tiket Anak WNI (Rp)</label>
-                                    <input type="number" name="harga_anak_wni" 
-                                           class="input-custom @error('harga_anak_wni') is-invalid @enderror" 
-                                           value="{{ old('harga_anak_wni') }}" 
-                                           placeholder="0 jika sama dengan dewasa atau gratis" min="0">
-                                    @error('harga_anak_wni')
-                                        <span class="error-message">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group-custom">
-                                    <label>Harga Tiket Anak WNA (Rp)</label>
-                                    <input type="number" name="harga_anak_wna" 
-                                           class="input-custom @error('harga_anak_wna') is-invalid @enderror" 
-                                           value="{{ old('harga_anak_wna') }}" 
-                                           placeholder="0 jika sama atau gratis" min="0">
-                                    @error('harga_anak_wna')
-                                        <span class="error-message">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
+                        
+                        <div class="form-group-custom">
+                            <label>Harga Tiket <small class="text-muted">(opsional, tapi penting)</small></label>
+                            <input type="text" name="harga_tiket" 
+                                   class="input-custom @error('harga_tiket') is-invalid @enderror" 
+                                   value="{{ old('harga_tiket') }}" 
+                                   placeholder="Contoh: Rp 50.000 / orang (WNI), Rp 350.000 (WNA) | Gratis | Rp 25.000 dewasa, Rp 10.000 anak">
+                            <small class="input-hint d-block mt-1">
+                                Tulis bebas termasuk catatan: WNI/WNA, dewasa/anak, paket kombo, gratis untuk balita, hari tertentu, dll.
+                            </small>
+                            @error('harga_tiket')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="form-group-custom mt-4">
-                            <label>Catatan Harga / Informasi Tambahan Tiket</label>
+                            <label>Catatan Tambahan Tiket / Info Penting</label>
                             <textarea name="info_tiket" 
                                       class="input-custom @error('info_tiket') is-invalid @enderror" 
                                       rows="3" 
-                                      placeholder="Contoh: Gratis untuk anak di bawah 3 tahun, tiket kombo Candi + Museum Rp 75.000, dll.">{{ old('info_tiket') }}</textarea>
+                                      placeholder="Contoh: Tiket kombo Candi + Museum Rp 75.000, Gratis untuk anak < 3 tahun, Bisa beli online via website resmi, Diskon pelajar 20%, dll.">{{ old('info_tiket') }}</textarea>
                             @error('info_tiket')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
+
                     </div>
                 </div>
 
@@ -202,19 +142,17 @@
                         <h5>📍 Lokasi</h5>
                     </div>
                     <div class="form-card-body">
-                        
                         <div class="form-group-custom">
                             <label>Alamat / Deskripsi Lokasi</label>
                             <input type="text" name="lokasi" 
                                    class="input-custom @error('lokasi') is-invalid @enderror" 
                                    value="{{ old('lokasi') }}" 
-                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah">
-                            <small class="input-hint">Bisa ditambahkan info desa, kecamatan, atau landmark terdekat</small>
+                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah 56553">
+                            <small class="input-hint">Sertakan info desa/kecamatan/landmark terdekat jika perlu</small>
                             @error('lokasi')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
-
                     </div>
                 </div>
 
@@ -225,14 +163,13 @@
                     </div>
                     <div class="form-card-body">
                         <div class="form-group-custom">
-                            <label>Embed URL Google Maps (iframe src)</label>
+                            <label>Embed URL Google Maps (hanya bagian src)</label>
                             <input type="url" name="peta_embed" 
                                    class="input-custom @error('peta_embed') is-invalid @enderror" 
                                    value="{{ old('peta_embed') }}" 
-                                   placeholder="https://www.google.com/maps/embed?pb=...">
+                                   placeholder="https://www.google.com/maps/embed?pb=!1m18!1m12!...">
                             <small class="input-hint d-block mb-2">
-                                Cara mendapatkan: Buka Google Maps → Share → Embed a map → Copy bagian src saja<br>
-                                Contoh: https://www.google.com/maps/embed?pb=!1m18!1m12!...
+                                Cara copy: Google Maps → Share → Embed a map → Copy src saja (bukan full iframe)
                             </small>
 
                             @if(old('peta_embed'))
@@ -274,19 +211,17 @@
                                         <line x1="12" y1="3" x2="12" y2="15"></line>
                                     </svg>
                                     <span>Klik atau drag gambar utama</span>
-                                    <small>JPG, PNG, WEBP • Maks. 2MB • Rasio ideal 4:3 atau 16:9</small>
+                                    <small>JPG, PNG, WEBP • Maks. 2MB</small>
                                 </label>
                             </div>
-                            
                             <div id="preview-utama" class="preview-box mt-3"></div>
-                            
                             @error('gambar_utama')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="form-group-custom">
-                            <label>Galeri Foto Tambahan</label>
+                        <div class="form-group-custom mt-5">
+                            <label>Galeri Foto Tambahan <small class="text-muted">(opsional)</small></label>
                             <div class="upload-area">
                                 <input type="file" name="galeri[]" 
                                        class="file-input" 
@@ -301,10 +236,9 @@
                                         <polyline points="21 15 16 10 5 21"></polyline>
                                     </svg>
                                     <span>Klik untuk upload beberapa foto</span>
-                                    <small>Bisa pilih banyak sekaligus • Maks. 2MB per foto</small>
+                                    <small>Bisa pilih banyak • Maks. 2MB per foto</small>
                                 </label>
                             </div>
-                            
                             <div id="preview-galeri" class="gallery-preview mt-3"></div>
                         </div>
 
@@ -327,7 +261,7 @@
     </div>
 </div>
 
-<!-- Style dan Script tetap sama seperti sebelumnya -->
+<!-- Style dan Script (tetap sama) -->
 <style>
     /* ============== Style asli + sedikit penyesuaian ============== */
     * { box-sizing: border-box; }
@@ -422,11 +356,6 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 1rem;
-    }
-
-    .form-check-input:checked {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
     }
 
     .form-actions { margin-top: 2rem; }

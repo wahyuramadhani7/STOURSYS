@@ -1,49 +1,442 @@
 @extends('backend.layouts.app')
 
 @section('content')
-<div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Edit Event: {{ $event->judul }}</h1>
-        <a href="{{ route('admin.event.index') }}" class="text-gray-600 hover:text-gray-900">Kembali</a>
-    </div>
-
-    <form action="{{ route('admin.event.update', $event) }}" method="POST" enctype="multipart/form-data" class="bg-white shadow rounded-lg p-8 space-y-6">
-        @csrf @method('PATCH')
-
-        <!-- Sama seperti create, tapi tambahkan value -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Judul Event</label>
-            <input type="text" name="judul" value="{{ old('judul', $event->judul) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-        </div>
-
-        <!-- ... isi field lain mirip create, pakai old() atau $event->field ... -->
-
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Gambar Utama Saat Ini</label>
-            @if($event->gambar_utama)
-                <img src="{{ Storage::url($event->gambar_utama) }}" alt="Gambar Utama" class="mt-2 h-40 object-cover rounded">
-            @endif
-            <input type="file" name="gambar_utama" accept="image/*" class="mt-2 block w-full text-sm text-gray-500 ...">
-        </div>
-
-        <!-- Galeri saat ini -->
-        @if($event->galeri && count($event->galeri) > 0)
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Galeri Saat Ini</label>
-                <div class="grid grid-cols-3 gap-4 mt-2">
-                    @foreach($event->galeri as $img)
-                        <img src="{{ Storage::url($img) }}" alt="Galeri" class="h-32 object-cover rounded">
-                    @endforeach
-                </div>
+<div class="container-fluid px-4 py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-9">
+            
+            <!-- Header -->
+            <div class="page-header mb-4">
+                <h2 class="page-title">Edit Destinasi: {{ $destinasi->nama }}</h2>
+                <p class="page-subtitle">Perbarui informasi destinasi wisata kawasan Borobudur dengan data terbaru dan akurat</p>
             </div>
-        @endif
 
-        <!-- Tombol simpan -->
-        <div class="flex justify-end">
-            <button type="submit" class="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600">
-                Update Event
-            </button>
+            <form action="{{ route('admin.destinasi.update', $destinasi) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PATCH')
+
+                <!-- Card Informasi Dasar -->
+                <div class="form-card mb-4">
+                    <div class="form-card-header">
+                        <h5>📋 Informasi Dasar</h5>
+                    </div>
+                    <div class="form-card-body">
+                        
+                        <div class="form-group-custom">
+                            <label>Nama Destinasi <span class="required">*</span></label>
+                            <input type="text" name="nama" 
+                                   class="input-custom @error('nama') is-invalid @enderror" 
+                                   value="{{ old('nama', $destinasi->nama) }}" 
+                                   placeholder="Contoh: Candi Borobudur, Balkondes Karangrejo, Punthuk Setumbu" 
+                                   required autofocus>
+                            @error('nama')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label>Kategori <span class="required">*</span></label>
+                            <select name="kategori" 
+                                    class="input-custom @error('kategori') is-invalid @enderror" 
+                                    required>
+                                <option value="">-- Pilih Kategori --</option>
+                                <option value="candi" {{ old('kategori', $destinasi->kategori) == 'candi' ? 'selected' : '' }}>Destinasi Candi</option>
+                                <option value="balkondes" {{ old('kategori', $destinasi->kategori) == 'balkondes' ? 'selected' : '' }}>Balkondes</option>
+                                <option value="kuliner" {{ old('kategori', $destinasi->kategori) == 'kuliner' ? 'selected' : '' }}>Kuliner</option>
+                                <option value="alam" {{ old('kategori', $destinasi->kategori) == 'alam' ? 'selected' : '' }}>Destinasi Alam</option>
+                                <option value="budaya" {{ old('kategori', $destinasi->kategori) == 'budaya' ? 'selected' : '' }}>Destinasi Budaya</option>
+                                <option value="religi" {{ old('kategori', $destinasi->kategori) == 'religi' ? 'selected' : '' }}>Destinasi Religi</option>
+                                <option value="desa_wisata" {{ old('kategori', $destinasi->kategori) == 'desa_wisata' ? 'selected' : '' }}>Desa Wisata</option>
+                            </select>
+                            @error('kategori')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label>Deskripsi <span class="required">*</span></label>
+                            <textarea name="deskripsi" 
+                                      class="input-custom @error('deskripsi') is-invalid @enderror" 
+                                      rows="6" 
+                                      placeholder="Deskripsi utama destinasi (muncul di halaman daftar & detail). Ideal 100–300 karakter untuk SEO dan keterbacaan." 
+                                      required>{{ old('deskripsi', $destinasi->deskripsi ?? '') }}</textarea>
+                            @error('deskripsi')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Card Jam Operasional & Fasilitas -->
+                <div class="form-card mb-4">
+                    <div class="form-card-header">
+                        <h5>⏰ Jam Operasional & Fasilitas</h5>
+                    </div>
+                    <div class="form-card-body">
+                        
+                        <div class="form-group-custom">
+                            <label>Jam Operasional <small class="text-muted">(sangat disarankan)</small></label>
+                            <input type="text" name="jam_operasional" 
+                                   class="input-custom @error('jam_operasional') is-invalid @enderror" 
+                                   value="{{ old('jam_operasional', $destinasi->jam_operasional ?? '') }}" 
+                                   placeholder="Contoh: Setiap hari 06:00 - 17:00 WIB (loket tutup 16:30)">
+                            <small class="input-hint">Bisa berbeda per hari atau musim (misal: Naik Candi pukul 04:30–09:00)</small>
+                            @error('jam_operasional')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label>Fasilitas yang Tersedia <small class="text-muted">(opsional)</small></label>
+                            <textarea name="fasilitas" 
+                                      class="input-custom @error('fasilitas') is-invalid @enderror" 
+                                      rows="5" 
+                                      placeholder="Pisah dengan koma atau enter. Contoh: Toilet bersih, Mushola, Parkir luas, Warung makan halal, Spot foto, Area bermain anak, Akses kursi roda, WiFi, Toko souvenir">{{ old('fasilitas', $destinasi->fasilitas ?? '') }}</textarea>
+                            <small class="input-hint">Akan ditampilkan sebagai daftar bullet di halaman detail</small>
+                            @error('fasilitas')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Card Harga Tiket -->
+                <div class="form-card mb-4">
+                    <div class="form-card-header">
+                        <h5>💰 Harga Tiket & Catatan</h5>
+                    </div>
+                    <div class="form-card-body">
+                        
+                        <div class="form-group-custom">
+                            <label>Harga Tiket <small class="text-muted">(opsional, tapi penting)</small></label>
+                            <input type="text" name="harga_tiket" 
+                                   class="input-custom @error('harga_tiket') is-invalid @enderror" 
+                                   value="{{ old('harga_tiket', $destinasi->harga_tiket ?? '') }}" 
+                                   placeholder="Contoh: Rp 50.000 / orang (WNI), Rp 350.000 (WNA) | Gratis | Rp 25.000 dewasa, Rp 10.000 anak">
+                            <small class="input-hint d-block mt-1">
+                                Tulis bebas termasuk catatan: WNI/WNA, dewasa/anak, paket kombo, gratis untuk balita, hari tertentu, dll.
+                            </small>
+                            @error('harga_tiket')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group-custom mt-4">
+                            <label>Catatan Tambahan Tiket / Info Penting</label>
+                            <textarea name="info_tiket" 
+                                      class="input-custom @error('info_tiket') is-invalid @enderror" 
+                                      rows="3" 
+                                      placeholder="Contoh: Tiket kombo Candi + Museum Rp 75.000, Gratis untuk anak < 3 tahun, Bisa beli online via website resmi, Diskon pelajar 20%, dll.">{{ old('info_tiket', $destinasi->info_tiket ?? '') }}</textarea>
+                            @error('info_tiket')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Card Lokasi -->
+                <div class="form-card mb-4">
+                    <div class="form-card-header">
+                        <h5>📍 Lokasi</h5>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="form-group-custom">
+                            <label>Alamat / Deskripsi Lokasi</label>
+                            <input type="text" name="lokasi" 
+                                   class="input-custom @error('lokasi') is-invalid @enderror" 
+                                   value="{{ old('lokasi', $destinasi->lokasi ?? '') }}" 
+                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah 56553">
+                            <small class="input-hint">Sertakan info desa/kecamatan/landmark terdekat jika perlu</small>
+                            @error('lokasi')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Peta -->
+                <div class="form-card mb-4">
+                    <div class="form-card-header">
+                        <h5>🗺️ Peta Lokasi (Google Maps Embed)</h5>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="form-group-custom">
+                            <label>Embed URL Google Maps (hanya bagian src)</label>
+                            <input type="url" name="peta_embed" 
+                                   class="input-custom @error('peta_embed') is-invalid @enderror" 
+                                   value="{{ old('peta_embed', $destinasi->peta_embed ?? '') }}" 
+                                   placeholder="https://www.google.com/maps/embed?pb=!1m18!1m12!...">
+                            <small class="input-hint d-block mb-2">
+                                Cara copy: Google Maps → Share → Embed a map → Copy src saja (bukan full iframe)
+                            </small>
+
+                            @if(old('peta_embed', $destinasi->peta_embed))
+                                <div class="mt-3">
+                                    <label>Preview:</label>
+                                    <iframe class="w-100" height="300" style="border:0;" 
+                                            loading="lazy" allowfullscreen 
+                                            src="{{ old('peta_embed', $destinasi->peta_embed) }}"></iframe>
+                                </div>
+                            @endif
+
+                            @error('peta_embed')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Media -->
+                <div class="form-card mb-4">
+                    <div class="form-card-header">
+                        <h5>🖼️ Gambar & Galeri</h5>
+                    </div>
+                    <div class="form-card-body">
+                        
+                        <div class="form-group-custom">
+                            <label>Gambar Utama Saat Ini</label>
+                            @if($destinasi->gambar_utama)
+                                <div class="mt-2 mb-4">
+                                    <img src="{{ $destinasi->gambar_utama_url }}" alt="{{ $destinasi->nama }}" 
+                                         class="img-fluid rounded" style="max-height: 280px; object-fit: cover; width: 100%;">
+                                </div>
+                            @else
+                                <p class="text-muted">Belum ada gambar utama</p>
+                            @endif
+
+                            <label class="mt-2">Ganti Gambar Utama <small class="text-muted">(opsional)</small></label>
+                            <div class="upload-area">
+                                <input type="file" name="gambar_utama" 
+                                       class="file-input @error('gambar_utama') is-invalid @enderror" 
+                                       accept="image/jpeg,image/png,image/jpg,image/webp"
+                                       id="gambar_utama"
+                                       onchange="previewImage(this, 'preview-utama')">
+                                <label for="gambar_utama" class="upload-label">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    <span>Klik atau drag untuk ganti gambar utama</span>
+                                    <small>JPG, PNG, WEBP • Maks. 2MB</small>
+                                </label>
+                            </div>
+                            <div id="preview-utama" class="preview-box mt-3"></div>
+                            @error('gambar_utama')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group-custom mt-5">
+                            <label>Galeri Foto Saat Ini</label>
+                            @if($destinasi->galeri_urls && count($destinasi->galeri_urls) > 0)
+                                <div class="gallery-preview mt-3">
+                                    @foreach($destinasi->galeri_urls as $url)
+                                        <img src="{{ $url }}" alt="Galeri {{ $destinasi->nama }}" class="rounded">
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-muted">Belum ada foto tambahan di galeri</p>
+                            @endif
+
+                            <label class="mt-4">Tambah Foto Baru ke Galeri <small class="text-muted">(opsional – akan ditambahkan, tidak menggantikan yang lama)</small></label>
+                            <div class="upload-area">
+                                <input type="file" name="galeri[]" 
+                                       class="file-input" 
+                                       multiple 
+                                       accept="image/jpeg,image/png,image/jpg,image/webp"
+                                       id="galeri"
+                                       onchange="previewGallery(this)">
+                                <label for="galeri" class="upload-label">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                    <span>Klik untuk upload beberapa foto baru</span>
+                                    <small>Bisa pilih banyak • Maks. 2MB per foto</small>
+                                </label>
+                            </div>
+                            <div id="preview-galeri" class="gallery-preview mt-3"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions d-flex gap-3 justify-content-end mt-5">
+                    <a href="{{ route('admin.destinasi.index') }}" class="btn btn-secondary px-5 py-3">
+                        Batal
+                    </a>
+                    <button type="submit" class="btn btn-primary px-5 py-3">
+                        <i class="fas fa-save me-2"></i> Simpan Perubahan
+                    </button>
+                </div>
+
+            </form>
+
         </div>
-    </form>
+    </div>
 </div>
+
+<!-- Style dan Script (sama persis seperti create) -->
+<style>
+    /* ============== Style sama persis dengan create.blade.php ============== */
+    * { box-sizing: border-box; }
+
+    .page-header { margin-bottom: 2.5rem; }
+    .page-title { font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.5rem; }
+    .page-subtitle { font-size: 1rem; color: #6b7280; }
+
+    .form-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .form-card-header {
+        background: #f9fafb;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .form-card-header h5 { margin: 0; font-size: 1.125rem; font-weight: 600; }
+
+    .form-card-body { padding: 1.5rem; }
+
+    .form-group-custom { margin-bottom: 1.75rem; }
+    .form-group-custom label {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    .required { color: #ef4444; }
+
+    .input-custom {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .input-custom:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        outline: none;
+    }
+    .input-custom.is-invalid { border-color: #ef4444; }
+
+    textarea.input-custom { resize: vertical; min-height: 100px; }
+
+    .input-hint {
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin-top: 0.35rem;
+        display: block;
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.8rem;
+        margin-top: 0.35rem;
+        display: block;
+    }
+
+    .upload-area { position: relative; }
+    .file-input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .upload-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 1.5rem;
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .upload-label:hover {
+        border-color: #3b82f6;
+        background: #eff6ff;
+    }
+
+    .preview-box img, .gallery-preview img {
+        max-width: 100%;
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        margin-bottom: 0.75rem;
+    }
+    .gallery-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+
+    .form-actions { margin-top: 2rem; }
+
+    @media (max-width: 768px) {
+        .form-actions { flex-direction: column-reverse; gap: 1rem; }
+        .btn-primary, .btn-secondary { width: 100%; }
+    }
+</style>
+
+<script>
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    preview.innerHTML = '';
+    const file = input.files[0];
+    
+    if (!file) return;
+
+    if (file.size > 2048000) {
+        preview.innerHTML = '<div class="status error">File terlalu besar (maks 2MB)</div>';
+        input.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        preview.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <div class="status success mt-2">✓ ${file.name}</div>
+        `;
+    };
+    reader.readAsDataURL(file);
+}
+
+function previewGallery(input) {
+    const preview = document.getElementById('preview-galeri');
+    preview.innerHTML = '';
+
+    Array.from(input.files).forEach((file, index) => {
+        if (file.size > 2048000) {
+            preview.innerHTML += `<div class="status error">❌ ${file.name} > 2MB</div>`;
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.innerHTML = `<img src="${e.target.result}" alt="Galeri ${index+1}">`;
+            preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    if (input.files.length > 0) {
+        const summary = document.createElement('div');
+        summary.className = 'status success mt-3';
+        summary.style.gridColumn = '1 / -1';
+        summary.textContent = `✓ ${input.files.length} foto baru dipilih (akan ditambahkan)`;
+        preview.appendChild(summary);
+    }
+}
+</script>
 @endsection
