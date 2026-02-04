@@ -36,10 +36,6 @@
         background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
         transition: all 0.3s ease;
     }
-    .info-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-    }
     
     .map-container {
         position: relative; overflow: hidden; border-radius: 0.75rem;
@@ -64,22 +60,64 @@
         padding: 1.5rem; box-shadow: 0 8px 20px rgba(251,146,60,0.2);
     }
 
+    /* Tab buttons - responsive & scrollable di mobile */
     .tab-buttons {
-        display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;
-        border-bottom: 3px solid #e5e7eb; padding-bottom: 0.5rem;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #fb923c #f3f4f6;
+    }
+    .tab-buttons::-webkit-scrollbar {
+        height: 6px;
+    }
+    .tab-buttons::-webkit-scrollbar-thumb {
+        background-color: #fb923c;
+        border-radius: 3px;
     }
     .tab-btn {
-        padding: 0.75rem 1.5rem; font-weight: 600; border-radius: 0.5rem 0.5rem 0 0;
-        background: #f3f4f6; color: #4b5563; cursor: pointer; transition: all 0.3s; border: none;
+        flex: 0 0 auto;
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        border-radius: 0.5rem 0.5rem 0 0;
+        background: #f3f4f6;
+        color: #4b5563;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+        white-space: nowrap;
     }
     .tab-btn:hover { background: #e5e7eb; }
     .tab-btn.active {
-        background: white; color: #ea580c; border-bottom: 3px solid #ea580c;
-        transform: translateY(3px); box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+        background: white;
+        color: #ea580c;
+        border-bottom: 3px solid #ea580c;
+        transform: translateY(3px);
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
     }
-    .tab-content { display: none; padding: 1.5rem 0; }
+    .tab-content { display: none; padding: 1rem 0; }
     .tab-content.active { display: block; }
     .tab-pane { animation: fadeSlideUp 0.6s ease-out; }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+        .parallax-hero { height: 100% !important; object-fit: cover; }
+        section.hero-section { height: 60vh; min-height: 350px; }
+        h1 { font-size: 2.25rem !important; }
+        .tab-btn { padding: 0.6rem 1rem; font-size: 0.95rem; }
+        .gallery-item img { height: 140px !important; }
+        .grid-cols-2 { gap: 0.75rem !important; }
+        .info-card { position: static !important; margin-top: 2rem; }
+        .container { padding-left: 1rem; padding-right: 1rem; }
+    }
+
+    @media (min-width: 641px) and (max-width: 1024px) {
+        .gallery-item img { height: 180px; }
+    }
 </style>
 @endpush
 
@@ -88,22 +126,22 @@
     <div class="scroll-progress" id="scrollProgress"></div>
 
     <!-- Hero Section -->
-    <section class="relative h-96 md:h-[500px] lg:h-[600px] overflow-hidden">
+    <section class="relative h-[50vh] sm:h-[60vh] md:h-[500px] lg:h-[600px] overflow-hidden hero-section">
         @if($destinasi->gambar_utama_url)
             <img src="{{ $destinasi->gambar_utama_url }}" alt="{{ $destinasi->nama }}" class="parallax-hero absolute inset-0 w-full h-full object-cover brightness-[0.65]" id="heroImage" loading="lazy">
             <div class="absolute inset-0 shimmer-effect opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
         @else
-            <div class="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-950 flex items-center justify-center text-white text-2xl font-medium">
+            <div class="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-950 flex items-center justify-center text-white text-xl sm:text-2xl font-medium">
                 <span class="animate-float">Tidak ada gambar utama</span>
             </div>
         @endif
 
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end justify-center pb-12 md:pb-16 lg:pb-20">
-            <div class="text-center text-white px-6 max-w-5xl">
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 drop-shadow-2xl tracking-tight" data-aos="fade-up" data-aos-duration="1000">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end justify-center pb-10 sm:pb-16 lg:pb-20">
+            <div class="text-center text-white px-4 sm:px-6 max-w-5xl">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-3 sm:mb-4 drop-shadow-2xl tracking-tight" data-aos="fade-up" data-aos-duration="1000">
                     {{ $destinasi->nama }}
                 </h1>
-                <p class="text-xl md:text-2xl lg:text-3xl drop-shadow-lg opacity-95" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+                <p class="text-lg sm:text-xl md:text-2xl lg:text-3xl drop-shadow-lg opacity-95" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
                     {{ $destinasi->lokasi ?? 'Lokasi tidak disebutkan' }}
                 </p>
             </div>
@@ -111,48 +149,51 @@
     </section>
 
     <!-- Main Content -->
-    <section class="py-12 md:py-16 lg:py-20 bg-white">
+    <section class="py-10 sm:py-12 md:py-16 lg:py-20 bg-white">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 xl:gap-12">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
 
                 <!-- Konten Utama (kiri) -->
-                <div class="lg:col-span-2 space-y-12 lg:space-y-16">
+                <div class="lg:col-span-2 space-y-10 sm:space-y-12 lg:space-y-16">
 
                     @if($destinasi->deskripsi_singkat ?? false)
                     <div data-aos="fade-right" data-aos-duration="800">
-                        <p class="text-xl text-gray-700 leading-relaxed">{{ $destinasi->deskripsi_singkat }}</p>
+                        <p class="text-lg sm:text-xl text-gray-700 leading-relaxed">{{ $destinasi->deskripsi_singkat }}</p>
                     </div>
                     @endif
 
                     <!-- Tabs -->
-                    <div class="mt-10" data-aos="fade-up" data-aos-duration="900">
+                    <div class="mt-8 sm:mt-10" data-aos="fade-up" data-aos-duration="900">
                         <div class="tab-buttons">
                             <button class="tab-btn active" data-tab="deskripsi">Deskripsi</button>
                             @if(count($destinasi->fasilitas_list ?? []) > 0)
                             <button class="tab-btn" data-tab="fasilitas">Fasilitas</button>
                             @endif
-                            <button class="tab-btn" data-tab="jam-harga">Jam & Harga Tiket</button>
+                            <button class="tab-btn" data-tab="jam-harga">Jam & Harga</button>
                             @if($destinasi->peta_embed_safe)
-                            <button class="tab-btn" data-tab="lokasi">Rute & Lokasi</button>
+                            <button class="tab-btn" data-tab="lokasi">Lokasi</button>
+                            @endif
+                            @if(count($destinasi->galeri_urls ?? []) > 0)
+                            <button class="tab-btn" data-tab="galeri">Galeri</button>
                             @endif
                         </div>
 
                         <div class="tab-content active" id="deskripsi">
-                            <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed tab-pane">
+                            <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed tab-pane px-1 sm:px-0">
                                 {!! nl2br(e($destinasi->deskripsi ?? 'Belum ada deskripsi lengkap.')) !!}
                             </div>
                         </div>
 
                         @if(count($destinasi->fasilitas_list ?? []) > 0)
                         <div class="tab-content" id="fasilitas">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 tab-pane">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 tab-pane">
                                 @foreach($destinasi->fasilitas_list as $fas)
                                     <div class="flex items-center gap-3 bg-gray-50 p-4 rounded-lg border border-gray-200 hover:bg-gray-100 transition">
                                         <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
-                                        <span class="text-lg text-gray-800">{{ $fas }}</span>
+                                        <span class="text-base sm:text-lg text-gray-800">{{ $fas }}</span>
                                     </div>
                                 @endforeach
                             </div>
@@ -160,34 +201,32 @@
                         @endif
 
                         <div class="tab-content" id="jam-harga">
-                            <div class="space-y-8 tab-pane">
-                                <!-- Jam Operasional -->
+                            <div class="space-y-8 tab-pane px-1 sm:px-0">
                                 @if($destinasi->jam_operasional)
                                 <div>
-                                    <h4 class="text-2xl font-bold mb-4 text-gray-800">Jam Operasional</h4>
-                                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
-                                        <p class="text-lg font-medium text-gray-800">{{ $destinasi->jam_operasional }}</p>
+                                    <h4 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">Jam Operasional</h4>
+                                    <div class="bg-gray-50 p-5 sm:p-6 rounded-xl border border-gray-200">
+                                        <p class="text-base sm:text-lg font-medium text-gray-800">{{ $destinasi->jam_operasional }}</p>
                                     </div>
                                 </div>
                                 @else
                                 <div>
-                                    <h4 class="text-2xl font-bold mb-4 text-gray-800">Jam Operasional</h4>
-                                    <p class="text-lg text-gray-700">Informasi jam operasional tersedia di lokasi atau situs resmi.</p>
+                                    <h4 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">Jam Operasional</h4>
+                                    <p class="text-base sm:text-lg text-gray-700">Informasi jam operasional tersedia di lokasi atau situs resmi.</p>
                                 </div>
                                 @endif
 
-                                <!-- Harga Tiket -->
                                 <div>
-                                    <h4 class="text-2xl font-bold mb-4 text-gray-800">Harga Tiket</h4>
+                                    <h4 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">Harga Tiket</h4>
                                     <div class="harga-tiket-box">
                                         @if($destinasi->harga_tiket_formatted)
-                                            <p class="text-3xl font-bold text-orange-800 mb-4">{{ $destinasi->harga_tiket_formatted }}</p>
+                                            <p class="text-2xl sm:text-3xl font-bold text-orange-800 mb-4">{{ $destinasi->harga_tiket_formatted }}</p>
                                         @else
-                                            <p class="text-lg text-gray-700">Informasi harga tiket tersedia di lokasi atau situs resmi.</p>
+                                            <p class="text-base sm:text-lg text-gray-700">Informasi harga tiket tersedia di lokasi atau situs resmi.</p>
                                         @endif
 
                                         @if($destinasi->info_tiket)
-                                            <p class="text-gray-700 italic border-t border-orange-300 pt-4 mt-4">{{ $destinasi->info_tiket }}</p>
+                                            <p class="text-sm sm:text-base text-gray-700 italic border-t border-orange-300 pt-4 mt-4">{{ $destinasi->info_tiket }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -201,51 +240,51 @@
                             </div>
                         </div>
                         @endif
-                    </div>
 
-                    <!-- Galeri Foto -->
-                    @if($destinasi->galeri_urls && count($destinasi->galeri_urls) > 0)
-                    <div class="mt-16 lg:mt-20" data-aos="fade-up" data-aos-duration="1000">
-                        <h2 class="text-3xl md:text-4xl font-bold text-center mb-10 relative inline-block mx-auto">
-                            Galeri Foto
-                            <span class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 rounded-full"></span>
-                        </h2>
+                        @if(count($destinasi->galeri_urls ?? []) > 0)
+                        <div class="tab-content" id="galeri">
+                            <div class="tab-pane">
+                                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-10 relative inline-block mx-auto">
+                                    Galeri Foto
+                                    <span class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-1 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 rounded-full"></span>
+                                </h2>
 
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                            @foreach($destinasi->galeri_urls as $index => $url)
-                            <a href="{{ $url }}" 
-                               class="gallery-item glightbox relative overflow-hidden rounded-xl shadow-md"
-                               data-aos="zoom-in" 
-                               data-aos-duration="700" 
-                               data-aos-delay="{{ $index * 80 }}">
-                                <img src="{{ $url }}" 
-                                     class="w-full h-56 object-cover transition-transform duration-700"
-                                     alt="Galeri {{ $destinasi->nama }} - {{ $index + 1 }}"
-                                     loading="lazy">
-                                <div class="zoom-icon text-white">
-                                    <svg class="w-14 h-14 drop-shadow-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
-                                    </svg>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                                    @foreach($destinasi->galeri_urls as $index => $url)
+                                    <a href="{{ $url }}" 
+                                       class="gallery-item glightbox relative overflow-hidden rounded-xl shadow-md"
+                                       data-aos="zoom-in" 
+                                       data-aos-duration="700" 
+                                       data-aos-delay="{{ $index * 60 }}">
+                                        <img src="{{ $url }}" 
+                                             class="w-full h-40 sm:h-48 md:h-56 object-cover transition-transform duration-700"
+                                             alt="Galeri {{ $destinasi->nama }} - {{ $index + 1 }}"
+                                             loading="lazy">
+                                        <div class="zoom-icon text-white">
+                                            <svg class="w-10 sm:w-12 md:w-14 h-10 sm:h-12 md:h-14 drop-shadow-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+                                            </svg>
+                                        </div>
+                                    </a>
+                                    @endforeach
                                 </div>
-                            </a>
-                            @endforeach
+                            </div>
                         </div>
+                        @endif
                     </div>
-                    @endif
-
                 </div>
 
-                <!-- Sidebar Kanan -->
-                <div class="space-y-8">
-                    <div class="info-card p-6 rounded-xl shadow-lg sticky top-6" data-aos="fade-left" data-aos-duration="800">
-                        <h3 class="text-xl font-bold mb-6 flex items-center gap-3 text-gray-800">
+                <!-- Sidebar Kanan - di mobile jadi di bawah -->
+                <div class="lg:sticky lg:top-6 space-y-8 order-last lg:order-none">
+                    <div class="info-card p-5 sm:p-6 rounded-xl shadow-lg" data-aos="fade-left" data-aos-duration="800">
+                        <h3 class="text-lg sm:text-xl font-bold mb-5 sm:mb-6 flex items-center gap-3 text-gray-800">
                             <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             Informasi Singkat
                         </h3>
 
-                        <ul class="space-y-4 text-gray-700">
+                        <ul class="space-y-4 text-gray-700 text-sm sm:text-base">
                             <li class="flex items-start gap-3">
                                 <svg class="w-5 h-5 text-orange-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -283,14 +322,31 @@
 
             </div>
 
-            <!-- Tombol Kembali -->
-            <div class="mt-16 lg:mt-20 flex justify-center" data-aos="fade-up" data-aos-duration="900">
-                <a href="{{ route('destinasi.index') }}"
-                   class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold text-lg rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 group">
-                    <svg class="w-6 h-6 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Tombol Kembali - pintar sesuai kategori -->
+            <div class="mt-12 sm:mt-16 lg:mt-20 flex justify-center" data-aos="fade-up" data-aos-duration="900">
+                @php
+                    // Ambil kategori dari query string (jika ada) atau dari destinasi saat ini
+                    $kategori = request()->query('kategori') 
+                                ?? (isset($destinasi->kategori) ? $destinasi->kategori : null);
+                    
+                    // Validasi agar hanya kategori yang diizinkan
+                    $validKategori = in_array($kategori, ['candi','balkondes','kuliner','alam','budaya','religi','desa_wisata']);
+                    
+                    // Buat URL kembali
+                    $backUrl = $validKategori 
+                        ? route('destinasi.index') . '?kategori=' . urlencode($kategori)
+                        : route('destinasi.index');
+                @endphp
+
+                <a href="{{ $backUrl }}"
+                   class="inline-flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold text-base sm:text-lg rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 group">
+                    <svg class="w-5 sm:w-6 h-5 sm:h-6 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                     <span>Kembali ke Daftar Destinasi</span>
+                    @if($validKategori)
+                        <span class="text-xs sm:text-sm opacity-90 ml-1">({{ $destinasi->kategori_nama }})</span>
+                    @endif
                 </a>
             </div>
 
@@ -344,7 +400,8 @@
                 tabContents.forEach(content => content.classList.remove('active'));
                 button.classList.add('active');
                 const tabId = button.getAttribute('data-tab');
-                document.getElementById(tabId).classList.add('active');
+                const target = document.getElementById(tabId);
+                if (target) target.classList.add('active');
             });
         });
     });

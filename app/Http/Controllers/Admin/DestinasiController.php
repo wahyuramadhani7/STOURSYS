@@ -15,7 +15,7 @@ class DestinasiController extends Controller
      */
     public function index()
     {
-        $destinasi = Destinasi::latest()->paginate(15); // 15 item per halaman, bisa diubah jadi 10/20 dll
+        $destinasi = Destinasi::latest()->paginate(15);
         return view('backend.destinasi.index', compact('destinasi'));
     }
 
@@ -39,7 +39,7 @@ class DestinasiController extends Controller
             'lokasi'            => 'nullable|string|max:255',
             'jam_operasional'   => 'nullable|string|max:255',
             'fasilitas'         => 'nullable|string',
-            'harga_tiket'       => 'nullable|string|max:100',
+            'harga_tiket'       => 'nullable|string|max:1000',           // ← Diperbaiki: dari max:100 → max:1000
             'info_tiket'        => 'nullable|string',
             'peta_embed'        => 'nullable|url|max:500',
             'gambar_utama'      => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -50,7 +50,7 @@ class DestinasiController extends Controller
             // Upload gambar utama (wajib)
             $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi/utama', 'public');
 
-            // Upload multiple galeri (opsional) - akan di-append jika edit nanti
+            // Upload multiple galeri (opsional)
             $galeriPaths = [];
             if ($request->hasFile('galeri') && is_array($request->file('galeri'))) {
                 foreach ($request->file('galeri') as $file) {
@@ -70,7 +70,7 @@ class DestinasiController extends Controller
             Log::error('Gagal menyimpan destinasi baru', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
-                'data'  => $request->except(['_token', 'gambar_utama', 'galeri']),
+                'input' => $request->except(['_token', 'gambar_utama', 'galeri']),
             ]);
 
             return redirect()
@@ -108,7 +108,7 @@ class DestinasiController extends Controller
             'lokasi'            => 'nullable|string|max:255',
             'jam_operasional'   => 'nullable|string|max:255',
             'fasilitas'         => 'nullable|string',
-            'harga_tiket'       => 'nullable|string|max:100',
+            'harga_tiket'       => 'nullable|string|max:1000',           // ← Diperbaiki: dari max:100 → max:1000
             'info_tiket'        => 'nullable|string',
             'peta_embed'        => 'nullable|url|max:500',
             'gambar_utama'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -116,14 +116,16 @@ class DestinasiController extends Controller
         ]);
 
         try {
-            // Ganti gambar utama jika diupload baru (hapus yang lama)
+            // Update gambar utama jika ada file baru
             if ($request->hasFile('gambar_utama') && $request->file('gambar_utama')->isValid()) {
+                // Hapus gambar lama jika ada
                 if ($destinasi->gambar_utama && Storage::disk('public')->exists($destinasi->gambar_utama)) {
                     Storage::disk('public')->delete($destinasi->gambar_utama);
                 }
                 $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi/utama', 'public');
             } else {
-                $validated['gambar_utama'] = $destinasi->gambar_utama; // pertahankan yang lama
+                // Pertahankan gambar lama
+                $validated['gambar_utama'] = $destinasi->gambar_utama;
             }
 
             // Tambah galeri baru (append, tidak replace)
@@ -146,7 +148,7 @@ class DestinasiController extends Controller
                 ->route('admin.destinasi.index')
                 ->with('success', 'Destinasi berhasil diperbarui.');
         } catch (\Exception $e) {
-            Log::error('Gagal update destinasi', [
+            Log::error('Gagal memperbarui destinasi', [
                 'id'    => $destinasi->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -165,12 +167,12 @@ class DestinasiController extends Controller
     public function destroy(Destinasi $destinasi)
     {
         try {
-            // Hapus gambar utama jika ada
+            // Hapus gambar utama
             if ($destinasi->gambar_utama && Storage::disk('public')->exists($destinasi->gambar_utama)) {
                 Storage::disk('public')->delete($destinasi->gambar_utama);
             }
 
-            // Hapus semua gambar di galeri
+            // Hapus semua gambar galeri
             $galeri = json_decode($destinasi->galeri ?? '[]', true) ?? [];
             foreach ($galeri as $path) {
                 if (Storage::disk('public')->exists($path)) {

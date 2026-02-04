@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class Destinasi extends Model
 {
@@ -14,9 +15,8 @@ class Destinasi extends Model
 
     /**
      * Gunakan 'id' sebagai default route model binding
-     * (karena slug sudah dihapus)
      */
-    // public function getRouteKeyName()  ← tidak perlu override lagi, default ke 'id'
+    // public function getRouteKeyName()  ← default 'id' sudah OK
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +30,7 @@ class Destinasi extends Model
         'lokasi',
         'jam_operasional',
         'fasilitas',
-        'harga_tiket',       // ← kolom baru (string)
+        'harga_tiket',
         'info_tiket',
         'peta_embed',
         'gambar_utama',
@@ -47,7 +47,7 @@ class Destinasi extends Model
     protected $casts = [
         'is_active'    => 'boolean',
         'views'        => 'integer',
-        'galeri'       => 'array',     // lebih aman daripada json langsung
+        'galeri'       => 'array',
         'created_at'   => 'datetime',
         'updated_at'   => 'datetime',
     ];
@@ -60,7 +60,7 @@ class Destinasi extends Model
     protected $attributes = [
         'is_active'      => true,
         'views'          => 0,
-        'galeri'         => '[]',       // JSON string kosong
+        'galeri'         => '[]',
         'fasilitas'      => null,
         'jam_operasional'=> null,
         'peta_embed'     => null,
@@ -72,9 +72,6 @@ class Destinasi extends Model
     // Accessors
     // =======================================
 
-    /**
-     * Accessor: URL gambar utama (full public URL)
-     */
     protected function gambarUtamaUrl(): Attribute
     {
         return Attribute::make(
@@ -84,17 +81,30 @@ class Destinasi extends Model
         );
     }
 
-    /**
-     * Accessor: Array URL semua gambar di galeri
-     */
     protected function galeriUrls(): Attribute
     {
         return Attribute::make(
             get: function (): array {
-                $paths = $this->galeri ?? [];
+                $raw = $this->getAttribute('galeri');
+
+                if (is_array($raw)) {
+                    $paths = $raw;
+                } elseif (is_string($raw) && trim($raw) !== '') {
+                    $decoded = json_decode($raw, true);
+                    $paths = is_array($decoded) ? $decoded : [];
+
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        Log::warning("JSON galeri corrupt untuk destinasi ID {$this->id}", [
+                            'raw'   => $raw,
+                            'error' => json_last_error_msg(),
+                        ]);
+                    }
+                } else {
+                    $paths = [];
+                }
 
                 return collect($paths)
-                    ->map(fn ($path) => $path ? Storage::url($path) : null)
+                    ->map(fn ($path) => is_string($path) && trim($path) !== '' ? Storage::url($path) : null)
                     ->filter()
                     ->values()
                     ->all();
@@ -102,9 +112,6 @@ class Destinasi extends Model
         );
     }
 
-    /**
-     * Accessor: Daftar fasilitas sebagai array (untuk tampilan list)
-     */
     protected function fasilitasList(): Attribute
     {
         return Attribute::make(
@@ -120,9 +127,6 @@ class Destinasi extends Model
         );
     }
 
-    /**
-     * Accessor: Nama kategori yang lebih readable
-     */
     protected function kategoriNama(): Attribute
     {
         return Attribute::make(
@@ -132,10 +136,6 @@ class Destinasi extends Model
         );
     }
 
-    /**
-     * Accessor: Harga tiket yang sudah diformat (karena sekarang string bebas)
-     * Menampilkan apa adanya, atau fallback jika kosong
-     */
     protected function hargaTiketFormatted(): Attribute
     {
         return Attribute::make(
@@ -146,14 +146,36 @@ class Destinasi extends Model
     }
 
     /**
-     * Accessor: Embed peta yang aman (hanya jika berasal dari Google Maps embed)
+     * PERBAIKAN UTAMA: Accessor peta_embed_safe yang lebih longgar dan aman
      */
     protected function petaEmbedSafe(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->peta_embed && Str::startsWith($this->peta_embed, 'https://www.google.com/maps/embed')
-                ? $this->peta_embed
-                : null,
+            get: function () {
+                $url = trim($this->peta_embed ?? '');
+
+                if ($url === '') {
+                    return null;
+                }
+
+                // Cek apakah ini embed Google Maps yang valid
+                // Lebih fleksibel: cek https + google.com/maps/embed (menerima parameter pb= dll)
+                if (
+                    str_starts_with($url, 'https://') &&
+                    str_contains($url, 'google.com/maps/embed')
+                ) {
+                    return $url;
+                }
+
+                // Optional: log jika URL mencurigakan (bantu debug)
+                if ($this->peta_embed) {
+                    Log::info("peta_embed tidak lolos filter untuk destinasi ID {$this->id}", [
+                        'url' => $this->peta_embed,
+                    ]);
+                }
+
+                return null;
+            }
         );
     }
 
@@ -161,25 +183,16 @@ class Destinasi extends Model
     // Scopes
     // =======================================
 
-    /**
-     * Scope: Hanya destinasi aktif
-     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
     }
 
-    /**
-     * Scope: Urutkan berdasarkan views terbanyak (populer)
-     */
     public function scopePopular($query)
     {
         return $query->orderByDesc('views')->active();
     }
 
-    /**
-     * Scope: Filter berdasarkan kategori
-     */
     public function scopeByKategori($query, string|array $kategori)
     {
         if (is_array($kategori)) {
@@ -188,9 +201,6 @@ class Destinasi extends Model
         return $query->where('kategori', $kategori);
     }
 
-    /**
-     * Scope: Cari berdasarkan nama atau lokasi atau deskripsi
-     */
     public function scopeSearch($query, string $search)
     {
         return $query->where(function ($q) use ($search) {

@@ -107,6 +107,56 @@
             margin-right: auto;
         }
     }
+
+    /* Perbaikan search bar */
+    .search-container {
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    .search-input {
+        height: 52px;
+        font-size: 1.05rem;
+        padding-left: 1.75rem;
+        padding-right: 9rem;
+        border: 2px solid #e5e7eb;
+    }
+
+    .search-btn {
+        height: 44px;
+        right: 0.5rem;
+        padding: 0 1.75rem;
+        font-size: 0.95rem;
+    }
+
+    /* Tombol kembali lebih jelas */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background-color: white;
+        border: 2px solid #fb923c;
+        border-radius: 9999px;
+        color: #ea580c;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(251, 146, 60, 0.15);
+    }
+
+    .back-btn:hover {
+        background-color: #fff7ed;
+        color: #c2410c;
+        border-color: #f97316;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(251, 146, 60, 0.25);
+    }
+
+    .back-btn svg {
+        width: 1.4rem;
+        height: 1.4rem;
+    }
 </style>
 @endpush
 
@@ -190,13 +240,16 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                     <div data-aos="fade-right">
                         <a href="{{ route('destinasi.index') }}" 
-                           class="inline-flex items-center text-orange-600 hover:text-orange-800 font-medium text-xl"
+                           class="back-btn"
                            aria-label="Kembali ke halaman semua kategori">
-                            ← Kembali ke Semua Kategori
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            Kembali ke Semua Kategori
                         </a>
                     </div>
 
-                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900" data-aos="fade-left">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 text-center md:text-left" data-aos="fade-left">
                         @if(request('kategori'))
                             {{ ucwords(str_replace('_', ' ', request('kategori'))) }}
                         @elseif(request('search'))
@@ -206,14 +259,15 @@
                     </h2>
                 </div>
 
-                <div class="mb-12 max-w-2xl mx-auto md:mx-0" data-aos="fade-up">
+                <!-- Search bar yang sudah diperkecil & di tengah -->
+                <div class="search-container mb-12" data-aos="fade-up">
                     <form method="GET" action="{{ route('destinasi.index') }}" class="relative">
                         <input type="hidden" name="kategori" value="{{ request('kategori') }}">
                         <input type="text" name="search" value="{{ request('search') }}" 
-                               placeholder="Cari destinasi di kategori ini..." 
-                               class="w-full px-8 py-5 pr-40 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-lg text-lg">
+                               placeholder="Cari destinasi..." 
+                               class="search-input w-full rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-md transition-all">
                         <button type="submit" 
-                                class="absolute right-4 top-1/2 -translate-y-1/2 bg-orange-600 text-white px-8 py-3 rounded-full hover:bg-orange-700 transition-all font-semibold text-base">
+                                class="search-btn absolute top-1/2 -translate-y-1/2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-all font-semibold shadow-md">
                             Cari
                         </button>
                     </form>
