@@ -105,6 +105,9 @@
                             value="{{ old('jam_mulai') }}"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 shadow-sm"
                         >
+                        @error('jam_mulai')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Jam Selesai -->
@@ -117,6 +120,9 @@
                             value="{{ old('jam_selesai') }}"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 shadow-sm"
                         >
+                        @error('jam_selesai')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Lokasi -->
@@ -130,6 +136,9 @@
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 shadow-sm"
                             placeholder="Contoh: Candi Borobudur, Magelang, Jawa Tengah"
                         >
+                        @error('lokasi')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Gambar Utama -->
@@ -165,6 +174,91 @@
                         @enderror
                     </div>
 
+                    <!-- ============================================= -->
+                    <!-- Bagian Recurring / Event Rutin -->
+                    <!-- ============================================= -->
+                    <div class="md:col-span-2 mt-6 border-t border-gray-200 pt-6">
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="is_recurring" 
+                                name="is_recurring" 
+                                value="1"
+                                {{ old('is_recurring') ? 'checked' : '' }}
+                                class="h-5 w-5 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                            >
+                            <label for="is_recurring" class="ml-3 text-lg font-medium text-gray-900">
+                                Jadikan event ini rutin / berulang
+                            </label>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Centang jika event ini berulang (misal tiap tahun, tiap bulan, dll)
+                        </p>
+                    </div>
+
+                    <!-- Field recurring (hidden awalnya) -->
+                    <div id="recurring-fields" class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6" style="display: {{ old('is_recurring') ? 'grid' : 'none' }};">
+
+                        <!-- Tipe Pengulangan -->
+                        <div>
+                            <label for="recurrence_type" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tipe Pengulangan <span class="text-red-500">*</span>
+                            </label>
+                            <select 
+                                id="recurrence_type" 
+                                name="recurrence_type" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 shadow-sm"
+                            >
+                                <option value="" {{ old('recurrence_type') ? '' : 'selected' }}>Pilih tipe...</option>
+                                <option value="daily" {{ old('recurrence_type') == 'daily' ? 'selected' : '' }}>Harian</option>
+                                <option value="weekly" {{ old('recurrence_type') == 'weekly' ? 'selected' : '' }}>Mingguan</option>
+                                <option value="monthly" {{ old('recurrence_type') == 'monthly' ? 'selected' : '' }}>Bulanan</option>
+                                <option value="yearly" {{ old('recurrence_type') == 'yearly' ? 'selected' : '' }}>Tahunan</option>
+                            </select>
+                            @error('recurrence_type')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Interval -->
+                        <div>
+                            <label for="recurrence_interval" class="block text-sm font-medium text-gray-700 mb-2">
+                                Setiap berapa kali <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                id="recurrence_interval" 
+                                type="number" 
+                                name="recurrence_interval" 
+                                min="1" 
+                                value="{{ old('recurrence_interval', 1) }}"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 shadow-sm"
+                                placeholder="1 = setiap minggu/bulan/tahun"
+                            >
+                            @error('recurrence_interval')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Tanggal Berakhir (opsional) -->
+                        <div>
+                            <label for="recurrence_end_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                Berakhir pada
+                            </label>
+                            <input 
+                                id="recurrence_end_date" 
+                                type="date" 
+                                name="recurrence_end_date" 
+                                value="{{ old('recurrence_end_date') }}"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 shadow-sm"
+                            >
+                            <p class="mt-1 text-xs text-gray-500">Kosongkan jika berulang selamanya</p>
+                            @error('recurrence_end_date')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+
                 </div>
 
                 <!-- Tombol -->
@@ -184,4 +278,21 @@
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkbox = document.getElementById('is_recurring');
+        const fields = document.getElementById('recurring-fields');
+
+        function toggleRecurring() {
+            fields.style.display = checkbox.checked ? 'grid' : 'none';
+        }
+
+        checkbox.addEventListener('change', toggleRecurring);
+        // Jalankan sekali saat load (jika old input checked)
+        toggleRecurring();
+    });
+</script>
 @endsection

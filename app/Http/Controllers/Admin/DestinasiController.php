@@ -11,12 +11,23 @@ use Illuminate\Support\Facades\Log;
 class DestinasiController extends Controller
 {
     /**
-     * Display a listing of the destinations (dengan paginasi).
+     * Display a listing of the destinations (dengan paginasi + statistik global).
      */
     public function index()
     {
         $destinasi = Destinasi::latest()->paginate(15);
-        return view('backend.destinasi.index', compact('destinasi'));
+
+        // Statistik global (tidak terpengaruh paginasi)
+        $totalDestinasi = Destinasi::count();
+        $totalViews     = Destinasi::sum('views');
+        $avgViews       = $totalDestinasi > 0 ? round(Destinasi::avg('views'), 0) : 0;
+
+        return view('backend.destinasi.index', compact(
+            'destinasi',
+            'totalDestinasi',
+            'totalViews',
+            'avgViews'
+        ));
     }
 
     /**
@@ -38,8 +49,10 @@ class DestinasiController extends Controller
             'deskripsi'         => 'required|string',
             'lokasi'            => 'nullable|string|max:255',
             'jam_operasional'   => 'nullable|string|max:255',
-            'fasilitas'         => 'nullable|string',
-            'harga_tiket'       => 'nullable|string|max:1000',           // ← Diperbaiki: dari max:100 → max:1000
+            'fasilitas'         => 'nullable|array',
+            'fasilitas.*'       => 'string|max:100',
+            'fasilitas_custom'  => 'nullable|string|max:1000',
+            'harga_tiket'       => 'nullable|string|max:1000',
             'info_tiket'        => 'nullable|string',
             'peta_embed'        => 'nullable|url|max:500',
             'gambar_utama'      => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -47,6 +60,14 @@ class DestinasiController extends Controller
         ]);
 
         try {
+            // Proses fasilitas (gabungkan checkbox + custom)
+            $fasilitasChecked = $request->input('fasilitas', []);
+            $customString     = trim($request->input('fasilitas_custom', ''));
+            $customArray      = $customString ? array_filter(explode('|||', $customString)) : [];
+            
+            $allFasilitas = array_unique(array_merge($fasilitasChecked, $customArray));
+            $validated['fasilitas'] = json_encode($allFasilitas);
+
             // Upload gambar utama (wajib)
             $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi/utama', 'public');
 
@@ -107,8 +128,10 @@ class DestinasiController extends Controller
             'deskripsi'         => 'required|string',
             'lokasi'            => 'nullable|string|max:255',
             'jam_operasional'   => 'nullable|string|max:255',
-            'fasilitas'         => 'nullable|string',
-            'harga_tiket'       => 'nullable|string|max:1000',           // ← Diperbaiki: dari max:100 → max:1000
+            'fasilitas'         => 'nullable|array',
+            'fasilitas.*'       => 'string|max:100',
+            'fasilitas_custom'  => 'nullable|string|max:1000',
+            'harga_tiket'       => 'nullable|string|max:1000',
             'info_tiket'        => 'nullable|string',
             'peta_embed'        => 'nullable|url|max:500',
             'gambar_utama'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -116,6 +139,14 @@ class DestinasiController extends Controller
         ]);
 
         try {
+            // Proses fasilitas (selalu replace dengan data terbaru dari form)
+            $fasilitasChecked = $request->input('fasilitas', []);
+            $customString     = trim($request->input('fasilitas_custom', ''));
+            $customArray      = $customString ? array_filter(explode('|||', $customString)) : [];
+            
+            $allFasilitas = array_unique(array_merge($fasilitasChecked, $customArray));
+            $validated['fasilitas'] = json_encode($allFasilitas);
+
             // Update gambar utama jika ada file baru
             if ($request->hasFile('gambar_utama') && $request->file('gambar_utama')->isValid()) {
                 // Hapus gambar lama jika ada
@@ -124,11 +155,10 @@ class DestinasiController extends Controller
                 }
                 $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi/utama', 'public');
             } else {
-                // Pertahankan gambar lama
                 $validated['gambar_utama'] = $destinasi->gambar_utama;
             }
 
-            // Tambah galeri baru (append, tidak replace)
+            // Galeri: append gambar baru (tidak replace semua)
             $galeriBaru = [];
             if ($request->hasFile('galeri') && is_array($request->file('galeri'))) {
                 foreach ($request->file('galeri') as $file) {

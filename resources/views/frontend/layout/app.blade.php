@@ -18,23 +18,13 @@
     <style>
         /* Enhanced animations and effects */
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
         
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
         
         .mobile-menu-enter {
@@ -79,39 +69,12 @@
             box-shadow: 0 10px 20px -5px rgba(234, 88, 12, 0.4);
         }
         
-        .btn-gradient:active {
-            transform: translateY(0);
-        }
-        
         .footer-gradient {
             background: linear-gradient(135deg, #001f3f 0%, #003366 100%);
         }
         
         .divider-gradient {
             background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 25%, #f97316 75%, #fb923c 100%);
-        }
-        
-        .home-btn {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-            transition: all 0.3s ease;
-        }
-        
-        .home-btn:hover {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 8px 16px -4px rgba(59, 130, 246, 0.4);
-        }
-        
-        .home-btn-inactive {
-            background: #f3f4f6;
-            color: #374151;
-            transition: all 0.3s ease;
-        }
-        
-        .home-btn-inactive:hover {
-            background: #e5e7eb;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -137,6 +100,7 @@
 
                 <!-- Menu Desktop -->
                 <nav class="hidden lg:flex items-center gap-6 xl:gap-8">
+                    <!-- Home (tetap ada) -->
                     <a href="/" 
                        class="font-medium transition-all duration-300 px-4 py-2 rounded-lg shadow-md flex items-center gap-2 {{ request()->is('/') ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,6 +108,16 @@
                         </svg>
                         Home
                     </a>
+
+                    <!-- Stoursys (baru, setelah Home) -->
+                    <a href="{{ route('stoursys.index') }}" 
+                       class="font-medium transition-all duration-300 relative py-1 {{ request()->routeIs('stoursys.*') ? 'text-orange-600 font-semibold' : 'text-gray-700 hover:text-orange-600 nav-link-gradient' }}">
+                        Stoursys
+                        @if(request()->routeIs('stoursys.*'))
+                            <span class="absolute left-0 bottom-[-4px] h-0.5 w-full bg-orange-600"></span>
+                        @endif
+                    </a>
+
                     <a href="{{ route('destinasi.index') }}" 
                        class="font-medium transition-all duration-300 relative py-1 {{ request()->routeIs('destinasi.*') ? 'text-orange-600 font-semibold' : 'text-gray-700 hover:text-orange-600 nav-link-gradient' }}">
                         Destinasi
@@ -151,6 +125,7 @@
                             <span class="absolute left-0 bottom-[-4px] h-0.5 w-full bg-orange-600"></span>
                         @endif
                     </a>
+
                     <a href="{{ route('event.index') }}" 
                        class="font-medium transition-all duration-300 relative py-1 {{ request()->routeIs('event.*') ? 'text-orange-600 font-semibold' : 'text-gray-700 hover:text-orange-600 nav-link-gradient' }}">
                         Event
@@ -158,6 +133,7 @@
                             <span class="absolute left-0 bottom-[-4px] h-0.5 w-full bg-orange-600"></span>
                         @endif
                     </a>
+
                     <a href="{{ route('berita.index') }}" 
                        class="font-medium transition-all duration-300 relative py-1 {{ request()->routeIs('berita.*') ? 'text-orange-600 font-semibold' : 'text-gray-700 hover:text-orange-600 nav-link-gradient' }}">
                         Berita
@@ -165,6 +141,7 @@
                             <span class="absolute left-0 bottom-[-4px] h-0.5 w-full bg-orange-600"></span>
                         @endif
                     </a>
+
                     <a href="{{ route('panduan.index') }}" 
                        class="font-medium transition-all duration-300 relative py-1 {{ request()->routeIs('panduan.*') ? 'text-orange-600 font-semibold' : 'text-gray-700 hover:text-orange-600 nav-link-gradient' }}">
                         Panduan
@@ -172,6 +149,7 @@
                             <span class="absolute left-0 bottom-[-4px] h-0.5 w-full bg-orange-600"></span>
                         @endif
                     </a>
+
                     <a href="{{ route('kontak.index') }}" 
                        class="font-medium transition-all duration-300 relative py-1 {{ request()->routeIs('kontak.*') ? 'text-orange-600 font-semibold' : 'text-gray-700 hover:text-orange-600 nav-link-gradient' }}">
                         Kontak
@@ -195,17 +173,44 @@
         <!-- Mobile Menu Dropdown -->
         <div id="mobileMenu" class="hidden lg:hidden bg-white/95 backdrop-blur-lg border-t border-gray-200/70 shadow-xl">
             <div class="px-6 py-6 space-y-4">
+                <!-- Home (tetap ada) -->
                 <a href="/" class="flex items-center gap-2 text-lg font-semibold px-4 py-3 rounded-lg shadow-md {{ request()->is('/') ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
                     Home
                 </a>
-                <a href="{{ route('destinasi.index') }}" class="block text-lg font-semibold py-2 {{ request()->routeIs('destinasi.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">Destinasi</a>
-                <a href="{{ route('event.index') }}" class="block text-lg font-semibold py-2 {{ request()->routeIs('event.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">Event</a>
-                <a href="{{ route('berita.index') }}" class="block text-lg font-semibold py-2 {{ request()->routeIs('berita.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">Berita</a>
-                <a href="{{ route('panduan.index') }}" class="block text-lg font-semibold py-2 {{ request()->routeIs('panduan.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">Panduan</a>
-                <a href="{{ route('kontak.index') }}" class="block text-lg font-semibold py-2 {{ request()->routeIs('kontak.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">Kontak</a>
+
+                <!-- Stoursys (baru, setelah Home) -->
+                <a href="{{ route('stoursys.index') }}" 
+                   class="block text-lg font-semibold py-2 {{ request()->routeIs('stoursys.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">
+                    Stoursys
+                </a>
+
+                <a href="{{ route('destinasi.index') }}" 
+                   class="block text-lg font-semibold py-2 {{ request()->routeIs('destinasi.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">
+                    Destinasi
+                </a>
+
+                <a href="{{ route('event.index') }}" 
+                   class="block text-lg font-semibold py-2 {{ request()->routeIs('event.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">
+                    Event
+                </a>
+
+                <a href="{{ route('berita.index') }}" 
+                   class="block text-lg font-semibold py-2 {{ request()->routeIs('berita.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">
+                    Berita
+                </a>
+
+                <a href="{{ route('panduan.index') }}" 
+                   class="block text-lg font-semibold py-2 {{ request()->routeIs('panduan.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">
+                    Panduan
+                </a>
+
+                <a href="{{ route('kontak.index') }}" 
+                   class="block text-lg font-semibold py-2 {{ request()->routeIs('kontak.*') ? 'text-orange-600 translate-x-2' : 'text-gray-700 hover:text-orange-600 hover:translate-x-2' }} transition-all duration-300">
+                    Kontak
+                </a>
             </div>
         </div>
     </header>
@@ -250,24 +255,23 @@
             const btn = document.getElementById('mobileMenuBtn');
             const menu = document.getElementById('mobileMenu');
 
-            btn.addEventListener('click', () => {
-                const isHidden = menu.classList.contains('hidden');
-                menu.classList.toggle('hidden');
-                
-                if (isHidden) {
-                    menu.classList.add('mobile-menu-enter');
-                    setTimeout(() => {
-                        menu.classList.remove('mobile-menu-enter');
-                    }, 300);
-                }
-            });
+            if (btn && menu) {
+                btn.addEventListener('click', () => {
+                    const isHidden = menu.classList.contains('hidden');
+                    menu.classList.toggle('hidden');
+                    
+                    if (isHidden) {
+                        menu.classList.add('mobile-menu-enter');
+                        setTimeout(() => menu.classList.remove('mobile-menu-enter'), 300);
+                    }
+                });
 
-            // Tutup menu jika klik di luar
-            document.addEventListener('click', (e) => {
-                if (!btn.contains(e.target) && !menu.contains(e.target)) {
-                    menu.classList.add('hidden');
-                }
-            });
+                document.addEventListener('click', (e) => {
+                    if (!btn.contains(e.target) && !menu.contains(e.target)) {
+                        menu.classList.add('hidden');
+                    }
+                });
+            }
         });
     </script>
 

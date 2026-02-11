@@ -14,4 +14,12 @@ class Panduan extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function scopeByKategori($query, $kategori)
+    {
+        if ($kategori) {
+            return $query->where('kategori', $kategori);
+        }
+        return $query;
+    }
 }

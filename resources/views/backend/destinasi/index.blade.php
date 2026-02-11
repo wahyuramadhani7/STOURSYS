@@ -63,7 +63,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Destinasi</p>
-                    <p class="text-3xl font-black text-gray-800 mt-2 tabular-nums">{{ $destinasi->count() }}</p>
+                    <p class="text-3xl font-black text-gray-800 mt-2 tabular-nums">{{ $totalDestinasi }}</p>
                 </div>
                 <div class="bg-gradient-to-br from-orange-100 to-orange-200 p-4 rounded-2xl">
                     <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +77,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Views</p>
-                    <p class="text-3xl font-black text-gray-800 mt-2 tabular-nums">{{ $destinasi->sum('views') }}</p>
+                    <p class="text-3xl font-black text-gray-800 mt-2 tabular-nums">{{ number_format($totalViews) }}</p>
                 </div>
                 <div class="bg-gradient-to-br from-blue-100 to-blue-200 p-4 rounded-2xl">
                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,9 +92,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Rata-rata Views</p>
-                    <p class="text-3xl font-black text-gray-800 mt-2 tabular-nums">
-                        {{ $destinasi->count() > 0 ? number_format($destinasi->avg('views'), 0) : 0 }}
-                    </p>
+                    <p class="text-3xl font-black text-gray-800 mt-2 tabular-nums">{{ number_format($avgViews, 0) }}</p>
                 </div>
                 <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-4 rounded-2xl">
                     <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +115,7 @@
                     Data Destinasi
                 </h2>
                 <div class="text-sm text-gray-500 font-medium">
-                    Total: <span class="text-orange-600 font-bold">{{ $destinasi->count() }}</span> destinasi
+                    Total: <span class="text-orange-600 font-bold">{{ $destinasi->total() }}</span> destinasi
                 </div>
             </div>
         </div>
@@ -306,7 +304,7 @@
                 });
             });
 
-            // Row fade-in animation (tetap dipertahankan)
+            // Row fade-in animation
             const rows = document.querySelectorAll('tbody tr');
             rows.forEach((row, index) => {
                 row.style.opacity = '0';

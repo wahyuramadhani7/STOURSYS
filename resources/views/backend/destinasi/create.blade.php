@@ -87,13 +87,69 @@
                         </div>
 
                         <div class="form-group-custom">
-                            <label>Fasilitas yang Tersedia <small class="text-muted">(opsional)</small></label>
-                            <textarea name="fasilitas" 
-                                      class="input-custom @error('fasilitas') is-invalid @enderror" 
-                                      rows="5" 
-                                      placeholder="Pisah dengan koma atau enter. Contoh: Toilet bersih, Mushola, Parkir luas, Warung makan halal, Spot foto, Area bermain anak, Akses kursi roda, WiFi, Toko souvenir">{{ old('fasilitas') }}</textarea>
-                            <small class="input-hint">Akan ditampilkan sebagai daftar bullet di halaman detail</small>
-                            @error('fasilitas')
+                            <label>Fasilitas yang Tersedia <small class="text-muted">(centang yang ada, tambah jika perlu)</small></label>
+                            
+                            <div class="checkbox-grid mt-2">
+                                @php
+                                    $daftarFasilitas = [
+                                        'Toilet bersih',
+                                        'Toilet difabel',
+                                        'Mushola / Tempat ibadah',
+                                        'Parkir luas',
+                                        'Parkir bus / kendaraan besar',
+                                        'Warung makan / Kafe',
+                                        'Makanan halal tersedia',
+                                        'Toko souvenir',
+                                        'Spot foto Instagramable',
+                                        'Area bermain anak',
+                                        'Akses kursi roda / difabel',
+                                        'WiFi gratis',
+                                        'Pemandu wisata tersedia',
+                                        'Homestay / Penginapan',
+                                        'Camping ground',
+                                        'Gazebo / Tempat duduk',
+                                        'Charging station / colokan listrik',
+                                        'P3K / Klinik kesehatan',
+                                        'ATM / Money changer terdekat',
+                                        'Area parkir motor',
+                                        'Jalur sepeda',
+                                        'Pemandangan sunrise / sunset',
+                                        'Jalur trekking',
+                                        'Spot fotografi drone',
+                                        'Area piknik',
+                                    ];
+                                @endphp
+
+                                @foreach($daftarFasilitas as $fas)
+                                    <label class="checkbox-custom d-flex align-items-center">
+                                        <input type="checkbox" name="fasilitas[]" value="{{ $fas }}"
+                                            {{ in_array($fas, old('fasilitas', [])) ? 'checked' : '' }}>
+                                        <span class="ms-2">{{ $fas }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <!-- Bagian tambah fasilitas custom -->
+                            <div class="mt-4">
+                                <div id="custom-fasilitas-list" class="d-flex flex-wrap gap-2 mb-3"></div>
+                                
+                                <div class="input-group">
+                                    <input type="text" id="input-fasilitas-baru" class="form-control input-custom" 
+                                           placeholder="Ketik fasilitas lain (contoh: Rental sepeda, Drone spot, Toilet bayi)">
+                                    <button type="button" class="btn btn-outline-primary" id="btn-tambah-fasilitas">Tambah</button>
+                                </div>
+                                
+                                <input type="hidden" name="fasilitas_custom" id="fasilitas_custom_hidden">
+                            </div>
+
+                            <small class="input-hint mt-2 d-block">
+                                Centang fasilitas yang tersedia di lokasi. Tambahkan fasilitas khusus dengan mengetik lalu tekan "Tambah" atau Enter.
+                            </small>
+
+                            @error('fasilitas.*')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                            @error('fasilitas_custom')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
@@ -101,7 +157,7 @@
                     </div>
                 </div>
 
-                <!-- Card Harga Tiket (diperbarui: satu field fleksibel) -->
+                <!-- Card Harga Tiket -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>💰 Harga Tiket & Catatan</h5>
@@ -261,9 +317,8 @@
     </div>
 </div>
 
-<!-- Style dan Script (tetap sama) -->
+<!-- ====================== STYLE ====================== -->
 <style>
-    /* ============== Style asli + sedikit penyesuaian ============== */
     * { box-sizing: border-box; }
 
     .page-header { margin-bottom: 2.5rem; }
@@ -360,12 +415,50 @@
 
     .form-actions { margin-top: 2rem; }
 
+    /* Tambahan untuk fasilitas checkbox */
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 0.9rem 1.5rem;
+    }
+    .checkbox-custom {
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+    .checkbox-custom input {
+        margin-right: 0.6rem;
+        accent-color: #3b82f6;
+    }
+
+    .custom-fasilitas-chip {
+        background: #e5e7eb;
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .custom-fasilitas-chip button {
+        background: none;
+        border: none;
+        color: #ef4444;
+        font-weight: bold;
+        font-size: 1.1rem;
+        cursor: pointer;
+        line-height: 1;
+    }
+    .custom-fasilitas-chip button:hover {
+        color: #b91c1c;
+    }
+
     @media (max-width: 768px) {
         .form-actions { flex-direction: column-reverse; gap: 1rem; }
         .btn-primary, .btn-secondary { width: 100%; }
     }
 </style>
 
+<!-- ====================== SCRIPT ====================== -->
 <script>
 function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);
@@ -417,5 +510,62 @@ function previewGallery(input) {
         preview.appendChild(summary);
     }
 }
+
+// Logika fasilitas custom
+document.addEventListener('DOMContentLoaded', () => {
+    const btnTambah    = document.getElementById('btn-tambah-fasilitas');
+    const inputBaru    = document.getElementById('input-fasilitas-baru');
+    const listCustom   = document.getElementById('custom-fasilitas-list');
+    const hiddenCustom = document.getElementById('fasilitas_custom_hidden');
+
+    let customItems = [];
+
+    function renderChips() {
+        listCustom.innerHTML = '';
+        customItems.forEach((text, idx) => {
+            const chip = document.createElement('div');
+            chip.className = 'custom-fasilitas-chip';
+            chip.innerHTML = `
+                ${text}
+                <button type="button" data-idx="${idx}">×</button>
+            `;
+            listCustom.appendChild(chip);
+        });
+        hiddenCustom.value = customItems.join('|||');
+    }
+
+    function tambahCustom() {
+        const val = inputBaru.value.trim();
+        if (!val || customItems.includes(val)) return;
+
+        customItems.push(val);
+        renderChips();
+        inputBaru.value = '';
+    }
+
+    btnTambah.addEventListener('click', tambahCustom);
+
+    inputBaru.addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            tambahCustom();
+        }
+    });
+
+    listCustom.addEventListener('click', e => {
+        if (e.target.tagName === 'BUTTON') {
+            const idx = parseInt(e.target.dataset.idx);
+            customItems.splice(idx, 1);
+            renderChips();
+        }
+    });
+
+    // Restore nilai lama setelah validasi gagal
+    @if(old('fasilitas_custom'))
+        const oldCustom = "{{ old('fasilitas_custom') }}".split('|||').filter(Boolean);
+        customItems = oldCustom;
+        renderChips();
+    @endif
+});
 </script>
 @endsection

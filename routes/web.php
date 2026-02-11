@@ -10,6 +10,7 @@ use App\Http\Controllers\Frontend\EventController;
 use App\Http\Controllers\Frontend\KontakController;
 use App\Http\Controllers\Frontend\PanduanController;
 use App\Http\Controllers\Frontend\BeritaController;
+use App\Http\Controllers\Frontend\StoursysController;
 
 // ===============================
 // FRONTEND / PUBLIC ROUTES
@@ -37,6 +38,10 @@ Route::get('/panduan/{panduan}', [PanduanController::class, 'show'])->name('pand
 // Berita (PAKAI SLUG → AMAN & SEO)
 Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
 Route::get('/berita/{berita:slug}', [BeritaController::class, 'show'])->name('berita.show');
+
+
+
+Route::get('/stoursys', [StoursysController::class, 'index'])->name('stoursys.index');
 
 // ===============================
 // DASHBOARD REDIRECT

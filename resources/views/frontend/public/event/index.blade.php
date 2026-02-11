@@ -235,6 +235,68 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
     }
+
+    /* Recurring badge style */
+    .recurring-badge {
+        background: linear-gradient(135deg, #f97316, #fb923c);
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+    }
+
+    .recurring-icon {
+        animation: spin 8s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+    }
+
+    /* Highlight recurring card */
+    .is-recurring {
+        border: 2px solid #f97316;
+        background: linear-gradient(to bottom right, rgba(249, 115, 22, 0.03), rgba(251, 146, 60, 0.03));
+    }
+
+    .is-recurring .event-title {
+        background: linear-gradient(90deg, #f97316, #fb923c, #fdba74);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Filter buttons */
+    .filter-btn {
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .filter-btn.active {
+        background: linear-gradient(to right, #f97316, #fb923c) !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35) !important;
+    }
+
+    .filter-btn:hover:not(.active) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .filter-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    .filter-container::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .filter-container::-webkit-scrollbar-thumb {
+        background: rgba(249, 115, 22, 0.4);
+        border-radius: 3px;
+    }
 </style>
 @endpush
 
@@ -260,47 +322,94 @@
         </div>
     </section>
 
-    <!-- Daftar Event + Search -->
-    <section class="py-12">
+    <!-- Filter + Search -->
+    <section class="py-8 bg-white border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <!-- Filter Buttons -->
+                <div class="filter-container">
+                    <div class="flex gap-3 pb-2">
+                        <a href="{{ route('event.index', request()->except('filter')) }}"
+                           class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all {{ !request('filter') ? 'active' : '' }}">
+                            Semua Event
+                        </a>
 
-            <!-- Search Bar (ukuran compact) -->
-            <div class="mb-8" data-aos="fade-up" data-aos-duration="800">
-                <form method="GET" action="{{ route('event.index') }}" class="max-w-md mx-auto">
-                    <div class="relative flex items-center">
-                        <input 
-                            type="text" 
-                            name="search" 
-                            value="{{ request('search') }}" 
-                            placeholder="Cari event atau lokasi..." 
-                            class="search-input w-full px-5 py-3 pr-28 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 shadow-sm text-base transition-all hover:shadow-md"
-                        >
-                        <div class="absolute right-2 flex items-center gap-2">
-                            <button type="submit" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-5 py-2.5 rounded-full font-medium hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg flex items-center gap-1.5 text-sm transform hover:scale-105 active:scale-95">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                                Cari
-                            </button>
-                            @if(request('search'))
-                                <a href="{{ route('event.index') }}" 
-                                   class="text-gray-600 hover:text-orange-600 transition-all px-3 py-2.5 text-sm transform hover:scale-110">
-                                    Reset
-                                </a>
-                            @endif
-                        </div>
+                        <a href="{{ route('event.index', array_merge(request()->query(), ['filter' => 'rutin'])) }}"
+                           class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium bg-orange-50 text-orange-700 hover:bg-orange-100 transition-all {{ request('filter') === 'rutin' ? 'active' : '' }}">
+                            Event Rutin
+                        </a>
+
+                        <a href="{{ route('event.index', array_merge(request()->query(), ['filter' => 'ongoing'])) }}"
+                           class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium bg-green-50 text-green-700 hover:bg-green-100 transition-all {{ request('filter') === 'ongoing' ? 'active' : '' }}">
+                            Sedang Berlangsung
+                        </a>
+
+                        <a href="{{ route('event.index', array_merge(request()->query(), ['filter' => 'upcoming'])) }}"
+                           class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all {{ request('filter') === 'upcoming' ? 'active' : '' }}">
+                            Akan Datang
+                        </a>
+
+                        <a href="{{ route('event.index', array_merge(request()->query(), ['filter' => 'past'])) }}"
+                           class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium bg-gray-50 text-gray-700 hover:bg-gray-200 transition-all {{ request('filter') === 'past' ? 'active' : '' }}">
+                            Sudah Berakhir
+                        </a>
                     </div>
-                </form>
+                </div>
 
-                @if(request('search'))
-                    <p class="text-center mt-3 text-gray-600 text-sm" data-aos="fade-in" data-aos-delay="200">
-                        Hasil untuk <strong class="text-orange-600">"{{ request('search') }}"</strong> 
-                        ({{ $events->total() }} event)
-                    </p>
-                @endif
+                <!-- Search Bar -->
+                <div class="w-full lg:w-auto" data-aos="fade-left" data-aos-duration="800">
+                    <form method="GET" action="{{ route('event.index') }}" class="max-w-md">
+                        <div class="relative flex items-center">
+                            <input 
+                                type="text" 
+                                name="search" 
+                                value="{{ request('search') }}" 
+                                placeholder="Cari event atau lokasi..." 
+                                class="search-input w-full px-5 py-3 pr-28 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 shadow-sm text-base transition-all hover:shadow-md"
+                            >
+                            <input type="hidden" name="filter" value="{{ request('filter') }}">
+                            <div class="absolute right-2 flex items-center gap-2">
+                                <button type="submit" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-5 py-2.5 rounded-full font-medium hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg flex items-center gap-1.5 text-sm transform hover:scale-105 active:scale-95">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                    Cari
+                                </button>
+                                @if(request('search') || request('filter'))
+                                    <a href="{{ route('event.index') }}" 
+                                       class="text-gray-600 hover:text-orange-600 transition-all px-3 py-2.5 text-sm transform hover:scale-110">
+                                        Reset
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <!-- Grid Event -->
+            <!-- Status Filter Aktif -->
+            @if(request('filter') || request('search'))
+                <div class="mt-4 text-center text-gray-600 text-sm" data-aos="fade-in">
+                    Menampilkan: 
+                    <span class="font-medium text-orange-600">
+                        @if(request('filter') === 'rutin') Event Rutin
+                        @elseif(request('filter') === 'ongoing') Sedang Berlangsung
+                        @elseif(request('filter') === 'upcoming') Akan Datang
+                        @elseif(request('filter') === 'past') Sudah Berakhir
+                        @else Semua Event @endif
+                    </span>
+                    @if(request('search'))
+                        untuk pencarian <strong>"{{ request('search') }}"</strong>
+                    @endif
+                    ({{ $events->total() }} event)
+                </div>
+            @endif
+        </div>
+    </section>
+
+    <!-- Daftar Event -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 @forelse ($events as $index => $event)
                     @php
@@ -315,9 +424,11 @@
                             'Akan Datang' => 'glow-blue',
                             default => '',
                         };
+
+                        $isRecurring = $event->isRecurring();
                     @endphp
 
-                    <div class="event-card {{ $cardGlow }} group relative bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-200/50"
+                    <div class="event-card {{ $cardGlow }} {{ $isRecurring ? 'is-recurring' : '' }} group relative bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-200/50"
                          data-aos="fade-up" 
                          data-aos-duration="800" 
                          data-aos-delay="{{ $index * 100 }}">
@@ -330,7 +441,6 @@
                                     class="image-zoom w-full h-full object-cover"
                                 >
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0"></div>
-                                <!-- Shimmer effect on hover -->
                                 <div class="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                             @else
                                 <div class="w-full h-full bg-gradient-to-br from-slate-800 via-blue-900 to-orange-900 flex items-center justify-center">
@@ -343,6 +453,15 @@
                             <div class="status-badge absolute top-4 right-4 {{ $statusClass }} px-3 py-1 rounded-full text-xs font-bold shadow-lg {{ $event->status === 'Sedang Berlangsung' ? 'badge-pulse' : '' }}">
                                 {{ $event->status }}
                             </div>
+
+                            @if($isRecurring)
+                                <div class="recurring-badge absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 badge-pulse">
+                                    <svg class="w-4 h-4 recurring-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                    Rutin
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Konten -->
@@ -362,9 +481,9 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                     <span class="date-display">
-                                        {{ $event->tanggal_mulai->format('d M Y') }}
-                                        @if ($event->tanggal_selesai)
-                                            - {{ $event->tanggal_selesai->format('d M Y') }}
+                                        {{ $event->tanggal_range }}
+                                        @if($event->jam_range && $event->jam_range !== '-')
+                                            • {{ $event->jam_range }}
                                         @endif
                                     </span>
                                 </div>
@@ -378,9 +497,18 @@
                                         <span>{{ $event->lokasi }}</span>
                                     </div>
                                 @endif
+
+                                @if($isRecurring)
+                                    <div class="info-item flex items-start gap-2 text-orange-600 font-medium">
+                                        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                        </svg>
+                                        <span>Event ini berulang secara rutin</span>
+                                    </div>
+                                @endif
                             </div>
 
-                            <a href="{{ route('event.show', $event->id) }}"
+                            <a href="{{ route('event.show', $event->slug) }}"
                                class="detail-button inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 group/btn text-sm relative overflow-hidden transform active:scale-95">
                                 <span class="relative z-10">Detail Event</span>
                                 <svg class="relative z-10 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
@@ -397,27 +525,25 @@
                             </div>
                             
                             <h3 class="text-3xl font-bold text-slate-900 mb-3">
-                                @if(request('search'))
-                                    Tidak menemukan event untuk "{{ request('search') }}"
+                                @if(request('search') || request('filter'))
+                                    Tidak menemukan event sesuai filter
                                 @else
                                     Belum Ada Event
                                 @endif
                             </h3>
                             
                             <p class="text-gray-600 text-lg mb-6">
-                                @if(request('search'))
-                                    Coba kata kunci lain atau reset pencarian.
+                                @if(request('search') || request('filter'))
+                                    Coba ubah kata kunci atau pilih filter lain.
                                 @else
                                     Belum ada event yang dijadwalkan saat ini. Pantau terus untuk update!
                                 @endif
                             </p>
 
-                            @if(request('search'))
-                                <a href="{{ route('event.index') }}" 
-                                   class="inline-block bg-orange-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-700 transition-all shadow-lg transform hover:scale-105 active:scale-95">
-                                    Lihat Semua Event
-                                </a>
-                            @endif
+                            <a href="{{ route('event.index') }}" 
+                               class="inline-block bg-orange-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-700 transition-all shadow-lg transform hover:scale-105 active:scale-95">
+                                Reset Filter
+                            </a>
                         </div>
                     </div>
                 @endforelse
@@ -444,45 +570,37 @@
         easing: 'ease-out-cubic',
     });
     
+    // Highlight active filter button (redundant safety)
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.href === window.location.href) {
+            btn.classList.add('active');
+        }
+    });
+    
     // Add dynamic countdown for ongoing events
     document.querySelectorAll('.event-card').forEach(card => {
         const statusBadge = card.querySelector('.status-badge');
         if (statusBadge && statusBadge.textContent.includes('Sedang Berlangsung')) {
-            // Add extra visual emphasis for ongoing events
             card.style.borderColor = 'rgba(34, 197, 94, 0.3)';
         }
     });
     
     // Smooth scroll for pagination
-    document.querySelectorAll('.pagination-link').forEach(link => {
+    document.querySelectorAll('.pagination a').forEach(link => {
         link.addEventListener('click', function(e) {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
     
-    // Add hover sound effect or haptic feedback (optional)
+    // Hover effects enhancement
     const cards = document.querySelectorAll('.event-card');
     cards.forEach(card => {
         card.addEventListener('mouseenter', function() {
             this.style.zIndex = '10';
         });
-        
         card.addEventListener('mouseleave', function() {
             this.style.zIndex = '1';
         });
-    });
-    
-    // Detect if event date is approaching (within 7 days)
-    const eventCards = document.querySelectorAll('.event-card');
-    eventCards.forEach(card => {
-        const dateElement = card.querySelector('.date-display');
-        if (dateElement) {
-            const dateText = dateElement.textContent.trim();
-            // You can add logic here to highlight upcoming events
-        }
     });
 </script>
 @endpush

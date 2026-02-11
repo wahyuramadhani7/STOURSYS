@@ -292,6 +292,28 @@
     .full-image-container:hover .full-image-overlay {
         opacity: 1;
     }
+
+    /* Recurring specific styles */
+    .recurring-highlight {
+        background: linear-gradient(to right, rgba(249, 115, 22, 0.08), rgba(251, 146, 60, 0.08));
+        border-left: 5px solid #f97316;
+        padding-left: 1.25rem;
+    }
+
+    .recurring-badge {
+        background: linear-gradient(135deg, #f97316, #fb923c);
+        color: white;
+        box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+    }
+
+    .recurring-icon {
+        animation: spin 10s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+    }
 </style>
 @endpush
 
@@ -326,23 +348,34 @@
 
         <div class="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-end pb-12 md:pb-16">
             <div class="max-w-4xl hero-content">
-                <!-- Badge Status -->
+                <!-- Badge Status + Recurring -->
                 @php
                     $statusClass = [
                         'Sedang Berlangsung' => 'bg-green-600 text-white status-ongoing',
                         'Akan Datang'        => 'bg-blue-600 text-white status-upcoming',
-                        'Berakhir'           => 'bg-red-600 text-white status-ended',
+                        'Selesai'            => 'bg-red-600 text-white status-ended',
                     ][$event->status ?? 'Akan Datang'] ?? 'bg-gray-600 text-white';
                     
                     $shouldPulse = $event->status === 'Sedang Berlangsung';
+                    $isRecurring = $event->isRecurring();
                 @endphp
 
-                <div class="inline-flex items-center gap-3 mb-4"
+                <div class="flex flex-wrap items-center gap-3 mb-4"
                      data-aos="fade-right"
                      data-aos-duration="800">
                     <span class="{{ $statusClass }} px-4 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm {{ $shouldPulse ? 'badge-pulse' : '' }}">
                         {{ $event->status ?? 'Akan Datang' }}
                     </span>
+
+                    @if($isRecurring)
+                        <span class="recurring-badge px-4 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm flex items-center gap-2 badge-pulse">
+                            <svg class="w-4 h-4 recurring-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Event Rutin
+                        </span>
+                    @endif
+
                     @if($event->tanggal_selesai && $event->tanggal_selesai->isPast())
                         <span class="bg-red-600/90 px-4 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm text-white">
                             Sudah Berakhir
@@ -366,22 +399,16 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         <span>
-                            {{ $event->tanggal_mulai->format('d M Y') }}
-                            @if($event->tanggal_selesai)
-                                — {{ $event->tanggal_selesai->format('d M Y') }}
-                            @endif
+                            {{ $event->tanggal_range }}
                         </span>
                     </div>
 
-                    @if($event->jam_mulai || $event->jam_selesai)
+                    @if($event->jam_range && $event->jam_range !== '-')
                         <div class="flex items-center gap-3 group">
                             <svg class="info-icon w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            <span>
-                                @if($event->jam_mulai) {{ $event->jam_mulai }} @endif
-                                @if($event->jam_selesai) — {{ $event->jam_selesai }} @endif
-                            </span>
+                            <span>{{ $event->jam_range }}</span>
                         </div>
                     @endif
 
@@ -418,7 +445,40 @@
                         {!! nl2br(e($event->deskripsi)) !!}
                     </div>
 
-                    <!-- Waktu Pelaksanaan Box (jika ada jam) -->
+                    <!-- Informasi Recurring (jika ada) -->
+                    @if($event->isRecurring())
+                    <div class="recurring-highlight my-10 p-6 rounded-2xl border border-orange-200/50 shadow-sm"
+                         data-aos="fade-up"
+                         data-aos-duration="800"
+                         data-aos-delay="300">
+                        <h3 class="text-2xl font-bold text-orange-700 mb-4 flex items-center gap-3">
+                            <svg class="w-7 h-7 recurring-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Event Rutin / Berulang
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            Acara ini merupakan event rutin yang berulang secara periodik.
+                            @if($event->recurrence_type && $event->recurrence_interval)
+                                Frekuensi: <strong>
+                                    @switch($event->recurrence_type)
+                                        @case('daily') setiap hari @break
+                                        @case('weekly') setiap {{ $event->recurrence_interval }} minggu @break
+                                        @case('monthly') setiap {{ $event->recurrence_interval }} bulan @break
+                                        @case('yearly') setiap {{ $event->recurrence_interval }} tahun @break
+                                    @endswitch
+                                </strong>.
+                            @endif
+                            @if($event->recurrence_end_date)
+                                Berakhir pada: <strong>{{ $event->recurrence_end_date->format('d F Y') }}</strong>
+                            @else
+                                Berlangsung tanpa batas waktu tertentu (selamanya atau hingga diubah).
+                            @endif
+                        </p>
+                    </div>
+                    @endif
+
+                    <!-- Waktu Pelaksanaan Box -->
                     @if($event->jam_mulai || $event->jam_selesai)
                     <div class="time-box my-10 p-6 bg-gradient-to-r from-orange-50 to-blue-50 rounded-2xl border border-orange-100/60 shadow-sm"
                          data-aos="fade-up"
@@ -431,8 +491,8 @@
                             Waktu Pelaksanaan
                         </h3>
                         <div class="text-lg text-gray-700">
-                            @if($event->jam_mulai) Mulai pukul <strong class="text-orange-600">{{ $event->jam_mulai }}</strong> @endif
-                            @if($event->jam_selesai) s/d <strong class="text-orange-600">{{ $event->jam_selesai }}</strong> @endif
+                            @if($event->jam_mulai) Mulai pukul <strong class="text-orange-600">{{ $event->jam_mulai->format('H:i') }}</strong> @endif
+                            @if($event->jam_selesai) s/d <strong class="text-orange-600">{{ $event->jam_selesai->format('H:i') }}</strong> @endif
                         </div>
                     </div>
                     @endif
@@ -444,7 +504,7 @@
                          data-aos-duration="800"
                          data-aos-delay="400">
                         <h3 class="text-2xl md:text-3xl font-bold mb-6 text-slate-900 relative inline-block">
-                            Foto Event
+                            Foto Utama Event
                             <span class="absolute bottom-0 left-0 w-20 h-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></span>
                         </h3>
                         <a href="{{ Storage::url($event->gambar_utama) }}" 
@@ -491,14 +551,11 @@
                                         Tanggal
                                     </dt>
                                     <dd class="mt-1 text-lg">
-                                        {{ $event->tanggal_mulai->format('d F Y') }}
-                                        @if($event->tanggal_selesai && $event->tanggal_selesai->ne($event->tanggal_mulai))
-                                            — {{ $event->tanggal_selesai->format('d F Y') }}
-                                        @endif
+                                        {{ $event->tanggal_range }}
                                     </dd>
                                 </div>
 
-                                @if($event->jam_mulai || $event->jam_selesai)
+                                @if($event->jam_range && $event->jam_range !== '-')
                                 <div>
                                     <dt class="font-semibold text-slate-800 flex items-center gap-2">
                                         <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -507,8 +564,7 @@
                                         Waktu
                                     </dt>
                                     <dd class="mt-1 text-lg">
-                                        @if($event->jam_mulai) {{ $event->jam_mulai }} @endif
-                                        @if($event->jam_selesai) — {{ $event->jam_selesai }} @endif
+                                        {{ $event->jam_range }}
                                     </dd>
                                 </div>
                                 @endif
@@ -522,6 +578,25 @@
                                         Lokasi
                                     </dt>
                                     <dd class="mt-1 text-lg">{{ $event->lokasi }}</dd>
+                                </div>
+                                @endif
+
+                                @if($isRecurring)
+                                <div class="bg-orange-50/50 p-4 rounded-xl mt-4">
+                                    <dt class="font-semibold text-orange-700 flex items-center gap-2">
+                                        <svg class="w-5 h-5 recurring-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                        </svg>
+                                        Tipe Event
+                                    </dt>
+                                    <dd class="mt-1 text-orange-700 font-medium">
+                                        Event Rutin / Berulang
+                                        @if($event->recurrence_type)
+                                            <br><small class="text-orange-600/80">
+                                                ({{ ucfirst($event->recurrence_type) }} setiap {{ $event->recurrence_interval ?? 1 }} kali)
+                                            </small>
+                                        @endif
+                                    </dd>
                                 </div>
                                 @endif
                             </dl>
@@ -548,7 +623,7 @@
                                        data-aos-delay="{{ $index * 50 }}">
                                         <img 
                                             src="{{ Storage::url($foto) }}" 
-                                            alt="Galeri {{ $event->judul }}" 
+                                            alt="Galeri {{ $event->judul }} - {{ $index + 1 }}" 
                                             class="w-full h-32 object-cover rounded-xl shadow-sm"
                                         >
                                         <div class="zoom-icon">
@@ -596,7 +671,7 @@
         easing: 'ease-out-cubic',
     });
     
-    // Initialize GLightbox for gallery
+    // Initialize GLightbox for gallery & full image
     const lightbox = GLightbox({
         touchNavigation: true,
         loop: true,
@@ -624,16 +699,15 @@
         });
     }
     
-    // Add countdown timer for upcoming events
+    // Live indicator for ongoing events
     const statusBadge = document.querySelector('.badge-pulse');
     if (statusBadge && statusBadge.textContent.includes('Sedang Berlangsung')) {
-        // Add live indicator
         const liveIndicator = document.createElement('span');
-        liveIndicator.className = 'inline-block w-2 h-2 bg-white rounded-full mr-2 animate-pulse';
+        liveIndicator.className = 'inline-block w-2.5 h-2.5 bg-white rounded-full mr-2.5 animate-pulse';
         statusBadge.prepend(liveIndicator);
     }
     
-    // Smooth scroll
+    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();

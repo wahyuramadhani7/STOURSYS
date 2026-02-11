@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 class PanduanController extends Controller
 {
     /**
-     * Menampilkan daftar panduan aktif dengan pencarian dan pagination.
+     * Menampilkan daftar panduan/informasi aktif (hotel, RS, BPBD, dll.) 
+     * dengan pencarian, filter kategori, dan pagination.
      */
     public function index(Request $request)
     {
@@ -18,25 +19,38 @@ class PanduanController extends Controller
             ->orderBy('urutan', 'asc')
             ->orderBy('judul', 'asc');
 
-        // Tambahkan fitur pencarian berdasarkan judul
+        // Pencarian berdasarkan judul (dan opsional isi jika uncomment)
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
             $query->where('judul', 'like', "%{$search}%");
-            // Jika ingin cari juga di isi panduan, uncomment baris ini:
+            // Uncomment jika ingin search juga di deskripsi/isi (bisa lebih lambat jika data banyak)
             // ->orWhere('isi', 'like', "%{$search}%");
         }
 
-        // Pagination: 9 item per halaman (cocok untuk tampilan list)
+        // Filter berdasarkan kategori (misal: ?kategori=hotel atau ?kategori=rumah_sakit)
+        if ($request->filled('kategori')) {
+            $query->byKategori($request->input('kategori'));
+        }
+
+        // Pagination: 9 item per halaman (cocok untuk grid/list responsif)
         $panduans = $query->paginate(9);
 
-        // Pertahankan parameter search di link pagination
+        // Pertahankan semua parameter query di link pagination (search & kategori)
         $panduans->appends($request->query());
 
-        return view('frontend.public.panduan.index', compact('panduans'));
+        // Ambil daftar kategori unik yang aktif (untuk dropdown filter di view)
+        $kategoris = Panduan::where('is_active', true)
+            ->select('kategori')
+            ->distinct()
+            ->orderBy('kategori')
+            ->pluck('kategori')
+            ->map(fn($k) => ucfirst($k)); // Capitalize untuk tampilan bagus
+
+        return view('frontend.public.panduan.index', compact('panduans', 'kategoris'));
     }
 
     /**
-     * Menampilkan detail satu panduan.
+     * Menampilkan detail satu panduan/informasi (misal detail RS atau hotel).
      */
     public function show($id)
     {

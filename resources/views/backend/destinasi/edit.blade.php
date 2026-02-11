@@ -58,7 +58,7 @@
                             <textarea name="deskripsi" 
                                       class="input-custom @error('deskripsi') is-invalid @enderror" 
                                       rows="6" 
-                                      placeholder="Deskripsi utama destinasi (muncul di halaman daftar & detail). Ideal 100–300 karakter untuk SEO dan keterbacaan." 
+                                      placeholder="Deskripsi utama destinasi..." 
                                       required>{{ old('deskripsi', $destinasi->deskripsi ?? '') }}</textarea>
                             @error('deskripsi')
                                 <span class="error-message">{{ $message }}</span>
@@ -81,20 +81,76 @@
                                    class="input-custom @error('jam_operasional') is-invalid @enderror" 
                                    value="{{ old('jam_operasional', $destinasi->jam_operasional ?? '') }}" 
                                    placeholder="Contoh: Setiap hari 06:00 - 17:00 WIB (loket tutup 16:30)">
-                            <small class="input-hint">Bisa berbeda per hari atau musim (misal: Naik Candi pukul 04:30–09:00)</small>
+                            <small class="input-hint">Bisa berbeda per hari atau musim...</small>
                             @error('jam_operasional')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <div class="form-group-custom">
-                            <label>Fasilitas yang Tersedia <small class="text-muted">(opsional)</small></label>
-                            <textarea name="fasilitas" 
-                                      class="input-custom @error('fasilitas') is-invalid @enderror" 
-                                      rows="5" 
-                                      placeholder="Pisah dengan koma atau enter. Contoh: Toilet bersih, Mushola, Parkir luas, Warung makan halal, Spot foto, Area bermain anak, Akses kursi roda, WiFi, Toko souvenir">{{ old('fasilitas', $destinasi->fasilitas ?? '') }}</textarea>
-                            <small class="input-hint">Akan ditampilkan sebagai daftar bullet di halaman detail</small>
-                            @error('fasilitas')
+                            <label>Fasilitas yang Tersedia <small class="text-muted">(centang yang ada, tambah jika perlu)</small></label>
+                            
+                            <div class="checkbox-grid mt-2">
+                                @php
+                                    $daftarFasilitas = [
+                                        'Toilet bersih',
+                                        'Toilet difabel',
+                                        'Mushola / Tempat ibadah',
+                                        'Parkir luas',
+                                        'Parkir bus / kendaraan besar',
+                                        'Warung makan / Kafe',
+                                        'Makanan halal tersedia',
+                                        'Toko souvenir',
+                                        'Spot foto Instagramable',
+                                        'Area bermain anak',
+                                        'Akses kursi roda / difabel',
+                                        'WiFi gratis',
+                                        'Pemandu wisata tersedia',
+                                        'Homestay / Penginapan',
+                                        'Camping ground',
+                                        'Gazebo / Tempat duduk',
+                                        'Charging station / colokan listrik',
+                                        'P3K / Klinik kesehatan',
+                                        'ATM / Money changer terdekat',
+                                        'Area parkir motor',
+                                        'Jalur sepeda',
+                                        'Pemandangan sunrise / sunset',
+                                        'Jalur trekking',
+                                        'Spot fotografi drone',
+                                        'Area piknik',
+                                    ];
+                                @endphp
+
+                                @foreach($daftarFasilitas as $fas)
+                                    <label class="checkbox-custom d-flex align-items-center">
+                                        <input type="checkbox" name="fasilitas[]" value="{{ $fas }}"
+                                            {{ in_array($fas, old('fasilitas', $destinasi->fasilitas ? json_decode($destinasi->fasilitas, true) : [])) ? 'checked' : '' }}>
+                                        <span class="ms-2">{{ $fas }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <!-- Bagian tambah fasilitas custom -->
+                            <div class="mt-4">
+                                <div id="custom-fasilitas-list" class="d-flex flex-wrap gap-2 mb-3"></div>
+                                
+                                <div class="input-group">
+                                    <input type="text" id="input-fasilitas-baru" class="form-control input-custom" 
+                                           placeholder="Ketik fasilitas lain (contoh: Rental sepeda, Drone spot, Toilet bayi)">
+                                    <button type="button" class="btn btn-outline-primary" id="btn-tambah-fasilitas">Tambah</button>
+                                </div>
+                                
+                                <input type="hidden" name="fasilitas_custom" id="fasilitas_custom_hidden">
+                            </div>
+
+                            <small class="input-hint mt-2 d-block">
+                                Centang fasilitas yang tersedia. Tambahkan fasilitas khusus dengan mengetik lalu tekan "Tambah" atau Enter.
+                            </small>
+
+                            @error('fasilitas.*')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                            @error('fasilitas_custom')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
@@ -114,9 +170,9 @@
                             <input type="text" name="harga_tiket" 
                                    class="input-custom @error('harga_tiket') is-invalid @enderror" 
                                    value="{{ old('harga_tiket', $destinasi->harga_tiket ?? '') }}" 
-                                   placeholder="Contoh: Rp 50.000 / orang (WNI), Rp 350.000 (WNA) | Gratis | Rp 25.000 dewasa, Rp 10.000 anak">
+                                   placeholder="Contoh: Rp 50.000 / orang (WNI), Rp 350.000 (WNA) | Gratis ...">
                             <small class="input-hint d-block mt-1">
-                                Tulis bebas termasuk catatan: WNI/WNA, dewasa/anak, paket kombo, gratis untuk balita, hari tertentu, dll.
+                                Tulis bebas termasuk catatan: WNI/WNA, dewasa/anak, paket kombo, dll.
                             </small>
                             @error('harga_tiket')
                                 <span class="error-message">{{ $message }}</span>
@@ -128,7 +184,7 @@
                             <textarea name="info_tiket" 
                                       class="input-custom @error('info_tiket') is-invalid @enderror" 
                                       rows="3" 
-                                      placeholder="Contoh: Tiket kombo Candi + Museum Rp 75.000, Gratis untuk anak < 3 tahun, Bisa beli online via website resmi, Diskon pelajar 20%, dll.">{{ old('info_tiket', $destinasi->info_tiket ?? '') }}</textarea>
+                                      placeholder="Contoh: Tiket kombo Candi + Museum Rp 75.000, Gratis untuk anak < 3 tahun, ...">{{ old('info_tiket', $destinasi->info_tiket ?? '') }}</textarea>
                             @error('info_tiket')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -148,7 +204,7 @@
                             <input type="text" name="lokasi" 
                                    class="input-custom @error('lokasi') is-invalid @enderror" 
                                    value="{{ old('lokasi', $destinasi->lokasi ?? '') }}" 
-                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah 56553">
+                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang...">
                             <small class="input-hint">Sertakan info desa/kecamatan/landmark terdekat jika perlu</small>
                             @error('lokasi')
                                 <span class="error-message">{{ $message }}</span>
@@ -168,9 +224,9 @@
                             <input type="url" name="peta_embed" 
                                    class="input-custom @error('peta_embed') is-invalid @enderror" 
                                    value="{{ old('peta_embed', $destinasi->peta_embed ?? '') }}" 
-                                   placeholder="https://www.google.com/maps/embed?pb=!1m18!1m12!...">
+                                   placeholder="https://www.google.com/maps/embed?pb=!1m18!...">
                             <small class="input-hint d-block mb-2">
-                                Cara copy: Google Maps → Share → Embed a map → Copy src saja (bukan full iframe)
+                                Cara copy: Google Maps → Share → Embed a map → Copy src saja
                             </small>
 
                             @if(old('peta_embed', $destinasi->peta_embed))
@@ -282,9 +338,8 @@
     </div>
 </div>
 
-<!-- Style dan Script (sama persis seperti create) -->
+<!-- ====================== STYLE (sama seperti create) ====================== -->
 <style>
-    /* ============== Style sama persis dengan create.blade.php ============== */
     * { box-sizing: border-box; }
 
     .page-header { margin-bottom: 2.5rem; }
@@ -381,12 +436,51 @@
 
     .form-actions { margin-top: 2rem; }
 
+    /* Checkbox grid */
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 0.9rem 1.5rem;
+    }
+    .checkbox-custom {
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+    .checkbox-custom input {
+        margin-right: 0.6rem;
+        accent-color: #3b82f6;
+    }
+
+    /* Custom fasilitas chip */
+    .custom-fasilitas-chip {
+        background: #e5e7eb;
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .custom-fasilitas-chip button {
+        background: none;
+        border: none;
+        color: #ef4444;
+        font-weight: bold;
+        font-size: 1.1rem;
+        cursor: pointer;
+        line-height: 1;
+    }
+    .custom-fasilitas-chip button:hover {
+        color: #b91c1c;
+    }
+
     @media (max-width: 768px) {
         .form-actions { flex-direction: column-reverse; gap: 1rem; }
         .btn-primary, .btn-secondary { width: 100%; }
     }
 </style>
 
+<!-- ====================== SCRIPT ====================== -->
 <script>
 function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);
@@ -438,5 +532,73 @@ function previewGallery(input) {
         preview.appendChild(summary);
     }
 }
+
+// Logika fasilitas custom (sama seperti create, tapi load data lama)
+document.addEventListener('DOMContentLoaded', () => {
+    const btnTambah    = document.getElementById('btn-tambah-fasilitas');
+    const inputBaru    = document.getElementById('input-fasilitas-baru');
+    const listCustom   = document.getElementById('custom-fasilitas-list');
+    const hiddenCustom = document.getElementById('fasilitas_custom_hidden');
+
+    let customItems = [];
+
+    // Load fasilitas custom lama dari database (yang bukan di daftar checkbox)
+    @if($destinasi->fasilitas)
+        @php
+            $allFasilitas = json_decode($destinasi->fasilitas, true) ?? [];
+            $standardFasilitas = $daftarFasilitas; // array dari atas
+            $customFromDb = array_diff($allFasilitas, $standardFasilitas);
+        @endphp
+        customItems = @json($customFromDb);
+        renderChips();
+    @endif
+
+    // Restore dari old input jika validasi gagal
+    @if(old('fasilitas_custom'))
+        const oldCustom = "{{ old('fasilitas_custom') }}".split('|||').filter(Boolean);
+        customItems = [...new Set([...customItems, ...oldCustom])];
+        renderChips();
+    @endif
+
+    function renderChips() {
+        listCustom.innerHTML = '';
+        customItems.forEach((text, idx) => {
+            const chip = document.createElement('div');
+            chip.className = 'custom-fasilitas-chip';
+            chip.innerHTML = `
+                ${text}
+                <button type="button" data-idx="${idx}">×</button>
+            `;
+            listCustom.appendChild(chip);
+        });
+        hiddenCustom.value = customItems.join('|||');
+    }
+
+    function tambahCustom() {
+        const val = inputBaru.value.trim();
+        if (!val || customItems.includes(val)) return;
+
+        customItems.push(val);
+        renderChips();
+        inputBaru.value = '';
+    }
+
+    btnTambah.addEventListener('click', tambahCustom);
+
+    inputBaru.addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            tambahCustom();
+        }
+    });
+
+    listCustom.addEventListener('click', e => {
+        if (e.target.tagName === 'BUTTON') {
+            const idx = parseInt(e.target.dataset.idx);
+            customItems.splice(idx, 1);
+            renderChips();
+        }
+    });
+});
 </script>
 @endsection

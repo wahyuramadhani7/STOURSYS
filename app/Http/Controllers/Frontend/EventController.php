@@ -10,47 +10,64 @@ use Carbon\Carbon;
 class EventController extends Controller
 {
     /**
-     * Menampilkan daftar event aktif di frontend dengan pencarian dan pagination.
+     * Menampilkan daftar event aktif di frontend (upcoming + ongoing + recurring)
+     * dengan fitur pencarian dan pagination.
      */
     public function index(Request $request)
     {
         $query = Event::query()
-            ->where('is_active', true)
-            ->where(function ($q) {
-                // Event yang belum selesai atau tidak punya tanggal selesai
-                $q->where('tanggal_selesai', '>=', Carbon::today()->toDateString())
-                  ->orWhereNull('tanggal_selesai');
+            ->activeAndRelevant()           // menggunakan scope dari model
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $search = trim($request->input('search'));
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('judul', 'like', "%{$search}%")
+                        ->orWhere('lokasi', 'like', "%{$search}%");
+                    // Opsional: tambah deskripsi jika diperlukan
+                    // ->orWhere('deskripsi', 'like', "%{$search}%");
+                });
             })
             ->orderBy('tanggal_mulai', 'asc');
 
-        // Fitur pencarian
-        if ($request->filled('search')) {
-            $search = trim($request->input('search'));
-            $query->where(function ($q) use ($search) {
-                $q->where('judul', 'like', "%{$search}%")
-                  ->orWhere('lokasi', 'like', "%{$search}%");
-                // Opsional: bisa ditambah deskripsi jika ingin
-                // ->orWhere('deskripsi', 'like', "%{$search}%");
-            });
-        }
-
-        // Pagination: 9 item per halaman (cocok grid 3 kolom)
+        // Pagination: 9 item per halaman (cocok untuk grid 3 kolom)
         $events = $query->paginate(9);
 
-        // Pertahankan parameter search di link pagination
+        // Pertahankan query string (search, page, dll) di link pagination
         $events->appends($request->query());
 
         return view('frontend.public.event.index', compact('events'));
     }
 
     /**
-     * Menampilkan detail satu event.
+     * Menampilkan detail satu event berdasarkan slug (SEO friendly).
+     *
+     * @param string $slug
+     * @return \Illuminate\View\View
      */
-    public function show($id)
+    public function show($slug)
     {
-        $event = Event::where('is_active', true)
-            ->findOrFail($id);
+        $event = Event::where('slug', $slug)
+            ->activeAndRelevant()   // pastikan event aktif / relevan
+            ->firstOrFail();
+
+        // Optional: bisa load relation di sini nanti (misal galeri, comments)
+        // $event->load('comments');
 
         return view('frontend.public.event.show', compact('event'));
+    }
+
+    /**
+     * Optional: Halaman archive / event yang sudah lewat (jika dibutuhkan nanti)
+     */
+    public function archive(Request $request)
+    {
+        $query = Event::query()
+            ->where('is_active', true)
+            ->whereNotNull('tanggal_selesai')
+            ->where('tanggal_selesai', '<', Carbon::today())
+            ->orderBy('tanggal_selesai', 'desc');
+
+        $events = $query->paginate(12);
+
+        return view('frontend.public.event.archive', compact('events'));
     }
 }
