@@ -30,6 +30,11 @@
                 Browser Anda tidak mendukung tag video.
             </video>
 
+            <!-- Credit sumber video - pojok kanan bawah -->
+            <div class="video-credit">
+                Sumber: <a href="https://youtu.be/6DiEVUSrRqE" target="_blank" rel="noopener noreferrer">Studio Sunday</a> – Aerial Drone Videography Borobudur
+            </div>
+
             <!-- Dark Overlay -->
             <div class="hero-overlay"></div>
 
@@ -131,6 +136,43 @@
             );
             z-index: 3;
             pointer-events: none;
+        }
+
+        /* Credit text - pojok kanan bawah */
+        .video-credit {
+            position: absolute;
+            bottom: 1.25rem;        /* ~20px */
+            right: 1.5rem;          /* ~24px */
+            z-index: 5;             /* di atas video (z1 & z2), tapi di bawah content (z10) & overlay jika perlu */
+            color: rgba(255, 255, 255, 0.80);
+            font-size: 0.875rem;    /* 14px */
+            font-weight: 400;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+            pointer-events: auto;   /* agar link bisa diklik */
+            max-width: 80%;
+            line-height: 1.4;
+            letter-spacing: 0.3px;
+        }
+
+        .video-credit a {
+            color: rgba(255, 255, 255, 0.95);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: color 0.3s ease;
+        }
+
+        .video-credit a:hover {
+            color: white;
+        }
+
+        /* Lebih kecil di mobile */
+        @media (max-width: 640px) {
+            .video-credit {
+                font-size: 0.75rem;     /* 12px */
+                bottom: 1rem;
+                right: 1rem;
+                max-width: 70%;
+            }
         }
 
         /* Content positioning - responsive */
@@ -235,6 +277,11 @@
             .hero-content {
                 padding: 0.5rem;
             }
+            .video-credit {
+                font-size: 0.7rem;
+                bottom: 0.75rem;
+                right: 1rem;
+            }
         }
     </style>
 
@@ -266,7 +313,6 @@
                         .catch(err => {
                             console.warn('Autoplay prevented:', err);
                             isPlaying = false;
-                            // Show a play button or message to user if needed
                         });
                 }
             }
@@ -280,14 +326,9 @@
             // Setup video switching
             function setupVideoSwitch() {
                 currentVideo.addEventListener('ended', function handleEnded() {
-                    // Fade out current
                     currentVideo.classList.remove('active');
-
-                    // Fade in next
                     nextVideo.classList.add('active');
                     playVideo(nextVideo);
-
-                    // Swap references
                     [currentVideo, nextVideo] = [nextVideo, currentVideo];
                 });
             }
@@ -297,7 +338,6 @@
                 if (!isPlaying && currentVideo.paused) {
                     playVideo(currentVideo);
                 }
-                // Remove listener after first interaction
                 document.body.removeEventListener('click', interactionListener);
                 document.body.removeEventListener('touchstart', interactionListener);
             };
@@ -309,7 +349,7 @@
             startFirstVideo();
             setupVideoSwitch();
 
-            // Dynamic height adjustment - Fill available space
+            // Dynamic height adjustment
             function adjustHeroHeight() {
                 const hero = document.querySelector('.hero-container');
                 const header = document.querySelector('header');
@@ -318,22 +358,19 @@
                 
                 if (hero && header && nav && footer) {
                     const vh = window.innerHeight;
-                    const headerHeight = header.offsetHeight;
-                    const navHeight = nav.offsetHeight;
-                    const footerHeight = footer.offsetHeight;
+                    const headerHeight = header.offsetHeight || 0;
+                    const navHeight = nav.offsetHeight || 0;
+                    const footerHeight = footer.offsetHeight || 0;
                     
-                    // Hitung tinggi yang tersedia
                     const availableHeight = vh - headerHeight - navHeight - footerHeight;
                     const minHeight = window.innerWidth < 640 ? 400 : 
                                      window.innerWidth < 1024 ? 450 : 500;
                     
-                    // Set height to fill available space
                     const finalHeight = Math.max(minHeight, availableHeight);
                     hero.style.height = finalHeight + 'px';
                 }
             }
 
-            // Adjust on load and resize
             adjustHeroHeight();
             
             let resizeTimeout;
@@ -342,28 +379,21 @@
                 resizeTimeout = setTimeout(adjustHeroHeight, 150);
             });
 
-            // Handle orientation change
             window.addEventListener('orientationchange', function() {
                 setTimeout(adjustHeroHeight, 200);
             });
 
-            // Pause video when tab is not visible (performance)
+            // Pause when tab hidden
             document.addEventListener('visibilitychange', function() {
                 if (document.hidden) {
-                    if (!currentVideo.paused) {
-                        currentVideo.pause();
-                    }
+                    if (!currentVideo.paused) currentVideo.pause();
                 } else {
-                    if (currentVideo.paused && isPlaying) {
-                        playVideo(currentVideo);
-                    }
+                    if (currentVideo.paused && isPlaying) playVideo(currentVideo);
                 }
             });
 
-            // Preload next video
-            if (nextVideo.readyState < 2) {
-                nextVideo.load();
-            }
+            // Preload next
+            if (nextVideo.readyState < 2) nextVideo.load();
         });
     </script>
     @endpush
