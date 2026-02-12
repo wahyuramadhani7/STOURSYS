@@ -1,6 +1,6 @@
 @extends('frontend.layout.app')
 
-@section('title', 'Informasi Wisata & Darurat - STOURSYS')
+@section('title', 'Panduan - STOURSYS')
 
 @section('content')
     <!-- Header -->
@@ -9,7 +9,7 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                 <div class="flex-1">
                     <div class="inline-block mb-3 px-4 py-2 bg-orange-100 rounded-full border border-orange-200">
-                        <span class="text-orange-600 text-sm font-semibold">Informasi Daerah</span>
+                        <span class="text-orange-600 text-sm font-semibold">Panduan</span>
                     </div>
                     <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-3 tracking-tight">
                         Panduan </span>
