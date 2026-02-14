@@ -9,7 +9,7 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -60,10 +60,10 @@
                                 >
                             </div>
                             
-                            <!-- Judul di tengah -->
+                            <!-- Judul di tengah - DIBUAT LEBIH TEBAL -->
                             <div class="flex-1 text-center px-2 sm:px-3 min-w-0">
                                 <div class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 md:gap-2.5">
-                                    <h1 class="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold tracking-wide leading-tight">
+                                    <h1 class="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black tracking-wide leading-tight">
                                         Smart Tourism System
                                     </h1>
                                     <p class="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-semibold text-orange-400">

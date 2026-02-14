@@ -223,7 +223,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="prose prose-lg md:prose-xl prose-blue max-w-none mx-auto text-gray-800 leading-relaxed">
                 <p class="mb-6 text-justify" data-aos="fade-up" data-aos-duration="800">
-                    <strong class="text-blue-800">STourSys</strong> (Smart Tourism System) adalah sistem informasi pariwisata cerdas yang dikembangkan khusus untuk mendukung pengelolaan, promosi, dan pengalaman wisata di 
+                    <strong class="text-blue-800">STourSys</strong> (Smart Tourism System) adalah sistem informasi pariwisata yang dikembangkan khusus untuk mendukung pengelolaan, promosi, dan pengalaman wisata di 
                     <strong>kawasan Candi Borobudur dan wilayah sekitarnya</strong>.
                 </p>
 
