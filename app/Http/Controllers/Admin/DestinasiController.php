@@ -45,7 +45,7 @@ class DestinasiController extends Controller
     {
         $validated = $request->validate([
             'nama'              => 'required|string|max:255',
-            'kategori'          => 'required|string|max:50|in:candi,balkondes,kuliner,alam,budaya,religi,desa_wisata',
+            'kategori'          => 'required|string|max:50|in:candi,balkondes,kuliner,alam,budaya,religi,desa_wisata,wisata_edukasi',
             'deskripsi'         => 'required|string',
             'lokasi'            => 'nullable|string|max:255',
             'jam_operasional'   => 'nullable|string|max:255',
@@ -124,7 +124,7 @@ class DestinasiController extends Controller
     {
         $validated = $request->validate([
             'nama'              => 'required|string|max:255',
-            'kategori'          => 'required|string|max:50|in:candi,balkondes,kuliner,alam,budaya,religi,desa_wisata',
+            'kategori'          => 'required|string|max:50|in:candi,balkondes,kuliner,alam,budaya,religi,desa_wisata,wisata_edukasi',
             'deskripsi'         => 'required|string',
             'lokasi'            => 'nullable|string|max:255',
             'jam_operasional'   => 'nullable|string|max:255',

@@ -5,7 +5,6 @@
     <div class="row justify-content-center">
         <div class="col-12 col-xl-9">
             
-            <!-- Header -->
             <div class="page-header mb-4">
                 <h2 class="page-title">Tambah Destinasi Baru</h2>
                 <p class="page-subtitle">Lengkapi informasi destinasi wisata kawasan Borobudur dengan lengkap dan akurat</p>
@@ -14,7 +13,7 @@
             <form action="{{ route('admin.destinasi.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                <!-- Card Informasi Dasar -->
+                <!-- Informasi Dasar -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>📋 Informasi Dasar</h5>
@@ -26,7 +25,7 @@
                             <input type="text" name="nama" 
                                    class="input-custom @error('nama') is-invalid @enderror" 
                                    value="{{ old('nama') }}" 
-                                   placeholder="Contoh: Candi Borobudur, Balkondes Karangrejo, Punthuk Setumbu" 
+                                   placeholder="Contoh: Candi Borobudur, Balkondes Karangrejo, Punthuk Setumbu, Soto & Kopi Mbah Kromo, Restoran Griya Rasa" 
                                    required autofocus>
                             @error('nama')
                                 <span class="error-message">{{ $message }}</span>
@@ -35,29 +34,45 @@
 
                         <div class="form-group-custom">
                             <label>Kategori <span class="required">*</span></label>
-                            <select name="kategori" 
+                            <select name="kategori" id="kategori-select"
                                     class="input-custom @error('kategori') is-invalid @enderror" 
                                     required>
                                 <option value="">-- Pilih Kategori --</option>
                                 <option value="candi" {{ old('kategori') == 'candi' ? 'selected' : '' }}>Destinasi Candi</option>
                                 <option value="balkondes" {{ old('kategori') == 'balkondes' ? 'selected' : '' }}>Balkondes</option>
-                                <option value="kuliner" {{ old('kategori') == 'kuliner' ? 'selected' : '' }}>Kuliner</option>
+                                <option value="kuliner" data-type="kuliner" {{ old('kategori') == 'kuliner' && old('sub_kategori') != 'restoran' ? 'selected' : '' }}>
+                                    Kuliner (warung, jajanan, street food, angkringan, dll)
+                                </option>
+                                <option value="kuliner" data-type="restoran" {{ old('kategori') == 'kuliner' && old('sub_kategori') == 'restoran' ? 'selected' : '' }}>
+                                    Restoran / Cafe (duduk, AC, pelayanan meja, dll)
+                                </option>
                                 <option value="alam" {{ old('kategori') == 'alam' ? 'selected' : '' }}>Destinasi Alam</option>
-                                <option value="budaya" {{ old('kategori') == 'budaya' ? 'selected' : '' }}>Destinasi Budaya</option>
+                                <option value="budaya" {{ old('kategori') == 'budaya' ? 'selected' : '' }}>Kesenian dan Budaya</option>
                                 <option value="religi" {{ old('kategori') == 'religi' ? 'selected' : '' }}>Destinasi Religi</option>
                                 <option value="desa_wisata" {{ old('kategori') == 'desa_wisata' ? 'selected' : '' }}>Desa Wisata</option>
+                                <option value="wisata_edukasi" {{ old('kategori') == 'wisata_edukasi' ? 'selected' : '' }}>Wisata Edukasi</option>
                             </select>
                             @error('kategori')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="form-group-custom">
+                        <!-- Hidden field untuk membedakan kuliner vs restoran -->
+                        <input type="hidden" name="sub_kategori" id="sub_kategori" value="{{ old('sub_kategori', '') }}">
+
+                        <div class="form-group-custom mt-3" id="info-kuliner-type" style="display: none; font-size: 0.9rem; color: #4b5563;">
+                            <div class="alert alert-info mb-0 py-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span id="kuliner-type-text">Anda memilih kategori Kuliner</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group-custom mt-4">
                             <label>Deskripsi <span class="required">*</span></label>
                             <textarea name="deskripsi" 
                                       class="input-custom @error('deskripsi') is-invalid @enderror" 
                                       rows="6" 
-                                      placeholder="Deskripsi utama destinasi (muncul di halaman daftar & detail). Ideal 100–300 karakter untuk SEO dan keterbacaan." 
+                                      placeholder="Deskripsi utama destinasi. Ideal 100–400 karakter untuk tampilan daftar & SEO.&#10;Contoh kuliner: Menyajikan sate klathak, kopi robusta lokal, dan wedang ronde hangat dengan view sawah.&#10;Contoh restoran: Restoran dengan view sawah, menyajikan menu Indonesia & western, cocok untuk keluarga." 
                                       required>{{ old('deskripsi') }}</textarea>
                             @error('deskripsi')
                                 <span class="error-message">{{ $message }}</span>
@@ -67,7 +82,7 @@
                     </div>
                 </div>
 
-                <!-- Card Jam Operasional & Fasilitas -->
+                <!-- Jam Operasional & Fasilitas -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>⏰ Jam Operasional & Fasilitas</h5>
@@ -79,8 +94,8 @@
                             <input type="text" name="jam_operasional" 
                                    class="input-custom @error('jam_operasional') is-invalid @enderror" 
                                    value="{{ old('jam_operasional') }}" 
-                                   placeholder="Contoh: Setiap hari 06:00 - 17:00 WIB (loket tutup 16:30)">
-                            <small class="input-hint">Bisa berbeda per hari atau musim (misal: Naik Candi pukul 04:30–09:00)</small>
+                                   placeholder="Contoh: Setiap hari 06:00 - 17:00 WIB | Loket tutup 16:30 | Jumat malam sampai 22:00">
+                            <small class="input-hint">Bisa berbeda per hari/musim (misal: Naik Candi pukul 04:30–09:00)</small>
                             @error('jam_operasional')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -92,31 +107,17 @@
                             <div class="checkbox-grid mt-2">
                                 @php
                                     $daftarFasilitas = [
-                                        'Toilet bersih',
-                                        'Toilet difabel',
-                                        'Mushola / Tempat ibadah',
-                                        'Parkir luas',
-                                        'Parkir bus / kendaraan besar',
-                                        'Warung makan / Kafe',
-                                        'Makanan halal tersedia',
-                                        'Toko souvenir',
-                                        'Spot foto Instagramable',
-                                        'Area bermain anak',
-                                        'Akses kursi roda / difabel',
-                                        'WiFi gratis',
-                                        'Pemandu wisata tersedia',
-                                        'Homestay / Penginapan',
-                                        'Camping ground',
-                                        'Gazebo / Tempat duduk',
-                                        'Charging station / colokan listrik',
-                                        'P3K / Klinik kesehatan',
-                                        'ATM / Money changer terdekat',
-                                        'Area parkir motor',
-                                        'Jalur sepeda',
-                                        'Pemandangan sunrise / sunset',
-                                        'Jalur trekking',
-                                        'Spot fotografi drone',
-                                        'Area piknik',
+                                        'Toilet bersih', 'Toilet difabel', 'Mushola / Tempat ibadah',
+                                        'Parkir luas', 'Parkir bus / kendaraan besar', 'Warung makan / Kafe',
+                                        'Makanan halal tersedia', 'Toko souvenir', 'Spot foto Instagramable',
+                                        'Area bermain anak', 'Akses kursi roda / difabel', 'WiFi gratis',
+                                        'Pemandu wisata tersedia', 'Homestay / Penginapan', 'Camping ground',
+                                        'Gazebo / Tempat duduk', 'Charging station', 'P3K / Klinik kesehatan',
+                                        'ATM / Money changer terdekat', 'Area parkir motor', 'Jalur sepeda',
+                                        'Pemandangan sunrise / sunset', 'Jalur trekking', 'Spot fotografi drone',
+                                        'Area piknik', 'Ruang kelas / workshop', 'Papan edukasi / informasi',
+                                        'Pusat informasi wisata', 'Koleksi artefak / museum mini',
+                                        'AC / Ruangan berpendingin', 'Live music', 'Pemesanan meja online',
                                     ];
                                 @endphp
 
@@ -129,13 +130,12 @@
                                 @endforeach
                             </div>
 
-                            <!-- Bagian tambah fasilitas custom -->
                             <div class="mt-4">
                                 <div id="custom-fasilitas-list" class="d-flex flex-wrap gap-2 mb-3"></div>
                                 
                                 <div class="input-group">
                                     <input type="text" id="input-fasilitas-baru" class="form-control input-custom" 
-                                           placeholder="Ketik fasilitas lain (contoh: Rental sepeda, Drone spot, Toilet bayi)">
+                                           placeholder="Contoh: Rental sepeda, Drone spot, Toilet bayi, Pemandu bahasa Inggris, Menu vegan">
                                     <button type="button" class="btn btn-outline-primary" id="btn-tambah-fasilitas">Tambah</button>
                                 </div>
                                 
@@ -143,21 +143,17 @@
                             </div>
 
                             <small class="input-hint mt-2 d-block">
-                                Centang fasilitas yang tersedia di lokasi. Tambahkan fasilitas khusus dengan mengetik lalu tekan "Tambah" atau Enter.
+                                Centang fasilitas yang tersedia. Tambahkan fasilitas khusus dengan mengetik lalu tekan "Tambah" atau Enter.
                             </small>
 
-                            @error('fasilitas.*')
-                                <span class="error-message">{{ $message }}</span>
-                            @enderror
-                            @error('fasilitas_custom')
-                                <span class="error-message">{{ $message }}</span>
-                            @enderror
+                            @error('fasilitas.*') <span class="error-message">{{ $message }}</span> @enderror
+                            @error('fasilitas_custom') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                     </div>
                 </div>
 
-                <!-- Card Harga Tiket -->
+                <!-- Harga Tiket & Info -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>💰 Harga Tiket & Catatan</h5>
@@ -165,13 +161,13 @@
                     <div class="form-card-body">
                         
                         <div class="form-group-custom">
-                            <label>Harga Tiket <small class="text-muted">(opsional, tapi penting)</small></label>
+                            <label>Harga Tiket / Kisaran Harga <small class="text-muted">(opsional)</small></label>
                             <input type="text" name="harga_tiket" 
                                    class="input-custom @error('harga_tiket') is-invalid @enderror" 
                                    value="{{ old('harga_tiket') }}" 
-                                   placeholder="Contoh: Rp 50.000 / orang (WNI), Rp 350.000 (WNA) | Gratis | Rp 25.000 dewasa, Rp 10.000 anak">
+                                   placeholder="Contoh: Rp 15.000 – Rp 45.000 / porsi | Rp 35.000 – Rp 120.000 / orang | Gratis masuk">
                             <small class="input-hint d-block mt-1">
-                                Tulis bebas termasuk catatan: WNI/WNA, dewasa/anak, paket kombo, gratis untuk balita, hari tertentu, dll.
+                                Tulis bebas termasuk catatan WNI/WNA, dewasa/anak, paket, harga minuman, dll.
                             </small>
                             @error('harga_tiket')
                                 <span class="error-message">{{ $message }}</span>
@@ -179,11 +175,11 @@
                         </div>
 
                         <div class="form-group-custom mt-4">
-                            <label>Catatan Tambahan Tiket / Info Penting</label>
+                            <label>Catatan Tambahan / Info Penting</label>
                             <textarea name="info_tiket" 
                                       class="input-custom @error('info_tiket') is-invalid @enderror" 
                                       rows="3" 
-                                      placeholder="Contoh: Tiket kombo Candi + Museum Rp 75.000, Gratis untuk anak < 3 tahun, Bisa beli online via website resmi, Diskon pelajar 20%, dll.">{{ old('info_tiket') }}</textarea>
+                                      placeholder="Contoh: Harga belum termasuk minuman, Bisa pesan antar via GoFood/GrabFood, Open table reservasi via WA, Diskon pelajar 15%">{{ old('info_tiket') }}</textarea>
                             @error('info_tiket')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -192,7 +188,7 @@
                     </div>
                 </div>
 
-                <!-- Card Lokasi -->
+                <!-- Lokasi -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>📍 Lokasi</h5>
@@ -203,8 +199,8 @@
                             <input type="text" name="lokasi" 
                                    class="input-custom @error('lokasi') is-invalid @enderror" 
                                    value="{{ old('lokasi') }}" 
-                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah 56553">
-                            <small class="input-hint">Sertakan info desa/kecamatan/landmark terdekat jika perlu</small>
+                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah 56553 (dekat pintu masuk Candi)">
+                            <small class="input-hint">Sertakan desa/kecamatan/landmark terdekat jika perlu</small>
                             @error('lokasi')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -212,7 +208,7 @@
                     </div>
                 </div>
 
-                <!-- Card Peta -->
+                <!-- Peta Embed -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>🗺️ Peta Lokasi (Google Maps Embed)</h5>
@@ -223,9 +219,9 @@
                             <input type="url" name="peta_embed" 
                                    class="input-custom @error('peta_embed') is-invalid @enderror" 
                                    value="{{ old('peta_embed') }}" 
-                                   placeholder="https://www.google.com/maps/embed?pb=!1m18!1m12!...">
+                                   placeholder="https://www.google.com/maps/embed?pb=!1m18!...">
                             <small class="input-hint d-block mb-2">
-                                Cara copy: Google Maps → Share → Embed a map → Copy src saja (bukan full iframe)
+                                Cara copy: Google Maps → Share → Embed a map → Copy src saja
                             </small>
 
                             @if(old('peta_embed'))
@@ -244,7 +240,7 @@
                     </div>
                 </div>
 
-                <!-- Card Media -->
+                <!-- Media -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>🖼️ Gambar & Galeri</h5>
@@ -277,7 +273,7 @@
                         </div>
 
                         <div class="form-group-custom mt-5">
-                            <label>Galeri Foto Tambahan <small class="text-muted">(opsional)</small></label>
+                            <label>Galeri Foto Tambahan <small class="text-muted">(opsional, maks 8–10 foto)</small></label>
                             <div class="upload-area">
                                 <input type="file" name="galeri[]" 
                                        class="file-input" 
@@ -301,7 +297,7 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
+                <!-- Tombol Aksi -->
                 <div class="form-actions d-flex gap-3 justify-content-end mt-5">
                     <a href="{{ route('admin.destinasi.index') }}" class="btn btn-secondary px-5 py-3">
                         Batal
@@ -317,7 +313,6 @@
     </div>
 </div>
 
-<!-- ====================== STYLE ====================== -->
 <style>
     * { box-sizing: border-box; }
 
@@ -413,9 +408,6 @@
         gap: 1rem;
     }
 
-    .form-actions { margin-top: 2rem; }
-
-    /* Tambahan untuk fasilitas checkbox */
     .checkbox-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -448,9 +440,9 @@
         cursor: pointer;
         line-height: 1;
     }
-    .custom-fasilitas-chip button:hover {
-        color: #b91c1c;
-    }
+    .custom-fasilitas-chip button:hover { color: #b91c1c; }
+
+    .form-actions { margin-top: 2rem; }
 
     @media (max-width: 768px) {
         .form-actions { flex-direction: column-reverse; gap: 1rem; }
@@ -458,7 +450,6 @@
     }
 </style>
 
-<!-- ====================== SCRIPT ====================== -->
 <script>
 function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);
@@ -474,7 +465,7 @@ function previewImage(input, previewId) {
     }
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = e => {
         preview.innerHTML = `
             <img src="${e.target.result}" alt="Preview">
             <div class="status success mt-2">✓ ${file.name}</div>
@@ -487,16 +478,16 @@ function previewGallery(input) {
     const preview = document.getElementById('preview-galeri');
     preview.innerHTML = '';
 
-    Array.from(input.files).forEach((file, index) => {
+    Array.from(input.files).forEach((file, i) => {
         if (file.size > 2048000) {
             preview.innerHTML += `<div class="status error">❌ ${file.name} > 2MB</div>`;
             return;
         }
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = e => {
             const div = document.createElement('div');
-            div.innerHTML = `<img src="${e.target.result}" alt="Galeri ${index+1}">`;
+            div.innerHTML = `<img src="${e.target.result}" alt="Galeri ${i+1}">`;
             preview.appendChild(div);
         };
         reader.readAsDataURL(file);
@@ -511,8 +502,8 @@ function previewGallery(input) {
     }
 }
 
-// Logika fasilitas custom
 document.addEventListener('DOMContentLoaded', () => {
+    // ── Custom Fasilitas ──
     const btnTambah    = document.getElementById('btn-tambah-fasilitas');
     const inputBaru    = document.getElementById('input-fasilitas-baru');
     const listCustom   = document.getElementById('custom-fasilitas-list');
@@ -544,7 +535,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     btnTambah.addEventListener('click', tambahCustom);
-
     inputBaru.addEventListener('keypress', e => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -560,12 +550,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Restore nilai lama setelah validasi gagal
     @if(old('fasilitas_custom'))
         const oldCustom = "{{ old('fasilitas_custom') }}".split('|||').filter(Boolean);
         customItems = oldCustom;
         renderChips();
     @endif
+
+    // ── Logika Kuliner vs Restoran ──
+    const kategoriSelect = document.getElementById('kategori-select');
+    const subKategori    = document.getElementById('sub_kategori');
+    const infoBox        = document.getElementById('info-kuliner-type');
+    const textInfo       = document.getElementById('kuliner-type-text');
+
+    function updateKulinerType() {
+        const selected = kategoriSelect.options[kategoriSelect.selectedIndex];
+        
+        if (selected && selected.value === 'kuliner') {
+            infoBox.style.display = 'block';
+            if (selected.dataset.type === 'restoran') {
+                subKategori.value = 'restoran';
+                textInfo.textContent = 'Anda memilih kategori Restoran / Cafe';
+            } else {
+                subKategori.value = 'kuliner';
+                textInfo.textContent = 'Anda memilih kategori Kuliner (warung/jajanan)';
+            }
+        } else {
+            infoBox.style.display = 'none';
+            subKategori.value = '';
+        }
+    }
+
+    // Jalankan saat halaman dimuat (penting untuk old input)
+    updateKulinerType();
+
+    // Update setiap kali kategori berubah
+    kategoriSelect.addEventListener('change', updateKulinerType);
 });
 </script>
 @endsection

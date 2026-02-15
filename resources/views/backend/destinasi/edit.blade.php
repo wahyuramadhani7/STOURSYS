@@ -5,7 +5,6 @@
     <div class="row justify-content-center">
         <div class="col-12 col-xl-9">
             
-            <!-- Header -->
             <div class="page-header mb-4">
                 <h2 class="page-title">Edit Destinasi: {{ $destinasi->nama }}</h2>
                 <p class="page-subtitle">Perbarui informasi destinasi wisata kawasan Borobudur dengan data terbaru dan akurat</p>
@@ -15,7 +14,7 @@
                 @csrf
                 @method('PATCH')
 
-                <!-- Card Informasi Dasar -->
+                <!-- Informasi Dasar -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>📋 Informasi Dasar</h5>
@@ -27,7 +26,7 @@
                             <input type="text" name="nama" 
                                    class="input-custom @error('nama') is-invalid @enderror" 
                                    value="{{ old('nama', $destinasi->nama) }}" 
-                                   placeholder="Contoh: Candi Borobudur, Balkondes Karangrejo, Punthuk Setumbu" 
+                                   placeholder="Contoh: Candi Borobudur, Balkondes Karangrejo, Museum Ullen Sentalu" 
                                    required autofocus>
                             @error('nama')
                                 <span class="error-message">{{ $message }}</span>
@@ -47,6 +46,7 @@
                                 <option value="budaya" {{ old('kategori', $destinasi->kategori) == 'budaya' ? 'selected' : '' }}>Destinasi Budaya</option>
                                 <option value="religi" {{ old('kategori', $destinasi->kategori) == 'religi' ? 'selected' : '' }}>Destinasi Religi</option>
                                 <option value="desa_wisata" {{ old('kategori', $destinasi->kategori) == 'desa_wisata' ? 'selected' : '' }}>Desa Wisata</option>
+                                <option value="wisata_edukasi" {{ old('kategori', $destinasi->kategori) == 'wisata_edukasi' ? 'selected' : '' }}>Wisata Edukasi</option>
                             </select>
                             @error('kategori')
                                 <span class="error-message">{{ $message }}</span>
@@ -58,7 +58,7 @@
                             <textarea name="deskripsi" 
                                       class="input-custom @error('deskripsi') is-invalid @enderror" 
                                       rows="6" 
-                                      placeholder="Deskripsi utama destinasi..." 
+                                      placeholder="Deskripsi utama destinasi. Ideal 100–400 karakter untuk tampilan daftar & SEO." 
                                       required>{{ old('deskripsi', $destinasi->deskripsi ?? '') }}</textarea>
                             @error('deskripsi')
                                 <span class="error-message">{{ $message }}</span>
@@ -68,7 +68,7 @@
                     </div>
                 </div>
 
-                <!-- Card Jam Operasional & Fasilitas -->
+                <!-- Jam Operasional & Fasilitas -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>⏰ Jam Operasional & Fasilitas</h5>
@@ -80,8 +80,8 @@
                             <input type="text" name="jam_operasional" 
                                    class="input-custom @error('jam_operasional') is-invalid @enderror" 
                                    value="{{ old('jam_operasional', $destinasi->jam_operasional ?? '') }}" 
-                                   placeholder="Contoh: Setiap hari 06:00 - 17:00 WIB (loket tutup 16:30)">
-                            <small class="input-hint">Bisa berbeda per hari atau musim...</small>
+                                   placeholder="Contoh: Setiap hari 06:00 - 17:00 WIB | Loket tutup 16:30">
+                            <small class="input-hint">Bisa berbeda per hari/musim (misal: Naik Candi pukul 04:30–09:00)</small>
                             @error('jam_operasional')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -93,72 +93,52 @@
                             <div class="checkbox-grid mt-2">
                                 @php
                                     $daftarFasilitas = [
-                                        'Toilet bersih',
-                                        'Toilet difabel',
-                                        'Mushola / Tempat ibadah',
-                                        'Parkir luas',
-                                        'Parkir bus / kendaraan besar',
-                                        'Warung makan / Kafe',
-                                        'Makanan halal tersedia',
-                                        'Toko souvenir',
-                                        'Spot foto Instagramable',
-                                        'Area bermain anak',
-                                        'Akses kursi roda / difabel',
-                                        'WiFi gratis',
-                                        'Pemandu wisata tersedia',
-                                        'Homestay / Penginapan',
-                                        'Camping ground',
-                                        'Gazebo / Tempat duduk',
-                                        'Charging station / colokan listrik',
-                                        'P3K / Klinik kesehatan',
-                                        'ATM / Money changer terdekat',
-                                        'Area parkir motor',
-                                        'Jalur sepeda',
-                                        'Pemandangan sunrise / sunset',
-                                        'Jalur trekking',
-                                        'Spot fotografi drone',
-                                        'Area piknik',
+                                        'Toilet bersih', 'Toilet difabel', 'Mushola / Tempat ibadah',
+                                        'Parkir luas', 'Parkir bus / kendaraan besar', 'Warung makan / Kafe',
+                                        'Makanan halal tersedia', 'Toko souvenir', 'Spot foto Instagramable',
+                                        'Area bermain anak', 'Akses kursi roda / difabel', 'WiFi gratis',
+                                        'Pemandu wisata tersedia', 'Homestay / Penginapan', 'Camping ground',
+                                        'Gazebo / Tempat duduk', 'Charging station', 'P3K / Klinik kesehatan',
+                                        'ATM / Money changer terdekat', 'Area parkir motor', 'Jalur sepeda',
+                                        'Pemandangan sunrise / sunset', 'Jalur trekking', 'Spot fotografi drone',
+                                        'Area piknik', 'Ruang kelas / workshop', 'Papan edukasi / informasi',
+                                        'Pusat informasi wisata', 'Koleksi artefak / museum mini',
                                     ];
                                 @endphp
 
                                 @foreach($daftarFasilitas as $fas)
                                     <label class="checkbox-custom d-flex align-items-center">
                                         <input type="checkbox" name="fasilitas[]" value="{{ $fas }}"
-                                            {{ in_array($fas, old('fasilitas', $destinasi->fasilitas ? json_decode($destinasi->fasilitas, true) : [])) ? 'checked' : '' }}>
+                                            {{ in_array($fas, old('fasilitas', json_decode($destinasi->fasilitas ?? '[]', true))) ? 'checked' : '' }}>
                                         <span class="ms-2">{{ $fas }}</span>
                                     </label>
                                 @endforeach
                             </div>
 
-                            <!-- Bagian tambah fasilitas custom -->
                             <div class="mt-4">
                                 <div id="custom-fasilitas-list" class="d-flex flex-wrap gap-2 mb-3"></div>
                                 
                                 <div class="input-group">
                                     <input type="text" id="input-fasilitas-baru" class="form-control input-custom" 
-                                           placeholder="Ketik fasilitas lain (contoh: Rental sepeda, Drone spot, Toilet bayi)">
+                                           placeholder="Contoh: Rental sepeda, Drone spot, Toilet bayi, Pemandu bahasa Inggris">
                                     <button type="button" class="btn btn-outline-primary" id="btn-tambah-fasilitas">Tambah</button>
                                 </div>
                                 
-                                <input type="hidden" name="fasilitas_custom" id="fasilitas_custom_hidden">
+                                <input type="hidden" name="fasilitas_custom" id="fasilitas_custom_hidden" value="{{ old('fasilitas_custom') }}">
                             </div>
 
                             <small class="input-hint mt-2 d-block">
                                 Centang fasilitas yang tersedia. Tambahkan fasilitas khusus dengan mengetik lalu tekan "Tambah" atau Enter.
                             </small>
 
-                            @error('fasilitas.*')
-                                <span class="error-message">{{ $message }}</span>
-                            @enderror
-                            @error('fasilitas_custom')
-                                <span class="error-message">{{ $message }}</span>
-                            @enderror
+                            @error('fasilitas.*') <span class="error-message">{{ $message }}</span> @enderror
+                            @error('fasilitas_custom') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                     </div>
                 </div>
 
-                <!-- Card Harga Tiket -->
+                <!-- Harga Tiket & Info -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>💰 Harga Tiket & Catatan</h5>
@@ -166,13 +146,13 @@
                     <div class="form-card-body">
                         
                         <div class="form-group-custom">
-                            <label>Harga Tiket <small class="text-muted">(opsional, tapi penting)</small></label>
+                            <label>Harga Tiket <small class="text-muted">(opsional)</small></label>
                             <input type="text" name="harga_tiket" 
                                    class="input-custom @error('harga_tiket') is-invalid @enderror" 
                                    value="{{ old('harga_tiket', $destinasi->harga_tiket ?? '') }}" 
-                                   placeholder="Contoh: Rp 50.000 / orang (WNI), Rp 350.000 (WNA) | Gratis ...">
+                                   placeholder="Contoh: Rp 50.000 / orang (WNI), Rp 350.000 (WNA) | Gratis | Rp 25.000 dewasa">
                             <small class="input-hint d-block mt-1">
-                                Tulis bebas termasuk catatan: WNI/WNA, dewasa/anak, paket kombo, dll.
+                                Tulis bebas termasuk catatan WNI/WNA, dewasa/anak, paket, gratis balita, dll.
                             </small>
                             @error('harga_tiket')
                                 <span class="error-message">{{ $message }}</span>
@@ -184,7 +164,7 @@
                             <textarea name="info_tiket" 
                                       class="input-custom @error('info_tiket') is-invalid @enderror" 
                                       rows="3" 
-                                      placeholder="Contoh: Tiket kombo Candi + Museum Rp 75.000, Gratis untuk anak < 3 tahun, ...">{{ old('info_tiket', $destinasi->info_tiket ?? '') }}</textarea>
+                                      placeholder="Contoh: Tiket kombo Candi + Museum Rp 75.000, Gratis anak < 3 tahun, Bisa beli online, Diskon pelajar 20%">{{ old('info_tiket', $destinasi->info_tiket ?? '') }}</textarea>
                             @error('info_tiket')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -193,7 +173,7 @@
                     </div>
                 </div>
 
-                <!-- Card Lokasi -->
+                <!-- Lokasi -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>📍 Lokasi</h5>
@@ -204,8 +184,8 @@
                             <input type="text" name="lokasi" 
                                    class="input-custom @error('lokasi') is-invalid @enderror" 
                                    value="{{ old('lokasi', $destinasi->lokasi ?? '') }}" 
-                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang...">
-                            <small class="input-hint">Sertakan info desa/kecamatan/landmark terdekat jika perlu</small>
+                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah 56553">
+                            <small class="input-hint">Sertakan desa/kecamatan/landmark terdekat jika perlu</small>
                             @error('lokasi')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -213,7 +193,7 @@
                     </div>
                 </div>
 
-                <!-- Card Peta -->
+                <!-- Peta Embed -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>🗺️ Peta Lokasi (Google Maps Embed)</h5>
@@ -229,7 +209,7 @@
                                 Cara copy: Google Maps → Share → Embed a map → Copy src saja
                             </small>
 
-                            @if(old('peta_embed', $destinasi->peta_embed))
+                            @if(old('peta_embed', $destinasi->peta_embed ?? ''))
                                 <div class="mt-3">
                                     <label>Preview:</label>
                                     <iframe class="w-100" height="300" style="border:0;" 
@@ -245,7 +225,7 @@
                     </div>
                 </div>
 
-                <!-- Card Media -->
+                <!-- Media -->
                 <div class="form-card mb-4">
                     <div class="form-card-header">
                         <h5>🖼️ Gambar & Galeri</h5>
@@ -254,7 +234,7 @@
                         
                         <div class="form-group-custom">
                             <label>Gambar Utama Saat Ini</label>
-                            @if($destinasi->gambar_utama)
+                            @if($destinasi->gambar_utama_url)
                                 <div class="mt-2 mb-4">
                                     <img src="{{ $destinasi->gambar_utama_url }}" alt="{{ $destinasi->nama }}" 
                                          class="img-fluid rounded" style="max-height: 280px; object-fit: cover; width: 100%;">
@@ -288,10 +268,10 @@
 
                         <div class="form-group-custom mt-5">
                             <label>Galeri Foto Saat Ini</label>
-                            @if($destinasi->galeri_urls && count($destinasi->galeri_urls) > 0)
+                            @if($destinasi->galeri && count(json_decode($destinasi->galeri, true) ?? []) > 0)
                                 <div class="gallery-preview mt-3">
-                                    @foreach($destinasi->galeri_urls as $url)
-                                        <img src="{{ $url }}" alt="Galeri {{ $destinasi->nama }}" class="rounded">
+                                    @foreach(json_decode($destinasi->galeri, true) as $path)
+                                        <img src="{{ Storage::url($path) }}" alt="Galeri {{ $destinasi->nama }}" class="rounded">
                                     @endforeach
                                 </div>
                             @else
@@ -322,7 +302,7 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
+                <!-- Tombol Aksi -->
                 <div class="form-actions d-flex gap-3 justify-content-end mt-5">
                     <a href="{{ route('admin.destinasi.index') }}" class="btn btn-secondary px-5 py-3">
                         Batal
@@ -338,7 +318,6 @@
     </div>
 </div>
 
-<!-- ====================== STYLE (sama seperti create) ====================== -->
 <style>
     * { box-sizing: border-box; }
 
@@ -434,9 +413,6 @@
         gap: 1rem;
     }
 
-    .form-actions { margin-top: 2rem; }
-
-    /* Checkbox grid */
     .checkbox-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -451,7 +427,6 @@
         accent-color: #3b82f6;
     }
 
-    /* Custom fasilitas chip */
     .custom-fasilitas-chip {
         background: #e5e7eb;
         padding: 0.4rem 0.9rem;
@@ -470,9 +445,9 @@
         cursor: pointer;
         line-height: 1;
     }
-    .custom-fasilitas-chip button:hover {
-        color: #b91c1c;
-    }
+    .custom-fasilitas-chip button:hover { color: #b91c1c; }
+
+    .form-actions { margin-top: 2rem; }
 
     @media (max-width: 768px) {
         .form-actions { flex-direction: column-reverse; gap: 1rem; }
@@ -480,7 +455,6 @@
     }
 </style>
 
-<!-- ====================== SCRIPT ====================== -->
 <script>
 function previewImage(input, previewId) {
     const preview = document.getElementById(previewId);
@@ -496,7 +470,7 @@ function previewImage(input, previewId) {
     }
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = e => {
         preview.innerHTML = `
             <img src="${e.target.result}" alt="Preview">
             <div class="status success mt-2">✓ ${file.name}</div>
@@ -509,16 +483,16 @@ function previewGallery(input) {
     const preview = document.getElementById('preview-galeri');
     preview.innerHTML = '';
 
-    Array.from(input.files).forEach((file, index) => {
+    Array.from(input.files).forEach((file, i) => {
         if (file.size > 2048000) {
             preview.innerHTML += `<div class="status error">❌ ${file.name} > 2MB</div>`;
             return;
         }
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = e => {
             const div = document.createElement('div');
-            div.innerHTML = `<img src="${e.target.result}" alt="Galeri ${index+1}">`;
+            div.innerHTML = `<img src="${e.target.result}" alt="Galeri ${i+1}">`;
             preview.appendChild(div);
         };
         reader.readAsDataURL(file);
@@ -533,7 +507,6 @@ function previewGallery(input) {
     }
 }
 
-// Logika fasilitas custom (sama seperti create, tapi load data lama)
 document.addEventListener('DOMContentLoaded', () => {
     const btnTambah    = document.getElementById('btn-tambah-fasilitas');
     const inputBaru    = document.getElementById('input-fasilitas-baru');
@@ -542,22 +515,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let customItems = [];
 
-    // Load fasilitas custom lama dari database (yang bukan di daftar checkbox)
-    @if($destinasi->fasilitas)
-        @php
-            $allFasilitas = json_decode($destinasi->fasilitas, true) ?? [];
-            $standardFasilitas = $daftarFasilitas; // array dari atas
-            $customFromDb = array_diff($allFasilitas, $standardFasilitas);
-        @endphp
-        customItems = @json($customFromDb);
-        renderChips();
-    @endif
+    // Load custom fasilitas dari database (yang tidak ada di daftar standar)
+    @php
+        $allFasilitas = json_decode($destinasi->fasilitas ?? '[]', true) ?? [];
+        $standard = $daftarFasilitas;
+        $customFromDb = array_values(array_diff($allFasilitas, $standard));
+    @endphp
+    customItems = @json($customFromDb) ?? [];
 
-    // Restore dari old input jika validasi gagal
+    // Jika ada old input (validasi gagal), prioritaskan itu
     @if(old('fasilitas_custom'))
-        const oldCustom = "{{ old('fasilitas_custom') }}".split('|||').filter(Boolean);
+        const oldCustom = "{{ old('fasilitas_custom') }}".split('|||').filter(v => v.trim());
         customItems = [...new Set([...customItems, ...oldCustom])];
-        renderChips();
     @endif
 
     function renderChips() {
@@ -565,26 +534,23 @@ document.addEventListener('DOMContentLoaded', () => {
         customItems.forEach((text, idx) => {
             const chip = document.createElement('div');
             chip.className = 'custom-fasilitas-chip';
-            chip.innerHTML = `
-                ${text}
-                <button type="button" data-idx="${idx}">×</button>
-            `;
+            chip.innerHTML = `${text}<button type="button" data-idx="${idx}">×</button>`;
             listCustom.appendChild(chip);
         });
         hiddenCustom.value = customItems.join('|||');
     }
 
+    renderChips(); // render awal
+
     function tambahCustom() {
         const val = inputBaru.value.trim();
         if (!val || customItems.includes(val)) return;
-
         customItems.push(val);
         renderChips();
         inputBaru.value = '';
     }
 
     btnTambah.addEventListener('click', tambahCustom);
-
     inputBaru.addEventListener('keypress', e => {
         if (e.key === 'Enter') {
             e.preventDefault();

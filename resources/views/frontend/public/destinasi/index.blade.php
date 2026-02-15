@@ -108,7 +108,6 @@
         }
     }
 
-    /* Perbaikan search bar */
     .search-container {
         max-width: 480px;
         margin: 0 auto;
@@ -129,7 +128,6 @@
         font-size: 0.95rem;
     }
 
-    /* Tombol kembali lebih jelas */
     .back-btn {
         display: inline-flex;
         align-items: center;
@@ -173,7 +171,7 @@
                     Destinasi Wisata <span class="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 bg-clip-text text-transparent">Kawasan Borobudur</span>
                 </h1>
                 <p class="text-lg md:text-xl lg:text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
-                    Temukan keajaiban candi, alam, budaya, kuliner, religi, dan desa wisata terbaik di sekitar Candi Borobudur
+                    Temukan keajaiban candi, alam, kesenian & budaya, kuliner, religi, dan desa wisata terbaik di sekitar Candi Borobudur
                 </p>
             </div>
         </div>
@@ -205,15 +203,15 @@
                                 @else
                                     <div class="w-full h-full bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950 flex items-center justify-center">
                                         <span class="kategori-icon">
-                                            @switch($kat['slug'])
-                                                @case('candi') 🏯 @break
-                                                @case('balkondes') 🏡 @break
-                                                @case('kuliner') 🍲 @break
-                                                @case('alam') 🌄 @break
-                                                @case('budaya') 🎭 @break
-                                                @case('religi') 🙏 @break
-                                                @case('desa_wisata') 🌾 @break
-                                                @default 🌟
+                                            @switch(strtolower($kat['slug'] ?? ''))
+                                                @case('candi')      🏯 @break
+                                                @case('balkondes')  🏡 @break
+                                                @case('kuliner')    🍲 @break
+                                                @case('alam')       🌄 @break
+                                                @case('budaya')     🎭 @break  <!-- tetap pakai slug lama -->
+                                                @case('religi')     🙏 @break
+                                                @case('desa_wisata')🌾 @break
+                                                @default            🌟
                                             @endswitch
                                         </span>
                                     </div>
@@ -221,7 +219,13 @@
                             </div>
 
                             <div class="kategori-content">
-                                <h3 class="kategori-title">{{ $kat['nama'] }}</h3>
+                                <h3 class="kategori-title">
+                                    @if(strtolower($kat['slug'] ?? '') === 'budaya')
+                                        Kesenian dan Budaya
+                                    @else
+                                        {{ $kat['nama'] }}
+                                    @endif
+                                </h3>
                                 <span class="inline-block px-7 py-3.5 bg-white text-orange-700 rounded-full font-bold text-base shadow-xl transform group-hover:scale-110 group-hover:shadow-2xl transition-all duration-400">
                                     Jelajahi →
                                 </span>
@@ -251,7 +255,11 @@
 
                     <h2 class="text-3xl md:text-4xl font-bold text-slate-900 text-center md:text-left" data-aos="fade-left">
                         @if(request('kategori'))
-                            {{ ucwords(str_replace('_', ' ', request('kategori'))) }}
+                            @if(request('kategori') === 'budaya')
+                                Kesenian dan Budaya
+                            @else
+                                {{ ucwords(str_replace(['_', '-'], ' ', request('kategori'))) }}
+                            @endif
                         @elseif(request('search'))
                             Hasil Pencarian: "{{ request('search') }}"
                         @endif
@@ -259,7 +267,7 @@
                     </h2>
                 </div>
 
-                <!-- Search bar yang sudah diperkecil & di tengah -->
+                <!-- Search bar -->
                 <div class="search-container mb-12" data-aos="fade-up">
                     <form method="GET" action="{{ route('destinasi.index') }}" class="relative">
                         <input type="hidden" name="kategori" value="{{ request('kategori') }}">
@@ -306,7 +314,11 @@
                             <div class="p-7">
                                 @if($item->kategori)
                                     <span class="inline-block px-5 py-2 bg-orange-100 text-orange-800 rounded-full text-base font-semibold mb-4">
-                                        {{ $item->kategori_nama }}
+                                        @if($item->kategori === 'budaya')
+                                            Kesenian dan Budaya
+                                        @else
+                                            {{ $item->kategori_nama ?? ucwords(str_replace(['_', '-'], ' ', $item->kategori)) }}
+                                        @endif
                                     </span>
                                 @endif
 
