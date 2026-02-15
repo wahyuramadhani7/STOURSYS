@@ -155,6 +155,37 @@
         width: 1.4rem;
         height: 1.4rem;
     }
+
+    /* Tambahan untuk tabs filter sub-kuliner */
+    .sub-filter-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .sub-filter-btn {
+        padding: 0.65rem 1.5rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .sub-filter-btn.active {
+        background-color: #ea580c;
+        color: white;
+        border-color: #ea580c;
+        box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
+    }
+
+    .sub-filter-btn:hover:not(.active) {
+        background-color: #fff7ed;
+        border-color: #f97316;
+        color: #c2410c;
+    }
 </style>
 @endpush
 
@@ -177,7 +208,7 @@
         </div>
     </section>
 
-    <!-- Kategori Section -->
+    <!-- Kategori Section (halaman awal tanpa filter) -->
     @if(!request()->has('kategori') && !request()->has('search'))
         <section class="py-16 md:py-20 bg-gray-50/70">
             <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -208,7 +239,7 @@
                                                 @case('balkondes')  🏡 @break
                                                 @case('kuliner')    🍲 @break
                                                 @case('alam')       🌄 @break
-                                                @case('budaya')     🎭 @break  <!-- tetap pakai slug lama -->
+                                                @case('budaya')     🎭 @break
                                                 @case('religi')     🙏 @break
                                                 @case('desa_wisata')🌾 @break
                                                 @default            🌟
@@ -220,7 +251,7 @@
 
                             <div class="kategori-content">
                                 <h3 class="kategori-title">
-                                    @if(strtolower($kat['slug'] ?? '') === 'budaya')
+                                    @if(strtolower($kat['slug']) === 'budaya')
                                         Kesenian dan Budaya
                                     @else
                                         {{ $kat['nama'] }}
@@ -237,7 +268,7 @@
         </section>
 
     @else
-        <!-- Daftar Destinasi -->
+        <!-- Daftar Destinasi (ketika ada filter kategori atau search) -->
         <section class="py-16 md:py-20">
             <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12">
 
@@ -255,11 +286,17 @@
 
                     <h2 class="text-3xl md:text-4xl font-bold text-slate-900 text-center md:text-left" data-aos="fade-left">
                         @if(request('kategori'))
-                            @if(request('kategori') === 'budaya')
-                                Kesenian dan Budaya
-                            @else
-                                {{ ucwords(str_replace(['_', '-'], ' ', request('kategori'))) }}
-                            @endif
+                            @php
+                                $kategoriInput = request('kategori');
+                                $judul = ucwords(str_replace(['_', '-'], ' ', $kategoriInput));
+                                
+                                if (str_starts_with($kategoriInput, 'kuliner')) {
+                                    $judul = 'Kuliner';
+                                } elseif ($kategoriInput === 'budaya') {
+                                    $judul = 'Kesenian dan Budaya';
+                                }
+                            @endphp
+                            {{ $judul }}
                         @elseif(request('search'))
                             Hasil Pencarian: "{{ request('search') }}"
                         @endif
@@ -267,10 +304,29 @@
                     </h2>
                 </div>
 
+                <!-- Filter sub-kategori khusus untuk Kuliner -->
+                @if(request('kategori') && (request('kategori') === 'kuliner' || str_starts_with(request('kategori'), 'kuliner')))
+                    <div class="sub-filter-tabs" data-aos="fade-up" data-aos-duration="800">
+                        <a href="{{ route('destinasi.index', ['kategori' => 'kuliner'] + request()->only('search')) }}"
+                           class="sub-filter-btn {{ !request('sub') ? 'active' : '' }}">
+                            Semua Kuliner
+                        </a>
+                        <a href="{{ route('destinasi.index', ['kategori' => 'kuliner', 'sub' => 'kuliner'] + request()->only('search')) }}"
+                           class="sub-filter-btn {{ request('sub') === 'kuliner' ? 'active' : '' }}">
+                            Warung / Street Food / Jajanan
+                        </a>
+                        <a href="{{ route('destinasi.index', ['kategori' => 'kuliner', 'sub' => 'restoran'] + request()->only('search')) }}"
+                           class="sub-filter-btn {{ request('sub') === 'restoran' ? 'active' : '' }}">
+                            Restoran / Cafe
+                        </a>
+                    </div>
+                @endif
+
                 <!-- Search bar -->
                 <div class="search-container mb-12" data-aos="fade-up">
                     <form method="GET" action="{{ route('destinasi.index') }}" class="relative">
                         <input type="hidden" name="kategori" value="{{ request('kategori') }}">
+                        <input type="hidden" name="sub" value="{{ request('sub') }}">
                         <input type="text" name="search" value="{{ request('search') }}" 
                                placeholder="Cari destinasi..." 
                                class="search-input w-full rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-md transition-all">
@@ -314,11 +370,17 @@
                             <div class="p-7">
                                 @if($item->kategori)
                                     <span class="inline-block px-5 py-2 bg-orange-100 text-orange-800 rounded-full text-base font-semibold mb-4">
-                                        @if($item->kategori === 'budaya')
-                                            Kesenian dan Budaya
-                                        @else
-                                            {{ $item->kategori_nama ?? ucwords(str_replace(['_', '-'], ' ', $item->kategori)) }}
-                                        @endif
+                                        @php
+                                            $katDisplay = $item->kategori;
+                                            if (str_starts_with($katDisplay, 'kuliner_') || $katDisplay === 'kuliner') {
+                                                $katDisplay = 'Kuliner';
+                                            } elseif ($katDisplay === 'budaya') {
+                                                $katDisplay = 'Kesenian dan Budaya';
+                                            } else {
+                                                $katDisplay = ucwords(str_replace(['_', '-'], ' ', $katDisplay));
+                                            }
+                                        @endphp
+                                        {{ $katDisplay }}
                                     </span>
                                 @endif
 

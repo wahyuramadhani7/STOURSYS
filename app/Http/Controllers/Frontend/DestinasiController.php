@@ -13,6 +13,7 @@ class DestinasiController extends Controller
         $hasFilter = $request->filled('kategori') || $request->filled('search');
 
         if (!$hasFilter) {
+            // Ambil daftar kategori unik, tapi gabungkan semua kuliner_* menjadi satu "Kuliner"
             $kategoriList = Destinasi::where('is_active', true)
                 ->whereNotNull('kategori')
                 ->select('kategori')
@@ -20,23 +21,51 @@ class DestinasiController extends Controller
                 ->orderBy('kategori')
                 ->get()
                 ->map(function ($item) {
-                    $destinasiPertama = Destinasi::where('kategori', $item->kategori)
+                    $kategoriAsli = $item->kategori;
+
+                    // Normalisasi untuk tampilan dan slug
+                    if (str_starts_with($kategoriAsli, 'kuliner_') || $kategoriAsli === 'kuliner') {
+                        $slug = 'kuliner';
+                        $nama = 'Kuliner';
+                    } else {
+                        $slug = $kategoriAsli;
+                        $nama = ucwords(str_replace(['_', '-'], ' ', $kategoriAsli));
+                    }
+
+                    // Ambil gambar representatif (prioritas views tertinggi)
+                    $destinasiPertama = Destinasi::where('kategori', $kategoriAsli)
                         ->where('is_active', true)
                         ->orderByDesc('views')
                         ->first();
 
+                    // Jika kuliner, ambil dari salah satu sub (atau dari 'kuliner' lama)
+                    if ($slug === 'kuliner' && !$destinasiPertama) {
+                        $destinasiPertama = Destinasi::where('kategori', 'like', 'kuliner%')
+                            ->where('is_active', true)
+                            ->orderByDesc('views')
+                            ->first();
+                    }
+
                     return [
-                        'slug'            => $item->kategori,
-                        'nama'            => ucwords(str_replace('_', ' ', $item->kategori)),
+                        'slug'            => $slug,
+                        'nama'            => $nama,
                         'gambar_kategori' => $destinasiPertama?->gambar_utama_url,
                     ];
-                });
+                })
+                // Hilangkan duplikat kalau ada (misal kuliner & kuliner_kuliner muncul terpisah)
+                ->unique('slug')
+                ->values();
 
             return view('frontend.public.destinasi.index', compact('kategoriList'));
         }
 
+        // =====================================
+        // Bagian filtered (kategori atau search)
+        // =====================================
+
         $query = Destinasi::where('is_active', true);
 
+        // Pencarian
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
             $query->where(function ($q) use ($search) {
@@ -46,17 +75,24 @@ class DestinasiController extends Controller
             });
         }
 
+        // Filter kategori
         if ($request->filled('kategori')) {
-            $allowed = ['candi', 'balkondes', 'kuliner', 'alam', 'budaya', 'religi', 'desa_wisata', 'wisata_edukasi'];
+            $kategoriInput = $request->input('kategori');
 
-            $kategoris = is_array($request->kategori)
-                ? array_filter($request->kategori, fn($v) => in_array($v, $allowed))
-                : [$request->kategori];
+            if ($kategoriInput === 'kuliner') {
+                // Tampilkan semua varian kuliner
+                $query->where('kategori', 'like', 'kuliner%');
 
-            $kategoris = array_intersect($kategoris, $allowed);
-
-            if (!empty($kategoris)) {
-                $query->whereIn('kategori', $kategoris);
+                // Filter sub-kategori (opsional)
+                if ($request->filled('sub')) {
+                    $sub = $request->input('sub');
+                    if (in_array($sub, ['kuliner', 'restoran'])) {
+                        $query->where('kategori', "kuliner_{$sub}");
+                    }
+                }
+            } else {
+                // Kategori biasa (non-kuliner)
+                $query->where('kategori', $kategoriInput);
             }
         }
 

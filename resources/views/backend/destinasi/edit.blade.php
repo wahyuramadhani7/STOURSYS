@@ -26,7 +26,7 @@
                             <input type="text" name="nama" 
                                    class="input-custom @error('nama') is-invalid @enderror" 
                                    value="{{ old('nama', $destinasi->nama) }}" 
-                                   placeholder="Contoh: Candi Borobudur, Balkondes Karangrejo, Museum Ullen Sentalu" 
+                                   placeholder="Contoh: Candi Borobudur, Balkondes Karangrejo, Punthuk Setumbu, Soto & Kopi Mbah Kromo, Restoran Griya Rasa" 
                                    required autofocus>
                             @error('nama')
                                 <span class="error-message">{{ $message }}</span>
@@ -35,15 +35,29 @@
 
                         <div class="form-group-custom">
                             <label>Kategori <span class="required">*</span></label>
-                            <select name="kategori" 
+                            <select name="kategori" id="kategori-select"
                                     class="input-custom @error('kategori') is-invalid @enderror" 
                                     required>
                                 <option value="">-- Pilih Kategori --</option>
                                 <option value="candi" {{ old('kategori', $destinasi->kategori) == 'candi' ? 'selected' : '' }}>Destinasi Candi</option>
                                 <option value="balkondes" {{ old('kategori', $destinasi->kategori) == 'balkondes' ? 'selected' : '' }}>Balkondes</option>
-                                <option value="kuliner" {{ old('kategori', $destinasi->kategori) == 'kuliner' ? 'selected' : '' }}>Kuliner</option>
+                                
+                                <!-- Kuliner biasa (warung, street food, dll) -->
+                                <option value="kuliner" data-type="kuliner"
+                                        {{ old('kategori', $destinasi->kategori) == 'kuliner_kuliner' || 
+                                           (old('kategori', $destinasi->kategori) == 'kuliner' && old('sub_kategori', '') != 'restoran') ? 'selected' : '' }}>
+                                    Kuliner (warung, jajanan, street food, angkringan, sate klathak, dll)
+                                </option>
+                                
+                                <!-- Restoran / Cafe -->
+                                <option value="kuliner" data-type="restoran"
+                                        {{ old('kategori', $destinasi->kategori) == 'kuliner_restoran' || 
+                                           (old('kategori', $destinasi->kategori) == 'kuliner' && old('sub_kategori', '') == 'restoran') ? 'selected' : '' }}>
+                                    Restoran / Cafe (duduk nyaman, AC, pelayanan meja, resto keluarga, coffee shop, dll)
+                                </option>
+                                
                                 <option value="alam" {{ old('kategori', $destinasi->kategori) == 'alam' ? 'selected' : '' }}>Destinasi Alam</option>
-                                <option value="budaya" {{ old('kategori', $destinasi->kategori) == 'budaya' ? 'selected' : '' }}>Destinasi Budaya</option>
+                                <option value="budaya" {{ old('kategori', $destinasi->kategori) == 'budaya' ? 'selected' : '' }}>Kesenian dan Budaya</option>
                                 <option value="religi" {{ old('kategori', $destinasi->kategori) == 'religi' ? 'selected' : '' }}>Destinasi Religi</option>
                                 <option value="desa_wisata" {{ old('kategori', $destinasi->kategori) == 'desa_wisata' ? 'selected' : '' }}>Desa Wisata</option>
                                 <option value="wisata_edukasi" {{ old('kategori', $destinasi->kategori) == 'wisata_edukasi' ? 'selected' : '' }}>Wisata Edukasi</option>
@@ -51,14 +65,32 @@
                             @error('kategori')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
+                            @error('sub_kategori')
+                                <span class="error-message d-block mt-1">{{ $message }}</span>
+                            @enderror
                         </div>
 
-                        <div class="form-group-custom">
+                        <!-- Hidden field sub_kategori -->
+                        <input type="hidden" name="sub_kategori" id="sub_kategori" 
+                               value="{{ old('sub_kategori', 
+                                             $destinasi->kategori == 'kuliner_restoran' ? 'restoran' : 
+                                             ($destinasi->kategori == 'kuliner_kuliner' ? 'kuliner' : '')) }}">
+
+                        <!-- Info box kuliner -->
+                        <div class="form-group-custom mt-3" id="info-kuliner-type" style="display: none; font-size: 0.9rem; color: #4b5563;">
+                            <div class="alert alert-info mb-0 py-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong id="kuliner-type-title">Anda memilih kategori Kuliner</strong><br>
+                                <span id="kuliner-type-text">Pilih tipe di atas untuk menentukan apakah ini warung/street food atau restoran/cafe.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group-custom mt-4">
                             <label>Deskripsi <span class="required">*</span></label>
                             <textarea name="deskripsi" 
                                       class="input-custom @error('deskripsi') is-invalid @enderror" 
                                       rows="6" 
-                                      placeholder="Deskripsi utama destinasi. Ideal 100–400 karakter untuk tampilan daftar & SEO." 
+                                      placeholder="Deskripsi utama destinasi. Ideal 100–400 karakter untuk tampilan daftar & SEO.&#10;Contoh kuliner warung: Menyajikan sate klathak empuk, kopi robusta lokal, wedang ronde hangat dengan view sawah.&#10;Contoh restoran: Restoran dengan view sawah/gunung, menu Indonesia & western, ruangan ber-AC, cocok untuk keluarga." 
                                       required>{{ old('deskripsi', $destinasi->deskripsi ?? '') }}</textarea>
                             @error('deskripsi')
                                 <span class="error-message">{{ $message }}</span>
@@ -80,7 +112,7 @@
                             <input type="text" name="jam_operasional" 
                                    class="input-custom @error('jam_operasional') is-invalid @enderror" 
                                    value="{{ old('jam_operasional', $destinasi->jam_operasional ?? '') }}" 
-                                   placeholder="Contoh: Setiap hari 06:00 - 17:00 WIB | Loket tutup 16:30">
+                                   placeholder="Contoh: Setiap hari 06:00 - 17:00 WIB | Loket tutup 16:30 | Jumat malam sampai 22:00">
                             <small class="input-hint">Bisa berbeda per hari/musim (misal: Naik Candi pukul 04:30–09:00)</small>
                             @error('jam_operasional')
                                 <span class="error-message">{{ $message }}</span>
@@ -103,13 +135,18 @@
                                         'Pemandangan sunrise / sunset', 'Jalur trekking', 'Spot fotografi drone',
                                         'Area piknik', 'Ruang kelas / workshop', 'Papan edukasi / informasi',
                                         'Pusat informasi wisata', 'Koleksi artefak / museum mini',
+                                        'AC / Ruangan berpendingin', 'Live music', 'Pemesanan meja online',
                                     ];
+                                @endphp
+
+                                @php
+                                    $fasilitasDb = json_decode($destinasi->fasilitas ?? '[]', true) ?? [];
                                 @endphp
 
                                 @foreach($daftarFasilitas as $fas)
                                     <label class="checkbox-custom d-flex align-items-center">
                                         <input type="checkbox" name="fasilitas[]" value="{{ $fas }}"
-                                            {{ in_array($fas, old('fasilitas', json_decode($destinasi->fasilitas ?? '[]', true))) ? 'checked' : '' }}>
+                                            {{ in_array($fas, old('fasilitas', $fasilitasDb)) ? 'checked' : '' }}>
                                         <span class="ms-2">{{ $fas }}</span>
                                     </label>
                                 @endforeach
@@ -120,11 +157,11 @@
                                 
                                 <div class="input-group">
                                     <input type="text" id="input-fasilitas-baru" class="form-control input-custom" 
-                                           placeholder="Contoh: Rental sepeda, Drone spot, Toilet bayi, Pemandu bahasa Inggris">
+                                           placeholder="Contoh: Rental sepeda, Drone spot, Toilet bayi, Pemandu bahasa Inggris, Menu vegan">
                                     <button type="button" class="btn btn-outline-primary" id="btn-tambah-fasilitas">Tambah</button>
                                 </div>
                                 
-                                <input type="hidden" name="fasilitas_custom" id="fasilitas_custom_hidden" value="{{ old('fasilitas_custom') }}">
+                                <input type="hidden" name="fasilitas_custom" id="fasilitas_custom_hidden">
                             </div>
 
                             <small class="input-hint mt-2 d-block">
@@ -146,13 +183,13 @@
                     <div class="form-card-body">
                         
                         <div class="form-group-custom">
-                            <label>Harga Tiket <small class="text-muted">(opsional)</small></label>
+                            <label>Harga Tiket / Kisaran Harga <small class="text-muted">(opsional)</small></label>
                             <input type="text" name="harga_tiket" 
                                    class="input-custom @error('harga_tiket') is-invalid @enderror" 
                                    value="{{ old('harga_tiket', $destinasi->harga_tiket ?? '') }}" 
-                                   placeholder="Contoh: Rp 50.000 / orang (WNI), Rp 350.000 (WNA) | Gratis | Rp 25.000 dewasa">
+                                   placeholder="Contoh: Rp 15.000 – Rp 45.000 / porsi | Rp 35.000 – Rp 120.000 / orang | Gratis masuk">
                             <small class="input-hint d-block mt-1">
-                                Tulis bebas termasuk catatan WNI/WNA, dewasa/anak, paket, gratis balita, dll.
+                                Tulis bebas termasuk catatan WNI/WNA, dewasa/anak, paket, harga minuman, dll.
                             </small>
                             @error('harga_tiket')
                                 <span class="error-message">{{ $message }}</span>
@@ -160,11 +197,11 @@
                         </div>
 
                         <div class="form-group-custom mt-4">
-                            <label>Catatan Tambahan Tiket / Info Penting</label>
+                            <label>Catatan Tambahan / Info Penting</label>
                             <textarea name="info_tiket" 
                                       class="input-custom @error('info_tiket') is-invalid @enderror" 
                                       rows="3" 
-                                      placeholder="Contoh: Tiket kombo Candi + Museum Rp 75.000, Gratis anak < 3 tahun, Bisa beli online, Diskon pelajar 20%">{{ old('info_tiket', $destinasi->info_tiket ?? '') }}</textarea>
+                                      placeholder="Contoh: Harga belum termasuk minuman, Bisa pesan antar via GoFood/GrabFood, Open table reservasi via WA, Diskon pelajar 15%">{{ old('info_tiket', $destinasi->info_tiket ?? '') }}</textarea>
                             @error('info_tiket')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
@@ -184,7 +221,7 @@
                             <input type="text" name="lokasi" 
                                    class="input-custom @error('lokasi') is-invalid @enderror" 
                                    value="{{ old('lokasi', $destinasi->lokasi ?? '') }}" 
-                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah 56553">
+                                   placeholder="Contoh: Desa Borobudur, Kec. Borobudur, Kab. Magelang, Jawa Tengah 56553 (dekat pintu masuk Candi)">
                             <small class="input-hint">Sertakan desa/kecamatan/landmark terdekat jika perlu</small>
                             @error('lokasi')
                                 <span class="error-message">{{ $message }}</span>
@@ -237,13 +274,13 @@
                             @if($destinasi->gambar_utama_url)
                                 <div class="mt-2 mb-4">
                                     <img src="{{ $destinasi->gambar_utama_url }}" alt="{{ $destinasi->nama }}" 
-                                         class="img-fluid rounded" style="max-height: 280px; object-fit: cover; width: 100%;">
+                                         class="img-fluid rounded shadow-sm" style="max-height: 280px; object-fit: cover; width: 100%;">
                                 </div>
                             @else
-                                <p class="text-muted">Belum ada gambar utama</p>
+                                <p class="text-muted small">Belum ada gambar utama</p>
                             @endif
 
-                            <label class="mt-2">Ganti Gambar Utama <small class="text-muted">(opsional)</small></label>
+                            <label class="mt-3">Ganti Gambar Utama <small class="text-muted">(opsional)</small></label>
                             <div class="upload-area">
                                 <input type="file" name="gambar_utama" 
                                        class="file-input @error('gambar_utama') is-invalid @enderror" 
@@ -268,14 +305,18 @@
 
                         <div class="form-group-custom mt-5">
                             <label>Galeri Foto Saat Ini</label>
-                            @if($destinasi->galeri && count(json_decode($destinasi->galeri, true) ?? []) > 0)
+                            @php
+                                $galeri = json_decode($destinasi->galeri ?? '[]', true) ?? [];
+                            @endphp
+                            @if(count($galeri) > 0)
                                 <div class="gallery-preview mt-3">
-                                    @foreach(json_decode($destinasi->galeri, true) as $path)
-                                        <img src="{{ Storage::url($path) }}" alt="Galeri {{ $destinasi->nama }}" class="rounded">
+                                    @foreach($galeri as $path)
+                                        <img src="{{ Storage::url($path) }}" alt="Galeri {{ $destinasi->nama }}" 
+                                             class="img-fluid rounded shadow-sm">
                                     @endforeach
                                 </div>
                             @else
-                                <p class="text-muted">Belum ada foto tambahan di galeri</p>
+                                <p class="text-muted small">Belum ada foto tambahan di galeri</p>
                             @endif
 
                             <label class="mt-4">Tambah Foto Baru ke Galeri <small class="text-muted">(opsional – akan ditambahkan, tidak menggantikan yang lama)</small></label>
@@ -472,7 +513,7 @@ function previewImage(input, previewId) {
     const reader = new FileReader();
     reader.onload = e => {
         preview.innerHTML = `
-            <img src="${e.target.result}" alt="Preview">
+            <img src="${e.target.result}" alt="Preview" class="img-fluid rounded">
             <div class="status success mt-2">✓ ${file.name}</div>
         `;
     };
@@ -492,7 +533,7 @@ function previewGallery(input) {
         const reader = new FileReader();
         reader.onload = e => {
             const div = document.createElement('div');
-            div.innerHTML = `<img src="${e.target.result}" alt="Galeri ${i+1}">`;
+            div.innerHTML = `<img src="${e.target.result}" alt="Galeri ${i+1}" class="img-fluid rounded">`;
             preview.appendChild(div);
         };
         reader.readAsDataURL(file);
@@ -500,14 +541,14 @@ function previewGallery(input) {
 
     if (input.files.length > 0) {
         const summary = document.createElement('div');
-        summary.className = 'status success mt-3';
-        summary.style.gridColumn = '1 / -1';
+        summary.className = 'status success mt-3 w-100 text-center';
         summary.textContent = `✓ ${input.files.length} foto baru dipilih (akan ditambahkan)`;
         preview.appendChild(summary);
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // ── Custom Fasilitas ──
     const btnTambah    = document.getElementById('btn-tambah-fasilitas');
     const inputBaru    = document.getElementById('input-fasilitas-baru');
     const listCustom   = document.getElementById('custom-fasilitas-list');
@@ -515,15 +556,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let customItems = [];
 
-    // Load custom fasilitas dari database (yang tidak ada di daftar standar)
+    // Ambil custom fasilitas dari database (yang tidak ada di daftar standar)
     @php
-        $allFasilitas = json_decode($destinasi->fasilitas ?? '[]', true) ?? [];
+        $fasilitasDb = json_decode($destinasi->fasilitas ?? '[]', true) ?? [];
         $standard = $daftarFasilitas;
-        $customFromDb = array_values(array_diff($allFasilitas, $standard));
+        $customFromDb = array_values(array_diff($fasilitasDb, $standard));
     @endphp
     customItems = @json($customFromDb) ?? [];
 
-    // Jika ada old input (validasi gagal), prioritaskan itu
+    // Jika ada old input (setelah validasi gagal), prioritaskan itu
     @if(old('fasilitas_custom'))
         const oldCustom = "{{ old('fasilitas_custom') }}".split('|||').filter(v => v.trim());
         customItems = [...new Set([...customItems, ...oldCustom])];
@@ -565,6 +606,39 @@ document.addEventListener('DOMContentLoaded', () => {
             renderChips();
         }
     });
+
+    // ── Logika Kuliner vs Restoran ──
+    const kategoriSelect = document.getElementById('kategori-select');
+    const subKategori    = document.getElementById('sub_kategori');
+    const infoBox        = document.getElementById('info-kuliner-type');
+    const titleInfo      = document.getElementById('kuliner-type-title');
+    const textInfo       = document.getElementById('kuliner-type-text');
+
+    function updateKulinerType() {
+        const selected = kategoriSelect.options[kategoriSelect.selectedIndex];
+        
+        if (selected && selected.value === 'kuliner') {
+            infoBox.style.display = 'block';
+            if (selected.dataset.type === 'restoran') {
+                subKategori.value = 'restoran';
+                titleInfo.textContent = 'Restoran / Cafe';
+                textInfo.textContent = 'Tempat duduk nyaman, AC, pelayanan meja, cocok untuk keluarga atau makan santai.';
+            } else {
+                subKategori.value = 'kuliner';
+                titleInfo.textContent = 'Kuliner (warung/jajanan)';
+                textInfo.textContent = 'Warung, angkringan, street food, jajanan pasar, sate klathak, dll – biasanya lebih kasual & cepat saji.';
+            }
+        } else {
+            infoBox.style.display = 'none';
+            subKategori.value = '';
+        }
+    }
+
+    // Jalankan saat halaman dimuat (penting untuk menampilkan state awal sesuai data)
+    updateKulinerType();
+
+    // Update saat user mengubah pilihan
+    kategoriSelect.addEventListener('change', updateKulinerType);
 });
 </script>
 @endsection

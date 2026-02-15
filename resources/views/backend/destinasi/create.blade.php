@@ -40,11 +40,13 @@
                                 <option value="">-- Pilih Kategori --</option>
                                 <option value="candi" {{ old('kategori') == 'candi' ? 'selected' : '' }}>Destinasi Candi</option>
                                 <option value="balkondes" {{ old('kategori') == 'balkondes' ? 'selected' : '' }}>Balkondes</option>
-                                <option value="kuliner" data-type="kuliner" {{ old('kategori') == 'kuliner' && old('sub_kategori') != 'restoran' ? 'selected' : '' }}>
-                                    Kuliner (warung, jajanan, street food, angkringan, dll)
+                                <option value="kuliner" data-type="kuliner" 
+                                        {{ old('kategori') == 'kuliner' && old('sub_kategori') != 'restoran' ? 'selected' : '' }}>
+                                    Kuliner (warung, jajanan, street food, angkringan, sate klathak, dll)
                                 </option>
-                                <option value="kuliner" data-type="restoran" {{ old('kategori') == 'kuliner' && old('sub_kategori') == 'restoran' ? 'selected' : '' }}>
-                                    Restoran / Cafe (duduk, AC, pelayanan meja, dll)
+                                <option value="kuliner" data-type="restoran" 
+                                        {{ old('kategori') == 'kuliner' && old('sub_kategori') == 'restoran' ? 'selected' : '' }}>
+                                    Restoran / Cafe (duduk nyaman, AC, pelayanan meja, resto keluarga, coffee shop, dll)
                                 </option>
                                 <option value="alam" {{ old('kategori') == 'alam' ? 'selected' : '' }}>Destinasi Alam</option>
                                 <option value="budaya" {{ old('kategori') == 'budaya' ? 'selected' : '' }}>Kesenian dan Budaya</option>
@@ -55,6 +57,9 @@
                             @error('kategori')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
+                            @error('sub_kategori')
+                                <span class="error-message d-block mt-1">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <!-- Hidden field untuk membedakan kuliner vs restoran -->
@@ -63,7 +68,8 @@
                         <div class="form-group-custom mt-3" id="info-kuliner-type" style="display: none; font-size: 0.9rem; color: #4b5563;">
                             <div class="alert alert-info mb-0 py-2">
                                 <i class="fas fa-info-circle me-2"></i>
-                                <span id="kuliner-type-text">Anda memilih kategori Kuliner</span>
+                                <strong id="kuliner-type-title">Anda memilih kategori Kuliner</strong><br>
+                                <span id="kuliner-type-text">Pilih tipe di atas untuk menentukan apakah ini warung/street food atau restoran/cafe.</span>
                             </div>
                         </div>
 
@@ -72,7 +78,7 @@
                             <textarea name="deskripsi" 
                                       class="input-custom @error('deskripsi') is-invalid @enderror" 
                                       rows="6" 
-                                      placeholder="Deskripsi utama destinasi. Ideal 100–400 karakter untuk tampilan daftar & SEO.&#10;Contoh kuliner: Menyajikan sate klathak, kopi robusta lokal, dan wedang ronde hangat dengan view sawah.&#10;Contoh restoran: Restoran dengan view sawah, menyajikan menu Indonesia & western, cocok untuk keluarga." 
+                                      placeholder="Deskripsi utama destinasi. Ideal 100–400 karakter untuk tampilan daftar & SEO.&#10;Contoh kuliner warung: Menyajikan sate klathak empuk, kopi robusta lokal, wedang ronde hangat dengan view sawah.&#10;Contoh restoran: Restoran dengan view sawah/gunung, menu Indonesia & western, ruangan ber-AC, cocok untuk keluarga." 
                                       required>{{ old('deskripsi') }}</textarea>
                             @error('deskripsi')
                                 <span class="error-message">{{ $message }}</span>
@@ -560,6 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const kategoriSelect = document.getElementById('kategori-select');
     const subKategori    = document.getElementById('sub_kategori');
     const infoBox        = document.getElementById('info-kuliner-type');
+    const titleInfo      = document.getElementById('kuliner-type-title');
     const textInfo       = document.getElementById('kuliner-type-text');
 
     function updateKulinerType() {
@@ -569,10 +576,12 @@ document.addEventListener('DOMContentLoaded', () => {
             infoBox.style.display = 'block';
             if (selected.dataset.type === 'restoran') {
                 subKategori.value = 'restoran';
-                textInfo.textContent = 'Anda memilih kategori Restoran / Cafe';
+                titleInfo.textContent = 'Restoran / Cafe';
+                textInfo.textContent = 'Tempat duduk nyaman, AC, pelayanan meja, cocok untuk keluarga atau makan santai.';
             } else {
                 subKategori.value = 'kuliner';
-                textInfo.textContent = 'Anda memilih kategori Kuliner (warung/jajanan)';
+                titleInfo.textContent = 'Kuliner (warung/jajanan)';
+                textInfo.textContent = 'Warung, angkringan, street food, jajanan pasar, sate klathak, dll – biasanya lebih kasual & cepat saji.';
             }
         } else {
             infoBox.style.display = 'none';
