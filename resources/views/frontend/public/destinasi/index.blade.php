@@ -186,6 +186,14 @@
         border-color: #f97316;
         color: #c2410c;
     }
+
+    /* Badge status event */
+    .status-badge {
+        padding: 0.35rem 0.9rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border-radius: 9999px;
+    }
 </style>
 @endpush
 
@@ -369,7 +377,7 @@
 
                             <div class="p-7">
                                 @if($item->kategori)
-                                    <span class="inline-block px-5 py-2 bg-orange-100 text-orange-800 rounded-full text-base font-semibold mb-4">
+                                    <span class="inline-block px-5 py-2 bg-orange-100 text-orange-800 rounded-full text-base font-semibold mb-3">
                                         @php
                                             $katDisplay = $item->kategori;
                                             if (str_starts_with($katDisplay, 'kuliner_') || $katDisplay === 'kuliner') {
@@ -383,6 +391,8 @@
                                         {{ $katDisplay }}
                                     </span>
                                 @endif
+
+                            
 
                                 <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-orange-600 transition-colors">
                                     {{ $item->nama }}

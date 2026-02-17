@@ -330,7 +330,7 @@
                 <div class="filter-container">
                     <div class="flex gap-3 pb-2">
                         <a href="{{ route('event.index', request()->except('filter')) }}"
-                           class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all {{ !request('filter') ? 'active' : '' }}">
+                           class="filter-btn px-5 py-2.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all {{ !request()->has('filter') ? 'active' : '' }}">
                             Semua Event
                         </a>
 

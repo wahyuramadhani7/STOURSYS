@@ -7,7 +7,6 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class EventController extends Controller
 {
@@ -19,7 +18,7 @@ class EventController extends Controller
         $events = Event::query()
             ->latest()
             ->when(request('type') === 'recurring', fn($q) => $q->where('is_recurring', true))
-            ->when(request('type') === 'regular', fn($q) => $q->where('is_recurring', false))
+            ->when(request('type') === 'regular',   fn($q) => $q->where('is_recurring', false))
             ->paginate(12);
 
         return view('backend.event.index', compact('events'));
@@ -49,19 +48,19 @@ class EventController extends Controller
             'gambar_utama'        => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
             'galeri.*'            => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
 
-            // Field recurring baru
+            // Recurring fields - hanya required jika is_recurring = true
             'is_recurring'        => 'sometimes|boolean',
             'recurrence_type'     => 'required_if:is_recurring,1|nullable|in:daily,weekly,monthly,yearly',
             'recurrence_interval' => 'required_if:is_recurring,1|nullable|integer|min:1',
             'recurrence_end_date' => 'nullable|date|after_or_equal:tanggal_mulai',
         ]);
 
-        // Handle gambar utama
+        // Handle upload gambar utama
         if ($request->hasFile('gambar_utama')) {
             $validated['gambar_utama'] = $request->file('gambar_utama')->store('events/utama', 'public');
         }
 
-        // Handle multiple galeri
+        // Handle multiple galeri uploads
         if ($request->hasFile('galeri')) {
             $galeriPaths = [];
             foreach ($request->file('galeri') as $file) {
@@ -79,11 +78,11 @@ class EventController extends Controller
         }
         $validated['slug'] = $slug;
 
-        // Penanganan recurring
+        // Set is_recurring & null-kan field recurring jika tidak aktif
         $validated['is_recurring'] = $request->boolean('is_recurring', false);
 
         if (!$validated['is_recurring']) {
-            $validated['recurrence_type'] = null;
+            $validated['recurrence_type']     = null;
             $validated['recurrence_interval'] = null;
             $validated['recurrence_end_date'] = null;
         }
@@ -96,11 +95,13 @@ class EventController extends Controller
     }
 
     /**
-     * Display the specified event (untuk frontend - dipindah ke Frontend\EventController lebih baik).
-     * Method ini sebaiknya dihapus atau di-redirect jika hanya untuk admin preview.
+     * Display the specified event.
+     * Catatan: Sebaiknya dipindahkan ke Frontend\EventController.
+     * Jika hanya untuk admin preview, bisa ditambahkan middleware auth + role check.
      */
     public function show(Event $event)
     {
+        // Alternatif: return redirect()->route('frontend.event.show', $event->slug);
         return view('frontend.event.show', compact('event'));
     }
 
@@ -128,14 +129,13 @@ class EventController extends Controller
             'gambar_utama'        => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
             'galeri.*'            => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
 
-            // Field recurring
             'is_recurring'        => 'sometimes|boolean',
             'recurrence_type'     => 'required_if:is_recurring,1|nullable|in:daily,weekly,monthly,yearly',
             'recurrence_interval' => 'required_if:is_recurring,1|nullable|integer|min:1',
             'recurrence_end_date' => 'nullable|date|after_or_equal:tanggal_mulai',
         ]);
 
-        // Handle gambar utama (replace jika upload baru)
+        // Handle gambar utama - replace jika ada upload baru
         if ($request->hasFile('gambar_utama')) {
             if ($event->gambar_utama) {
                 Storage::disk('public')->delete($event->gambar_utama);
@@ -143,7 +143,7 @@ class EventController extends Controller
             $validated['gambar_utama'] = $request->file('gambar_utama')->store('events/utama', 'public');
         }
 
-        // Handle galeri: tambah baru, lama tetap
+        // Handle galeri: tambah baru, existing tetap
         if ($request->hasFile('galeri')) {
             $existingGaleri = $event->galeri ?? [];
             $newGaleri = [];
@@ -153,7 +153,7 @@ class EventController extends Controller
             $validated['galeri'] = array_merge($existingGaleri, $newGaleri);
         }
 
-        // Update slug jika judul berubah
+        // Update slug hanya jika judul berubah
         if ($validated['judul'] !== $event->judul) {
             $baseSlug = Str::slug($validated['judul']);
             $slug = $baseSlug;
@@ -168,7 +168,7 @@ class EventController extends Controller
         $validated['is_recurring'] = $request->boolean('is_recurring', false);
 
         if (!$validated['is_recurring']) {
-            $validated['recurrence_type'] = null;
+            $validated['recurrence_type']     = null;
             $validated['recurrence_interval'] = null;
             $validated['recurrence_end_date'] = null;
         }
@@ -185,16 +185,15 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        // Hapus gambar utama
+        // Hapus gambar utama jika ada
         if ($event->gambar_utama) {
             Storage::disk('public')->delete($event->gambar_utama);
         }
 
-        // Hapus semua galeri
-        if (is_array($event->galeri)) {
-            foreach ($event->galeri as $path) {
-                Storage::disk('public')->delete($path);
-            }
+        // Hapus semua gambar galeri jika ada
+        $galeri = $event->galeri ?? [];
+        foreach ($galeri as $path) {
+            Storage::disk('public')->delete($path);
         }
 
         $event->delete();
@@ -205,7 +204,7 @@ class EventController extends Controller
     }
 
     /**
-     * Hapus satu foto dari galeri (via AJAX).
+     * Hapus satu foto dari galeri via AJAX.
      */
     public function deleteGalleryImage(Request $request, Event $event)
     {
@@ -214,18 +213,27 @@ class EventController extends Controller
         ]);
 
         $imagePath = $request->input('image');
-
         $galeri = $event->galeri ?? [];
 
-        if (in_array($imagePath, $galeri)) {
-            Storage::disk('public')->delete($imagePath);
-
-            $updatedGaleri = array_values(array_filter($galeri, fn($path) => $path !== $imagePath));
-            $event->update(['galeri' => $updatedGaleri]);
-
-            return response()->json(['success' => true, 'message' => 'Foto galeri berhasil dihapus']);
+        if (!in_array($imagePath, $galeri)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Foto tidak ditemukan di galeri event ini'
+            ], 404);
         }
 
-        return response()->json(['success' => false, 'message' => 'Foto tidak ditemukan'], 404);
+        // Hapus file fisik
+        Storage::disk('public')->delete($imagePath);
+
+        // Update array galeri (hapus path yang sesuai)
+        $updatedGaleri = array_values(array_filter($galeri, fn($path) => $path !== $imagePath));
+
+        $event->update(['galeri' => $updatedGaleri]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Foto galeri berhasil dihapus',
+            'remaining' => count($updatedGaleri)
+        ]);
     }
 }

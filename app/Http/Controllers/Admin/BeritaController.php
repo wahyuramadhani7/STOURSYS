@@ -56,8 +56,12 @@ class BeritaController extends Controller
             $validated['galeri'] = $galeriPaths;
         }
 
-        // Slug unik
+        // Slug unik (tambah pengecekan duplikat jika perlu)
         $validated['slug'] = Str::slug($validated['judul']);
+        $count = 1;
+        while (Berita::where('slug', $validated['slug'])->exists()) {
+            $validated['slug'] = Str::slug($validated['judul']) . '-' . $count++;
+        }
 
         Berita::create($validated);
 
@@ -77,16 +81,20 @@ class BeritaController extends Controller
     /**
      * Show the form for editing the specified berita.
      */
-    public function edit(Berita $berita)
+    public function edit($beritum)
     {
+        $berita = Berita::findOrFail($beritum);
+
         return view('backend.berita.edit', compact('berita'));
     }
 
     /**
      * Update the specified berita in storage.
      */
-    public function update(Request $request, Berita $berita)
+    public function update(Request $request, $beritum)
     {
+        $berita = Berita::findOrFail($beritum);
+
         $validated = $request->validate([
             'judul'              => 'required|string|max:255',
             'ringkasan'          => 'nullable|string|max:500',
@@ -116,7 +124,13 @@ class BeritaController extends Controller
         }
 
         // Update slug jika judul berubah
-        $validated['slug'] = Str::slug($validated['judul']);
+        if ($berita->judul !== $validated['judul']) {
+            $validated['slug'] = Str::slug($validated['judul']);
+            $count = 1;
+            while (Berita::where('slug', $validated['slug'])->where('id', '!=', $berita->id)->exists()) {
+                $validated['slug'] = Str::slug($validated['judul']) . '-' . $count++;
+            }
+        }
 
         $berita->update($validated);
 
@@ -128,8 +142,10 @@ class BeritaController extends Controller
     /**
      * Remove the specified berita from storage.
      */
-    public function destroy(Berita $berita)
+    public function destroy($beritum)
     {
+        $berita = Berita::findOrFail($beritum);
+
         if ($berita->gambar_utama) {
             Storage::disk('public')->delete($berita->gambar_utama);
         }
@@ -150,8 +166,10 @@ class BeritaController extends Controller
     /**
      * Optional: Hapus satu foto galeri (bisa dipanggil via AJAX)
      */
-    public function deleteGalleryImage(Request $request, Berita $berita)
+    public function deleteGalleryImage(Request $request, $beritum)
     {
+        $berita = Berita::findOrFail($beritum);
+
         $request->validate([
             'image' => 'required|string',
         ]);

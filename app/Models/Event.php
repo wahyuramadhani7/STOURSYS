@@ -29,12 +29,8 @@ class Event extends Model
         'jam_selesai'         => 'datetime:H:i',
         'galeri'              => 'array',
         'is_active'           => 'boolean',
-        
-        // Tambahan untuk recurring (jika sudah ditambah kolom via phpMyAdmin)
         'is_recurring'        => 'boolean',
         'recurrence_end_date' => 'date:Y-m-d',
-        // recurrence_type     → string (daily, weekly, monthly, yearly)
-        // recurrence_interval → integer
     ];
 
     /**
@@ -45,15 +41,40 @@ class Event extends Model
     protected $attributes = [
         'is_active'     => true,
         'is_recurring'  => false,
-        'galeri'        => '[]', // default array kosong
+        'galeri'        => '[]',
     ];
 
     // -------------------------------------------------------------------------
-    // Accessors (untuk memudahkan tampilan di blade)
+    // Accessors
     // -------------------------------------------------------------------------
 
     /**
-     * Format rentang tanggal untuk tampilan (contoh: 15 - 18 Mei 2025)
+     * Tanggal mulai dalam format Indonesia (contoh: 16 Februari 2026)
+     */
+    public function getTanggalMulaiFormattedAttribute(): string
+    {
+        return $this->tanggal_mulai
+            ? $this->tanggal_mulai->locale('id_ID')->translatedFormat('d F Y')
+            : '-';
+    }
+
+    /**
+     * Tanggal selesai dalam format Indonesia (atau kosong jika tidak ada)
+     */
+    public function getTanggalSelesaiFormattedAttribute(): string
+    {
+        return $this->tanggal_selesai
+            ? $this->tanggal_selesai->locale('id_ID')->translatedFormat('d F Y')
+            : '';
+    }
+
+    /**
+     * Rentang tanggal untuk tampilan (diperbaiki agar bulan & tahun mulai selalu jelas)
+     * Contoh output:
+     * - 15 - 18 Februari 2026
+     * - 28 Desember 2025 - 5 Januari 2026
+     * - 20 Desember 2025 - 10 Januari 2027
+     * - 5 Maret 2026 (single day)
      */
     public function getTanggalRangeAttribute(): string
     {
@@ -61,20 +82,36 @@ class Event extends Model
             return '-';
         }
 
-        if ($this->tanggal_selesai && $this->tanggal_selesai->ne($this->tanggal_mulai)) {
-            if ($this->tanggal_mulai->year === $this->tanggal_selesai->year) {
-                return $this->tanggal_mulai->translatedFormat('j') . ' - ' .
-                       $this->tanggal_selesai->translatedFormat('j F Y');
-            }
-            return $this->tanggal_mulai->translatedFormat('j F Y') . ' - ' .
-                   $this->tanggal_selesai->translatedFormat('j F Y');
+        $mulai = $this->tanggal_mulai->locale('id_ID');
+
+        // Kasus single day atau tidak ada tanggal selesai
+        if (!$this->tanggal_selesai || $this->tanggal_selesai->equalTo($this->tanggal_mulai)) {
+            return $mulai->translatedFormat('d F Y');
         }
 
-        return $this->tanggal_mulai->translatedFormat('j F Y');
+        $selesai = $this->tanggal_selesai->locale('id_ID');
+
+        $formatMulai   = 'd F Y';   // default: selalu tampilkan bulan & tahun di mulai
+        $formatSelesai = 'd F Y';
+
+        // Optimasi ringkas jika tahun sama
+        if ($mulai->year === $selesai->year) {
+            $formatMulai = 'd F';     // hilangkan tahun di mulai (tahun ada di selesai)
+
+            // Jika bulan juga sama → hanya hari di selesai
+            if ($mulai->month === $selesai->month) {
+                $formatSelesai = 'd F Y';
+            }
+        }
+
+        // Jika tahun berbeda → tetap full di kedua sisi
+        return $mulai->translatedFormat($formatMulai)
+               . ' - '
+               . $selesai->translatedFormat($formatSelesai);
     }
 
     /**
-     * Format jam lengkap (contoh: 08:00 - 16:30 WIB)
+     * Format jam lengkap (contoh: 08:00 - 16:30)
      */
     public function getJamRangeAttribute(): string
     {
@@ -83,13 +120,17 @@ class Event extends Model
         }
 
         $start = $this->jam_mulai->format('H:i');
-        $end = $this->jam_selesai ? $this->jam_selesai->format('H:i') : null;
 
-        return $end ? "$start - $end" : $start;
+        if (!$this->jam_selesai) {
+            return $start;
+        }
+
+        return $start . ' - ' . $this->jam_selesai->format('H:i');
     }
 
     /**
-     * Status teks sederhana untuk tampilan
+     * Status event dalam bahasa Indonesia
+     * (disesuaikan agar lebih akurat dengan tanggal saat ini: 17 Februari 2026)
      */
     public function getStatusAttribute(): string
     {
@@ -97,67 +138,75 @@ class Event extends Model
             return 'Nonaktif';
         }
 
-        $now = Carbon::now();
-
         if ($this->is_recurring) {
             return 'Rutin / Berulang';
         }
 
-        if ($this->tanggal_selesai && $this->tanggal_selesai->lt($now)) {
-            return 'Selesai';
+        $now = Carbon::today();  // hari ini: 17 Februari 2026
+
+        if (!$this->tanggal_mulai) {
+            return 'Tanggal belum ditentukan';
         }
 
         if ($this->tanggal_mulai->gt($now)) {
             return 'Akan Datang';
         }
 
-        return 'Sedang Berlangsung';
+        if ($this->tanggal_selesai) {
+            if ($this->tanggal_selesai->lt($now)) {
+                return 'Telah Berakhir';
+            }
+
+            // Mulai ≤ hari ini DAN selesai ≥ hari ini → sedang berlangsung
+            if ($this->tanggal_mulai->lte($now) && $this->tanggal_selesai->gte($now)) {
+                return 'Sedang Berlangsung';
+            }
+        } else {
+            // Tidak ada tanggal selesai → berlangsung jika sudah mulai
+            if ($this->tanggal_mulai->lte($now)) {
+                return 'Sedang Berlangsung';
+            }
+        }
+
+        return 'Tidak diketahui';
     }
 
     // -------------------------------------------------------------------------
-    // Query Scopes (untuk dipakai di controller)
+    // Query Scopes
     // -------------------------------------------------------------------------
 
-    /**
-     * Scope untuk event yang aktif dan belum/ sedang berlangsung
-     */
     public function scopeActiveAndRelevant($query)
     {
-        $now = Carbon::today();
+        $today = Carbon::today();
 
         return $query->where('is_active', true)
-            ->where(function ($q) use ($now) {
+            ->where(function ($q) use ($today) {
+                // Event sekali pakai yang belum selesai atau tidak punya tanggal selesai
                 $q->whereNull('tanggal_selesai')
-                  ->orWhere('tanggal_selesai', '>=', $now);
+                  ->orWhere('tanggal_selesai', '>=', $today);
             })
-            ->orWhere('is_recurring', true); // recurring dianggap relevan
+            ->orWhere('is_recurring', true);
     }
 
-    /**
-     * Scope untuk event mendatang (upcoming)
-     */
     public function scopeUpcoming($query, $daysAhead = 365)
     {
         $future = Carbon::today()->addDays($daysAhead);
 
         return $query->where('tanggal_mulai', '>=', Carbon::today())
-            ->where('tanggal_mulai', '<=', $future)
-            ->orderBy('tanggal_mulai', 'asc');
+                     ->where('tanggal_mulai', '<=', $future)
+                     ->orderBy('tanggal_mulai', 'asc');
     }
 
-    /**
-     * Scope untuk event yang sedang berlangsung
-     */
     public function scopeOngoing($query)
     {
         $now = Carbon::now();
 
         return $query->where('is_active', true)
-            ->where('tanggal_mulai', '<=', $now)
-            ->where(function ($q) use ($now) {
-                $q->whereNull('tanggal_selesai')
-                  ->orWhere('tanggal_selesai', '>=', $now);
-            });
+                     ->where('tanggal_mulai', '<=', $now)
+                     ->where(function ($q) use ($now) {
+                         $q->whereNull('tanggal_selesai')
+                           ->orWhere('tanggal_selesai', '>=', $now);
+                     });
     }
 
     // -------------------------------------------------------------------------
@@ -166,14 +215,22 @@ class Event extends Model
 
     public function isUpcoming(): bool
     {
-        return $this->tanggal_mulai->isFuture();
+        return $this->tanggal_mulai && $this->tanggal_mulai->isFuture();
     }
 
     public function isOngoing(): bool
     {
         $now = Carbon::now();
-        return $this->tanggal_mulai->lte($now) &&
-               ($this->tanggal_selesai === null || $this->tanggal_selesai->gte($now));
+
+        if (!$this->tanggal_mulai || $this->tanggal_mulai->isFuture()) {
+            return false;
+        }
+
+        if ($this->tanggal_selesai) {
+            return $this->tanggal_selesai->gte($now);
+        }
+
+        return true; // tanpa tanggal selesai → dianggap ongoing setelah mulai
     }
 
     public function hasEnded(): bool
