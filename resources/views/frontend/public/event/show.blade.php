@@ -110,7 +110,7 @@
         box-shadow: 0 12px 24px rgba(249, 115, 22, 0.2);
     }
     
-    /* Sidebar sticky with smooth transition */
+    /* Sidebar sticky */
     .sidebar-sticky {
         position: sticky;
         top: 2rem;
@@ -153,7 +153,6 @@
         box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
     }
     
-    /* Zoom icon on gallery hover */
     .zoom-icon {
         position: absolute;
         top: 50%;
@@ -188,7 +187,7 @@
         left: 100%;
     }
     
-    /* Back button ripple effect */
+    /* Back button ripple */
     .back-button {
         position: relative;
         overflow: hidden;
@@ -220,7 +219,7 @@
         transform: translateX(-5px) scale(1.1);
     }
     
-    /* Description list animation */
+    /* Description list hover */
     dl div {
         transition: all 0.3s ease;
         padding: 0.75rem;
@@ -232,7 +231,7 @@
         transform: translateX(5px);
     }
     
-    /* Status badge glow based on status */
+    /* Status glow */
     .status-ongoing {
         box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
     }
@@ -245,55 +244,7 @@
         box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
     }
     
-    /* Hero content animation */
-    .hero-content {
-        animation: fadeSlideUp 0.8s ease-out forwards;
-    }
-    
-    /* Prose content fade in */
-    .prose-animate {
-        animation: fadeSlideUp 0.8s ease-out forwards;
-    }
-
-    /* Full image display styles */
-    .full-image-container {
-        position: relative;
-        overflow: hidden;
-        border-radius: 1rem;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .full-image-container:hover {
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-        transform: translateY(-5px);
-    }
-    
-    .full-image-container img {
-        width: 100%;
-        height: auto;
-        display: block;
-        transition: transform 0.6s ease;
-    }
-    
-    .full-image-container:hover img {
-        transform: scale(1.05);
-    }
-    
-    .full-image-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
-        opacity: 0;
-        transition: opacity 0.4s;
-        pointer-events: none;
-    }
-    
-    .full-image-container:hover .full-image-overlay {
-        opacity: 1;
-    }
-
-    /* Recurring specific styles */
+    /* Recurring highlight */
     .recurring-highlight {
         background: linear-gradient(to right, rgba(249, 115, 22, 0.08), rgba(251, 146, 60, 0.08));
         border-left: 5px solid #f97316;
@@ -331,7 +282,6 @@
                 class="hero-image absolute inset-0 w-full h-full object-cover"
                 id="heroImage"
             >
-            <!-- Shimmer overlay -->
             <div class="absolute inset-0 shimmer-effect opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
         @else
             <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-orange-950">
@@ -350,20 +300,18 @@
             <div class="max-w-4xl hero-content">
                 <!-- Badge Status + Recurring -->
                 @php
-                    $statusClass = [
-                        'Sedang Berlangsung' => 'bg-green-600 text-white status-ongoing',
+                    $statusClass = match ($event->status) {
+                        'Sedang Berlangsung' => 'bg-green-600 text-white status-ongoing badge-pulse',
                         'Akan Datang'        => 'bg-blue-600 text-white status-upcoming',
-                        'Selesai'            => 'bg-red-600 text-white status-ended',
-                    ][$event->status ?? 'Akan Datang'] ?? 'bg-gray-600 text-white';
-                    
-                    $shouldPulse = $event->status === 'Sedang Berlangsung';
-                    $isRecurring = $event->isRecurring();
+                        'Telah Berakhir'     => 'bg-red-600 text-white status-ended',
+                        default              => 'bg-gray-600 text-white',
+                    };
+
+                    $isRecurring = $event->event_type === 'recurring';
                 @endphp
 
-                <div class="flex flex-wrap items-center gap-3 mb-4"
-                     data-aos="fade-right"
-                     data-aos-duration="800">
-                    <span class="{{ $statusClass }} px-4 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm {{ $shouldPulse ? 'badge-pulse' : '' }}">
+                <div class="flex flex-wrap items-center gap-3 mb-4" data-aos="fade-right" data-aos-duration="800">
+                    <span class="{{ $statusClass }} px-4 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm">
                         {{ $event->status ?? 'Akan Datang' }}
                     </span>
 
@@ -375,32 +323,20 @@
                             Event Rutin
                         </span>
                     @endif
-
-                    @if($event->tanggal_selesai && $event->tanggal_selesai->isPast())
-                        <span class="bg-red-600/90 px-4 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm text-white">
-                            Sudah Berakhir
-                        </span>
-                    @endif
                 </div>
 
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight mb-4 drop-shadow-lg"
-                    data-aos="fade-up"
-                    data-aos-duration="1000"
-                    data-aos-delay="100">
+                    data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
                     {{ $event->judul }}
                 </h1>
 
                 <div class="flex flex-wrap gap-6 text-white/95 text-base md:text-lg"
-                     data-aos="fade-up"
-                     data-aos-duration="1000"
-                     data-aos-delay="200">
+                     data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
                     <div class="flex items-center gap-3 group">
                         <svg class="info-icon w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        <span>
-                            {{ $event->tanggal_range }}
-                        </span>
+                        <span>{{ $event->tanggal_range }}</span>
                     </div>
 
                     @if($event->jam_range && $event->jam_range !== '-')
@@ -433,57 +369,46 @@
                 <!-- Left: Deskripsi Utama -->
                 <div class="lg:col-span-2 prose prose-lg max-w-none prose-headings:text-slate-900 prose-a:text-orange-600">
                     <h2 class="text-3xl md:text-4xl font-bold mb-6 text-slate-900 relative inline-block"
-                        data-aos="fade-right"
-                        data-aos-duration="800">
+                        data-aos="fade-right" data-aos-duration="800">
                         Deskripsi Event
                         <span class="absolute bottom-0 left-0 w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></span>
                     </h2>
-                    <div class="prose-animate"
-                         data-aos="fade-up"
-                         data-aos-duration="800"
-                         data-aos-delay="200">
+
+                    <div class="prose-animate" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
                         {!! nl2br(e($event->deskripsi)) !!}
                     </div>
 
-                    <!-- Informasi Recurring (jika ada) -->
-                    @if($event->isRecurring())
+                    <!-- Informasi Rutin -->
+                    @if($event->event_type === 'recurring')
                     <div class="recurring-highlight my-10 p-6 rounded-2xl border border-orange-200/50 shadow-sm"
-                         data-aos="fade-up"
-                         data-aos-duration="800"
-                         data-aos-delay="300">
+                         data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
                         <h3 class="text-2xl font-bold text-orange-700 mb-4 flex items-center gap-3">
                             <svg class="w-7 h-7 recurring-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                             </svg>
                             Event Rutin / Berulang
                         </h3>
-                        <p class="text-gray-700 leading-relaxed">
-                            Acara ini merupakan event rutin yang berulang secara periodik.
-                            @if($event->recurrence_type && $event->recurrence_interval)
-                                Frekuensi: <strong>
-                                    @switch($event->recurrence_type)
-                                        @case('daily') setiap hari @break
-                                        @case('weekly') setiap {{ $event->recurrence_interval }} minggu @break
-                                        @case('monthly') setiap {{ $event->recurrence_interval }} bulan @break
-                                        @case('yearly') setiap {{ $event->recurrence_interval }} tahun @break
-                                    @endswitch
-                                </strong>.
-                            @endif
-                            @if($event->recurrence_end_date)
-                                Berakhir pada: <strong>{{ $event->recurrence_end_date->format('d F Y') }}</strong>
+                        <div class="text-gray-700 leading-relaxed space-y-2">
+                            <p>
+                                Acara ini berlangsung secara rutin dan berulang.
+                            </p>
+                            @if($event->recurring_description)
+                                <p class="font-medium text-orange-800">
+                                    Jadwal: {{ $event->recurring_description }}
+                                </p>
                             @else
-                                Berlangsung tanpa batas waktu tertentu (selamanya atau hingga diubah).
+                                <p class="italic text-gray-600">
+                                    Jadwal rutin belum dijelaskan secara detail oleh penyelenggara.
+                                </p>
                             @endif
-                        </p>
+                        </div>
                     </div>
                     @endif
 
-                    <!-- Waktu Pelaksanaan Box -->
-                    @if($event->jam_mulai || $event->jam_selesai)
+                    <!-- Waktu Pelaksanaan (non-rutin) -->
+                    @if(!$event->event_type === 'recurring' && ($event->jam_mulai || $event->jam_selesai))
                     <div class="time-box my-10 p-6 bg-gradient-to-r from-orange-50 to-blue-50 rounded-2xl border border-orange-100/60 shadow-sm"
-                         data-aos="fade-up"
-                         data-aos-duration="800"
-                         data-aos-delay="300">
+                         data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
                         <h3 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                             <svg class="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -497,12 +422,9 @@
                     </div>
                     @endif
 
-                    <!-- Gambar Utama Full Display -->
+                    <!-- Gambar Utama Full -->
                     @if($event->gambar_utama)
-                    <div class="my-10"
-                         data-aos="fade-up"
-                         data-aos-duration="800"
-                         data-aos-delay="400">
+                    <div class="my-10" data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
                         <h3 class="text-2xl md:text-3xl font-bold mb-6 text-slate-900 relative inline-block">
                             Foto Utama Event
                             <span class="absolute bottom-0 left-0 w-20 h-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></span>
@@ -533,8 +455,7 @@
                     <!-- Informasi Singkat -->
                     <div class="sidebar-sticky">
                         <div class="info-box bg-gradient-to-br from-orange-50 via-white to-blue-50 p-7 rounded-2xl border border-orange-100/50 shadow-sm"
-                             data-aos="fade-left"
-                             data-aos-duration="800">
+                             data-aos="fade-left" data-aos-duration="800">
                             <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
                                 <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -591,10 +512,10 @@
                                     </dt>
                                     <dd class="mt-1 text-orange-700 font-medium">
                                         Event Rutin / Berulang
-                                        @if($event->recurrence_type)
-                                            <br><small class="text-orange-600/80">
-                                                ({{ ucfirst($event->recurrence_type) }} setiap {{ $event->recurrence_interval ?? 1 }} kali)
-                                            </small>
+                                        @if($event->recurring_description)
+                                            <br><span class="text-sm text-orange-800/90 block mt-1">
+                                                {{ $event->recurring_description }}
+                                            </span>
                                         @endif
                                     </dd>
                                 </div>
@@ -605,9 +526,7 @@
                         <!-- Galeri -->
                         @if($event->galeri && count($event->galeri) > 0)
                         <div class="rounded-2xl overflow-hidden border border-gray-200 shadow-sm mt-8"
-                             data-aos="fade-left"
-                             data-aos-duration="800"
-                             data-aos-delay="200">
+                             data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
                             <h3 class="text-xl font-bold px-6 py-5 bg-gradient-to-r from-orange-500/10 to-blue-500/10 text-slate-800 flex items-center gap-2">
                                 <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -642,10 +561,7 @@
             </div>
 
             <!-- Tombol Kembali -->
-            <div class="mt-16 text-center"
-                 data-aos="fade-up"
-                 data-aos-duration="800"
-                 data-aos-delay="400">
+            <div class="mt-16 text-center" data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
                 <a href="{{ route('event.index') }}"
                    class="back-button inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95 relative overflow-hidden">
                     <svg class="w-5 h-5 rotate-180 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -671,7 +587,7 @@
         easing: 'ease-out-cubic',
     });
     
-    // Initialize GLightbox for gallery & full image
+    // Initialize GLightbox
     const lightbox = GLightbox({
         touchNavigation: true,
         loop: true,
@@ -689,7 +605,7 @@
         scrollProgress.style.width = scrollPercentage + '%';
     });
     
-    // Parallax effect on hero image
+    // Parallax hero image
     const heroImage = document.getElementById('heroImage');
     if (heroImage) {
         window.addEventListener('scroll', function() {
@@ -699,25 +615,21 @@
         });
     }
     
-    // Live indicator for ongoing events
+    // Live pulse indicator
     const statusBadge = document.querySelector('.badge-pulse');
     if (statusBadge && statusBadge.textContent.includes('Sedang Berlangsung')) {
-        const liveIndicator = document.createElement('span');
-        liveIndicator.className = 'inline-block w-2.5 h-2.5 bg-white rounded-full mr-2.5 animate-pulse';
-        statusBadge.prepend(liveIndicator);
+        const liveDot = document.createElement('span');
+        liveDot.className = 'inline-block w-2.5 h-2.5 bg-white rounded-full mr-2.5 animate-pulse';
+        statusBadge.prepend(liveDot);
     }
     
-    // Smooth scroll for anchor links
+    // Smooth scroll for anchors
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
+            document.querySelector(this.getAttribute('href'))?.scrollIntoView({
+                behavior: 'smooth'
+            });
         });
     });
 </script>

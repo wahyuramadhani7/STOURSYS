@@ -2,7 +2,7 @@
 
     <!-- Hero Section - Full Width & Responsive -->
     <section class="hero-section">
-        <div class="hero-container">
+        <div class="hero-container" id="heroContainer">
 
             <!-- Video 1 -->
             <video
@@ -50,16 +50,19 @@
     </section>
 
     <style>
-        /* Reset untuk menghilangkan semua gap */
+        /* x-app-layout harus mengisi penuh ruang <main> */
         x-app-layout {
             display: block;
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
         }
-        
-        /* Hero Section - Full Width Responsive */
+
+        /* Hero section mengisi 100% tinggi <main> */
         .hero-section {
             width: 100%;
+            height: 100%;
             position: relative;
             margin: 0;
             padding: 0;
@@ -68,39 +71,17 @@
             overflow: hidden;
         }
 
+        /* Hero container sama tinggi dengan section */
         .hero-container {
             position: relative;
             width: 100%;
-            height: calc(100vh - 180px); /* Dikurangi tinggi header+nav+footer */
-            min-height: 500px;
+            height: 100%;
             display: block;
             line-height: 0;
             overflow: hidden;
         }
-        
-        /* Responsive height adjustments */
-        @media (max-width: 640px) {
-            .hero-container {
-                height: calc(100vh - 200px);
-                min-height: 400px;
-            }
-        }
-        
-        @media (min-width: 641px) and (max-width: 1023px) {
-            .hero-container {
-                height: calc(100vh - 180px);
-                min-height: 450px;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .hero-container {
-                height: calc(100vh - 170px);
-                min-height: 500px;
-            }
-        }
 
-        /* Video styling dengan object-fit untuk semua device */
+        /* Video styling */
         .hero-video {
             position: absolute;
             top: 0;
@@ -121,7 +102,7 @@
             z-index: 2;
         }
 
-        /* Overlay dengan opacity yang pas untuk semua device */
+        /* Overlay */
         .hero-overlay {
             position: absolute;
             top: 0;
@@ -141,14 +122,14 @@
         /* Credit text - pojok kanan bawah */
         .video-credit {
             position: absolute;
-            bottom: 1.25rem;        /* ~20px */
-            right: 1.5rem;          /* ~24px */
-            z-index: 5;             /* di atas video (z1 & z2), tapi di bawah content (z10) & overlay jika perlu */
+            bottom: 1.25rem;
+            right: 1.5rem;
+            z-index: 5;
             color: rgba(255, 255, 255, 0.80);
-            font-size: 0.875rem;    /* 14px */
+            font-size: 0.875rem;
             font-weight: 400;
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-            pointer-events: auto;   /* agar link bisa diklik */
+            pointer-events: auto;
             max-width: 80%;
             line-height: 1.4;
             letter-spacing: 0.3px;
@@ -165,17 +146,16 @@
             color: white;
         }
 
-        /* Lebih kecil di mobile */
         @media (max-width: 640px) {
             .video-credit {
-                font-size: 0.75rem;     /* 12px */
+                font-size: 0.75rem;
                 bottom: 1rem;
                 right: 1rem;
                 max-width: 70%;
             }
         }
 
-        /* Content positioning - responsive */
+        /* Content positioning */
         .hero-content {
             position: relative;
             z-index: 10;
@@ -189,7 +169,7 @@
             padding: 1rem;
         }
 
-        /* Title styling - fully responsive */
+        /* Title - responsive dengan clamp agar tidak overflow di layar kecil */
         .hero-title {
             font-weight: 800;
             letter-spacing: -0.025em;
@@ -197,82 +177,19 @@
             margin: 0;
             padding: 0 1rem;
             filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
-            text-shadow: 
+            text-shadow:
                 2px 2px 4px rgba(0, 0, 0, 0.8),
                 0 0 10px rgba(0, 0, 0, 0.5);
             word-wrap: break-word;
             max-width: 100%;
+            /* clamp: min 1.4rem, fluid 5vw+0.5rem, max 4.5rem */
+            font-size: clamp(1.4rem, 5vw + 0.5rem, 4.5rem);
         }
 
-        /* Mobile First - Small devices (portrait phones) */
-        @media (max-width: 374px) {
-            .hero-title {
-                font-size: 1.5rem; /* 24px */
-            }
-            .hero-content {
-                padding: 0.75rem;
-            }
-        }
-
-        /* Small devices (landscape phones, 375px and up) */
-        @media (min-width: 375px) and (max-width: 639px) {
-            .hero-title {
-                font-size: 1.75rem; /* 28px */
-            }
-        }
-
-        /* Medium devices (tablets, 640px and up) */
-        @media (min-width: 640px) and (max-width: 767px) {
-            .hero-title {
-                font-size: 2.25rem; /* 36px */
-            }
-            .hero-content {
-                padding: 1.25rem;
-            }
-        }
-
-        /* Large tablets (768px and up) */
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .hero-title {
-                font-size: 2.75rem; /* 44px */
-            }
-            .hero-content {
-                padding: 1.5rem;
-            }
-        }
-
-        /* Desktop (1024px and up) */
-        @media (min-width: 1024px) and (max-width: 1279px) {
-            .hero-title {
-                font-size: 3.25rem; /* 52px */
-            }
-            .hero-content {
-                padding: 2rem;
-            }
-        }
-
-        /* Large desktop (1280px and up) */
-        @media (min-width: 1280px) and (max-width: 1535px) {
-            .hero-title {
-                font-size: 3.75rem; /* 60px */
-            }
-        }
-
-        /* Extra large desktop (1536px and up) */
-        @media (min-width: 1536px) {
-            .hero-title {
-                font-size: 4.5rem; /* 72px */
-            }
-        }
-
-        /* Landscape orientation adjustments */
+        /* Landscape / short screens */
         @media (max-height: 500px) and (orientation: landscape) {
-            .hero-container {
-                min-height: 300px;
-                height: 50vh;
-            }
             .hero-title {
-                font-size: 1.5rem !important;
+                font-size: clamp(1rem, 4vw, 1.75rem) !important;
             }
             .hero-content {
                 padding: 0.5rem;
@@ -285,115 +202,54 @@
         }
     </style>
 
-    <!-- Scripts -->
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+
+            /* ── Video Switcher ── */
             const video1 = document.getElementById('hero-video-1');
             const video2 = document.getElementById('hero-video-2');
 
-            if (!video1 || !video2) {
-                console.error('Video elements not found');
-                return;
-            }
+            if (!video1 || !video2) return;
 
             let currentVideo = video1;
-            let nextVideo = video2;
-            let isPlaying = false;
+            let nextVideo    = video2;
+            let isPlaying    = false;
 
-            // Function to play video safely
             function playVideo(video) {
-                const playPromise = video.play();
-                if (playPromise !== undefined) {
-                    playPromise
-                        .then(() => {
-                            isPlaying = true;
-                            console.log('Video playing successfully');
-                        })
-                        .catch(err => {
-                            console.warn('Autoplay prevented:', err);
-                            isPlaying = false;
-                        });
+                const p = video.play();
+                if (p !== undefined) {
+                    p.then(() => { isPlaying = true; })
+                     .catch(err => { console.warn('Autoplay prevented:', err); isPlaying = false; });
                 }
             }
 
-            // Start first video
-            function startFirstVideo() {
-                currentVideo.classList.add('active');
-                playVideo(currentVideo);
+            function switchVideo() {
+                currentVideo.classList.remove('active');
+                nextVideo.classList.add('active');
+                playVideo(nextVideo);
+                [currentVideo, nextVideo] = [nextVideo, currentVideo];
             }
 
-            // Setup video switching
-            function setupVideoSwitch() {
-                currentVideo.addEventListener('ended', function handleEnded() {
-                    currentVideo.classList.remove('active');
-                    nextVideo.classList.add('active');
-                    playVideo(nextVideo);
-                    [currentVideo, nextVideo] = [nextVideo, currentVideo];
-                });
-            }
+            video1.addEventListener('ended', switchVideo);
+            video2.addEventListener('ended', switchVideo);
 
-            // Fallback: user interaction to start video
-            let interactionListener = function(e) {
-                if (!isPlaying && currentVideo.paused) {
-                    playVideo(currentVideo);
-                }
-                document.body.removeEventListener('click', interactionListener);
-                document.body.removeEventListener('touchstart', interactionListener);
+            if (nextVideo.readyState < 2) nextVideo.load();
+            playVideo(currentVideo);
+
+            const startOnInteraction = function () {
+                if (!isPlaying && currentVideo.paused) playVideo(currentVideo);
             };
+            document.body.addEventListener('click',      startOnInteraction, { once: true });
+            document.body.addEventListener('touchstart', startOnInteraction, { once: true });
 
-            document.body.addEventListener('click', interactionListener, { once: true });
-            document.body.addEventListener('touchstart', interactionListener, { once: true });
-
-            // Initialize
-            startFirstVideo();
-            setupVideoSwitch();
-
-            // Dynamic height adjustment
-            function adjustHeroHeight() {
-                const hero = document.querySelector('.hero-container');
-                const header = document.querySelector('header');
-                const nav = document.querySelector('nav');
-                const footer = document.querySelector('footer');
-                
-                if (hero && header && nav && footer) {
-                    const vh = window.innerHeight;
-                    const headerHeight = header.offsetHeight || 0;
-                    const navHeight = nav.offsetHeight || 0;
-                    const footerHeight = footer.offsetHeight || 0;
-                    
-                    const availableHeight = vh - headerHeight - navHeight - footerHeight;
-                    const minHeight = window.innerWidth < 640 ? 400 : 
-                                     window.innerWidth < 1024 ? 450 : 500;
-                    
-                    const finalHeight = Math.max(minHeight, availableHeight);
-                    hero.style.height = finalHeight + 'px';
-                }
-            }
-
-            adjustHeroHeight();
-            
-            let resizeTimeout;
-            window.addEventListener('resize', function() {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(adjustHeroHeight, 150);
-            });
-
-            window.addEventListener('orientationchange', function() {
-                setTimeout(adjustHeroHeight, 200);
-            });
-
-            // Pause when tab hidden
-            document.addEventListener('visibilitychange', function() {
+            document.addEventListener('visibilitychange', function () {
                 if (document.hidden) {
                     if (!currentVideo.paused) currentVideo.pause();
                 } else {
                     if (currentVideo.paused && isPlaying) playVideo(currentVideo);
                 }
             });
-
-            // Preload next
-            if (nextVideo.readyState < 2) nextVideo.load();
         });
     </script>
     @endpush

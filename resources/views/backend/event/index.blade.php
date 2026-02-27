@@ -69,7 +69,7 @@
                         {{ $events->where('status', 'Sedang Berlangsung')->count() }}
                     </p>
                 </div>
-                <div class="bg-green-100 p-4 rounded-[var(--radius-sm)] group-hover:scale-110 transition-transform">
+                <div class="bg-green-100/80 p-4 rounded-[var(--radius-sm)] group-hover:scale-110 transition-transform">
                     <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -86,7 +86,7 @@
                         {{ $events->where('status', 'Akan Datang')->count() }}
                     </p>
                 </div>
-                <div class="bg-purple-100 p-4 rounded-[var(--radius-sm)] group-hover:scale-110 transition-transform">
+                <div class="bg-purple-100/80 p-4 rounded-[var(--radius-sm)] group-hover:scale-110 transition-transform">
                     <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -100,10 +100,10 @@
                 <div>
                     <p class="text-sm font-semibold text-[var(--text-3)] uppercase tracking-wide">Event Rutin</p>
                     <p class="text-4xl font-black text-[var(--text-1)] mt-3 group-hover:text-[var(--accent)] transition-colors tabular-nums">
-                        {{ $events->where('is_recurring', true)->count() }}
+                        {{ $events->where('event_type', 'recurring')->count() }}
                     </p>
                 </div>
-                <div class="bg-[var(--accent-bg)] p-4 rounded-[var(--radius-sm)] group-hover:scale-110 transition-transform">
+                <div class="bg-[var(--accent-bg)]/80 p-4 rounded-[var(--radius-sm)] group-hover:scale-110 transition-transform">
                     <svg class="w-8 h-8 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
@@ -134,7 +134,7 @@
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-bold text-[var(--text-3)] uppercase tracking-wider">Judul Event</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-[var(--text-3)] uppercase tracking-wider">Tipe</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-[var(--text-3)] uppercase tracking-wider">Tanggal</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-[var(--text-3)] uppercase tracking-wider">Tanggal / Jadwal</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-[var(--text-3)] uppercase tracking-wider">Lokasi</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-[var(--text-3)] uppercase tracking-wider">Status</th>
                         <th class="px-6 py-4 text-center text-xs font-bold text-[var(--text-3)] uppercase tracking-wider">Aksi</th>
@@ -142,7 +142,7 @@
                 </thead>
                 <tbody class="divide-y divide-[var(--border)] bg-[var(--surface)]">
                     @forelse ($events as $event)
-                        <tr class="hover:bg-[var(--accent-bg)]/40 transition-colors group">
+                        <tr class="hover:bg-[var(--accent-bg)]/30 transition-colors group">
                             <td class="px-6 py-5">
                                 <div class="font-semibold text-[var(--text-1)] group-hover:text-[var(--accent)] transition-colors truncate max-w-xs">
                                     {{ $event->judul }}
@@ -150,7 +150,7 @@
                                 <div class="text-xs text-[var(--text-3)] mt-1 truncate">{{ $event->slug ?? '—' }}</div>
                             </td>
                             <td class="px-6 py-5">
-                                @if($event->is_recurring)
+                                @if($event->event_type === 'recurring')
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-border)]/50 text-xs font-semibold">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -159,17 +159,23 @@
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-300 text-xs font-semibold">
-                                        Sekali
+                                        Sekali Pakai
                                     </span>
                                 @endif
                             </td>
                             <td class="px-6 py-5 text-[var(--text-2)]">
-                                <div class="flex flex-col">
-                                    <span class="font-medium">{{ $event->tanggal_mulai->format('d M Y') }}</span>
-                                    @if($event->tanggal_selesai && $event->tanggal_selesai->ne($event->tanggal_mulai))
-                                        <span class="text-xs text-[var(--text-3)] mt-1">s/d {{ $event->tanggal_selesai->format('d M Y') }}</span>
-                                    @endif
-                                </div>
+                                @if($event->event_type === 'recurring')
+                                    <div class="text-sm font-medium text-amber-700">
+                                        {{ $event->recurring_description ? Str::limit($event->recurring_description, 60) : '—' }}
+                                    </div>
+                                @else
+                                    <div class="flex flex-col">
+                                        <span class="font-medium">{{ $event->tanggal_range }}</span>
+                                        @if($event->jam_range !== '-')
+                                            <span class="text-xs text-[var(--text-3)] mt-1">{{ $event->jam_range }}</span>
+                                        @endif
+                                    </div>
+                                @endif
                             </td>
                             <td class="px-6 py-5 text-[var(--text-2)]">
                                 {{ $event->lokasi ?? '—' }}
@@ -186,6 +192,10 @@
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                                         </svg>
                                         Akan Datang
+                                    </span>
+                                @elseif($event->status == 'Telah Berakhir')
+                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-red-100 text-red-800 border border-red-300 text-xs font-semibold">
+                                        Telah Berakhir
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gray-100 text-gray-700 border border-gray-300 text-xs font-semibold">
@@ -270,7 +280,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 bg-[var(--accent)] rounded-full"></div>
-                        Rutin: <span class="font-semibold">{{ $events->where('is_recurring', true)->count() }}</span>
+                        Rutin: <span class="font-semibold">{{ $events->where('event_type', 'recurring')->count() }}</span>
                     </div>
                 </div>
             </div>
@@ -292,8 +302,8 @@
                 html: `Event <strong>"${judul}"</strong> akan dihapus permanen.<br>Data yang dihapus <b>tidak dapat dikembalikan</b>.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: 'var(--red)',
-                cancelButtonColor: 'var(--gray-500)',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Ya, Hapus',
                 cancelButtonText: 'Batal',
                 reverseButtons: true

@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.event.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+    <form action="{{ route('admin.event.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" id="eventForm">
         @csrf
 
         <div class="bg-[var(--surface)] rounded-[var(--radius)] shadow-[var(--shadow-md)] border border-[var(--border)] overflow-hidden">
@@ -48,7 +48,34 @@
                     <span class="text-2xl">📅</span> Informasi Dasar Event
                 </h5>
             </div>
-            <div class="p-6 space-y-6">
+            <div class="p-6 space-y-8">
+                <!-- Pilihan Jenis Event -->
+                <div class="mb-6">
+                    <label class="block text-lg font-semibold text-[var(--text-1)] mb-4">
+                        Jenis Event <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Event Akan Datang -->
+                        <label class="relative flex flex-col p-6 border-2 rounded-[var(--radius)] cursor-pointer transition-all hover:border-[var(--accent)] hover:bg-[var(--accent-bg)]/20
+                                      {{ old('event_type', 'upcoming') === 'upcoming' ? 'border-[var(--accent)] bg-[var(--accent-bg)]/30' : 'border-[var(--border)] bg-[var(--bg)]' }}">
+                            <input type="radio" name="event_type" value="upcoming" class="absolute inset-0 opacity-0" 
+                                   {{ old('event_type', 'upcoming') === 'upcoming' ? 'checked' : '' }} required>
+                            <div class="text-xl font-semibold mb-2">Event yang Akan Datang / Sekali Pakai</div>
+                            <p class="text-sm text-[var(--text-2)]">Event dengan tanggal dan jam tertentu (festival, pameran, konser, dll).</p>
+                        </label>
+
+                        <!-- Event Rutin -->
+                        <label class="relative flex flex-col p-6 border-2 rounded-[var(--radius)] cursor-pointer transition-all hover:border-[var(--accent)] hover:bg-[var(--accent-bg)]/20
+                                      {{ old('event_type') === 'recurring' ? 'border-[var(--accent)] bg-[var(--accent-bg)]/30' : 'border-[var(--border)] bg-[var(--bg)]' }}">
+                            <input type="radio" name="event_type" value="recurring" class="absolute inset-0 opacity-0" 
+                                   {{ old('event_type') === 'recurring' ? 'checked' : '' }}>
+                            <div class="text-xl font-semibold mb-2">Event Rutin / Berulang</div>
+                            <p class="text-sm text-[var(--text-2)]">Event yang berlangsung rutin (setiap minggu, tiap tanggal 1, setiap hari libur, dll).</p>
+                        </label>
+                    </div>
+                    @error('event_type') <span class="text-red-500 text-xs mt-2 block">{{ $message }}</span> @enderror
+                </div>
+
                 <!-- Judul -->
                 <div>
                     <label class="block text-sm font-semibold text-[var(--text-2)] mb-2">
@@ -56,8 +83,8 @@
                     </label>
                     <input type="text" name="judul"
                            class="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] text-[var(--text-1)] placeholder-[var(--text-3)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 @error('judul') border-red-500 @enderror"
-                           value="{{ old('judul') }}" placeholder="Contoh: Festival Lampion Borobudur 2025" required maxlength="150">
-                    <small class="block mt-1.5 text-xs text-[var(--text-3)]">Maksimal 150 karakter. Buat judul menarik dan jelas</small>
+                           value="{{ old('judul') }}" placeholder="Contoh: Yoga Pagi di Candi Borobudur" required maxlength="150">
+                    <small class="block mt-1.5 text-xs text-[var(--text-3)]">Maksimal 150 karakter</small>
                     @error('judul') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
@@ -68,24 +95,22 @@
                     </label>
                     <textarea name="deskripsi" rows="7"
                               class="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] text-[var(--text-1)] placeholder-[var(--text-3)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 @error('deskripsi') border-red-500 @enderror"
-                              placeholder="Jelaskan tema, rangkaian kegiatan, peserta, tiket, dress code, aturan, dll..." required>{{ old('deskripsi') }}</textarea>
-                    <small class="block mt-1.5 text-xs text-[var(--text-3)]">Semakin lengkap, semakin mudah pengunjung memahami acara</small>
+                              placeholder="Jelaskan tema, rangkaian kegiatan, target peserta, tiket, dll..." required>{{ old('deskripsi') }}</textarea>
                     @error('deskripsi') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Tanggal Mulai -->
+                <!-- Section Tanggal & Jam (hanya untuk upcoming) -->
+                <div id="date-time-section" class="{{ old('event_type') === 'recurring' ? 'hidden' : '' }} grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-[var(--text-2)] mb-2">
                             Tanggal Mulai <span class="text-red-500">*</span>
                         </label>
-                        <input type="date" name="tanggal_mulai"
+                        <input type="date" name="tanggal_mulai" id="tanggal_mulai"
                                class="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] text-[var(--text-1)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 @error('tanggal_mulai') border-red-500 @enderror"
                                value="{{ old('tanggal_mulai') }}" required>
                         @error('tanggal_mulai') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <!-- Tanggal Selesai -->
                     <div>
                         <label class="block text-sm font-semibold text-[var(--text-2)] mb-2">
                             Tanggal Selesai <span class="text-[var(--text-3)] font-normal">(opsional)</span>
@@ -93,11 +118,10 @@
                         <input type="date" name="tanggal_selesai"
                                class="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] text-[var(--text-1)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 @error('tanggal_selesai') border-red-500 @enderror"
                                value="{{ old('tanggal_selesai') }}" min="{{ old('tanggal_mulai') }}">
-                        <small class="block mt-1.5 text-xs text-[var(--text-3)]">Kosongkan jika event hanya 1 hari</small>
+                        <small class="block mt-1.5 text-xs text-[var(--text-3)]">Kosongkan jika hanya 1 hari</small>
                         @error('tanggal_selesai') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <!-- Jam Mulai -->
                     <div>
                         <label class="block text-sm font-semibold text-[var(--text-2)] mb-2">
                             Jam Mulai <span class="text-[var(--text-3)] font-normal">(opsional)</span>
@@ -108,7 +132,6 @@
                         @error('jam_mulai') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <!-- Jam Selesai -->
                     <div>
                         <label class="block text-sm font-semibold text-[var(--text-2)] mb-2">
                             Jam Selesai <span class="text-[var(--text-3)] font-normal">(opsional)</span>
@@ -118,6 +141,18 @@
                                value="{{ old('jam_selesai') }}">
                         @error('jam_selesai') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
+                </div>
+
+                <!-- Keterangan Jadwal Rutin (hanya untuk recurring) -->
+                <div id="recurring-description-section" class="{{ old('event_type') !== 'recurring' ? 'hidden' : '' }}">
+                    <label class="block text-sm font-semibold text-[var(--text-2)] mb-2">
+                        Keterangan Jadwal Rutin <span class="text-red-500">*</span>
+                    </label>
+                    <textarea name="recurring_description" rows="5"
+                              class="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-[var(--radius-sm)] text-[var(--text-1)] placeholder-[var(--text-3)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 @error('recurring_description') border-red-500 @enderror"
+                              placeholder="Contoh:&#10;• Setiap hari Minggu pukul 06.30 - 08.30 WIB&#10;• Setiap tanggal 1 dan 15 bulan berjalan pukul 07.00 - 09.00&#10;• Berlangsung hingga akhir 2026 (kecuali hari libur nasional)">{{ old('recurring_description') }}</textarea>
+                    <small class="block mt-1.5 text-xs text-[var(--text-3)]">Jelaskan pola jadwal secara jelas agar pengunjung tahu kapan event berlangsung.</small>
+                    @error('recurring_description') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Lokasi -->
@@ -134,7 +169,7 @@
             </div>
         </div>
 
-        <!-- Media -->
+        <!-- Media (sama seperti sebelumnya) -->
         <div class="bg-[var(--surface)] rounded-[var(--radius)] shadow-[var(--shadow-md)] border border-[var(--border)] overflow-hidden">
             <div class="bg-[var(--bg)] px-6 py-5 border-b border-[var(--border)]">
                 <h5 class="text-xl font-bold text-[var(--text-1)] flex items-center gap-3">
@@ -184,80 +219,6 @@
                             </label>
                         </div>
                         <div id="preview-galeri" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pengulangan Event -->
-        <div class="bg-[var(--surface)] rounded-[var(--radius)] shadow-[var(--shadow-md)] border border-[var(--border)] overflow-hidden">
-            <div class="bg-[var(--bg)] px-6 py-5 border-b border-[var(--border)]">
-                <h5 class="text-xl font-bold text-[var(--text-1)] flex items-center gap-3">
-                    <span class="text-2xl">🔄</span> Pengaturan Pengulangan
-                </h5>
-            </div>
-            <div class="p-6">
-                <div class="flex items-start mb-6">
-                    <div class="flex items-center h-5">
-                        <input id="is_recurring" type="checkbox" name="is_recurring" value="1"
-                               class="w-5 h-5 text-[var(--accent)] border-[var(--border)] rounded focus:ring-[var(--accent)]/30 @error('is_recurring') border-red-500 @enderror"
-                               {{ old('is_recurring') ? 'checked' : '' }}>
-                    </div>
-                    <div class="ml-3">
-                        <label for="is_recurring" class="text-base font-semibold text-[var(--text-1)]">
-                            Event ini bersifat rutin / berulang
-                        </label>
-                        <p class="text-sm text-[var(--text-2)] mt-1">
-                            Centang jika event berlangsung berulang (contoh: setiap Minggu pagi, tiap tanggal 1, setiap 17 Agustus, dll).
-                        </p>
-                    </div>
-                </div>
-
-                <div id="recurring-section" class="bg-[var(--bg)] p-6 rounded-[var(--radius-sm)] border border-[var(--border)] transition-all">
-                    <p class="text-sm text-[var(--text-2)] mb-6">
-                        Isi bagian ini <strong>hanya jika</strong> Anda mencentang kotak “Event ini bersifat rutin” di atas.
-                    </p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label class="block text-sm font-semibold text-[var(--text-2)] mb-2">
-                                Tipe Pengulangan <span id="req-type" class="text-red-500 font-semibold hidden">*</span>
-                            </label>
-                            <select id="recurrence_type" name="recurrence_type"
-                                    class="w-full px-4 py-3 bg-white border border-[var(--border)] rounded-[var(--radius-sm)] text-[var(--text-1)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20">
-                                <option value="">Pilih tipe pengulangan...</option>
-                                <option value="daily"   {{ old('recurrence_type') == 'daily'   ? 'selected' : '' }}>Harian</option>
-                                <option value="weekly"  {{ old('recurrence_type') == 'weekly'  ? 'selected' : '' }}>Mingguan</option>
-                                <option value="monthly" {{ old('recurrence_type') == 'monthly' ? 'selected' : '' }}>Bulanan</option>
-                                <option value="yearly"  {{ old('recurrence_type') == 'yearly'  ? 'selected' : '' }}>Tahunan</option>
-                            </select>
-                            @error('recurrence_type') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-[var(--text-2)] mb-2">
-                                Setiap <span id="req-interval" class="text-red-500 font-semibold hidden">*</span>
-                            </label>
-                            <div class="flex items-center gap-3">
-                                <input id="recurrence_interval" type="number" name="recurrence_interval" min="1"
-                                       class="w-24 px-4 py-3 bg-white border border-[var(--border)] rounded-[var(--radius-sm)] text-center text-[var(--text-1)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
-                                       value="{{ old('recurrence_interval', 1) }}" placeholder="1">
-                                <span class="text-[var(--text-2)]">kali</span>
-                            </div>
-                            <small class="block mt-1.5 text-xs text-[var(--text-3)]">Contoh: 1 = setiap hari/minggu, 2 = setiap 2 minggu</small>
-                            @error('recurrence_interval') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-[var(--text-2)] mb-2">
-                                Berakhir pada <span class="text-[var(--text-3)] font-normal">(opsional)</span>
-                            </label>
-                            <input type="date" name="recurrence_end_date"
-                                   class="w-full px-4 py-3 bg-white border border-[var(--border)] rounded-[var(--radius-sm)] text-[var(--text-1)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
-                                   value="{{ old('recurrence_end_date') }}">
-                            <small class="block mt-1.5 text-xs text-[var(--text-3)]">Kosongkan jika berulang selamanya</small>
-                            @error('recurrence_end_date') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                        </div>
                     </div>
                 </div>
             </div>
@@ -339,49 +300,74 @@ function previewGallery(input) {
     }
 }
 
-// Logika Recurring
+// Toggle section berdasarkan jenis event
 document.addEventListener('DOMContentLoaded', function () {
-    const checkbox      = document.getElementById('is_recurring');
-    const section       = document.getElementById('recurring-section');
-    const typeSelect    = document.getElementById('recurrence_type');
-    const intervalInput = document.getElementById('recurrence_interval');
-    const reqType       = document.getElementById('req-type');
-    const reqInterval   = document.getElementById('req-interval');
+    const radios = document.querySelectorAll('input[name="event_type"]');
+    const dateSection = document.getElementById('date-time-section');
+    const recurringDescSection = document.getElementById('recurring-description-section');
+    const tanggalMulaiInput = document.getElementById('tanggal_mulai');
 
-    function toggleRecurring() {
-        const isChecked = checkbox.checked;
+    function toggleSections() {
+        const selectedValue = document.querySelector('input[name="event_type"]:checked')?.value;
 
-        typeSelect.required    = isChecked;
-        intervalInput.required = isChecked;
+        if (selectedValue === 'recurring') {
+            dateSection.classList.add('hidden');
+            recurringDescSection.classList.remove('hidden');
 
-        if (isChecked) {
-            reqType.classList.remove('hidden');
-            reqInterval.classList.remove('hidden');
-            section.classList.remove('opacity-50', 'pointer-events-none');
+            // Nonaktifkan required pada tanggal mulai
+            tanggalMulaiInput.removeAttribute('required');
         } else {
-            reqType.classList.add('hidden');
-            reqInterval.classList.add('hidden');
-            section.classList.add('opacity-50', 'pointer-events-none');
+            dateSection.classList.remove('hidden');
+            recurringDescSection.classList.add('hidden');
 
-            // Reset fields agar tidak terkirim data tidak valid
-            typeSelect.value    = '';
-            intervalInput.value = '1';
+            // Aktifkan kembali required
+            tanggalMulaiInput.setAttribute('required', 'required');
         }
     }
 
-    toggleRecurring(); // initial state (penting untuk old input setelah validasi gagal)
-    checkbox.addEventListener('change', toggleRecurring);
+    radios.forEach(radio => {
+        radio.addEventListener('change', toggleSections);
+    });
 
-    // Validasi sederhana sebelum submit (opsional)
-    document.querySelector('form').addEventListener('submit', function(e) {
-        if (checkbox.checked && (!typeSelect.value || !intervalInput.value)) {
+    // Jalankan sekali di awal (penting untuk old() setelah validasi gagal)
+    toggleSections();
+
+    // Validasi sederhana sebelum submit
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+        const selected = document.querySelector('input[name="event_type"]:checked')?.value;
+
+        if (!selected) {
             e.preventDefault();
             Swal.fire({
                 icon: 'warning',
                 title: 'Perhatian',
-                text: 'Mohon lengkapi tipe dan interval pengulangan event.',
+                text: 'Mohon pilih jenis event terlebih dahulu.',
                 confirmButtonText: 'OK'
             });
+            return;
+        }
+
+        if (selected === 'recurring') {
+            const desc = document.querySelector('textarea[name="recurring_description"]').value.trim();
+            if (!desc) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: 'Mohon isi keterangan jadwal rutin untuk event berulang.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        } else if (selected === 'upcoming') {
+            if (!document.getElementById('tanggal_mulai').value) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: 'Tanggal mulai wajib diisi untuk event yang akan datang.',
+                    confirmButtonText: 'OK'
+                });
+            }
         }
     });
 });

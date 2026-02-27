@@ -17,8 +17,8 @@ class EventController extends Controller
     {
         $events = Event::query()
             ->latest()
-            ->when(request('type') === 'recurring', fn($q) => $q->where('is_recurring', true))
-            ->when(request('type') === 'regular',   fn($q) => $q->where('is_recurring', false))
+            ->when(request('type') === 'recurring', fn($q) => $q->where('event_type', 'recurring'))
+            ->when(request('type') === 'upcoming',  fn($q) => $q->where('event_type', 'upcoming'))
             ->paginate(12);
 
         return view('backend.event.index', compact('events'));
@@ -38,21 +38,28 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'judul'               => 'required|string|max:255',
-            'deskripsi'           => 'required|string',
-            'tanggal_mulai'       => 'required|date',
-            'tanggal_selesai'     => 'nullable|date|after_or_equal:tanggal_mulai',
-            'jam_mulai'           => 'nullable|string|date_format:H:i',
-            'jam_selesai'         => 'nullable|string|date_format:H:i|after_or_equal:jam_mulai',
-            'lokasi'              => 'nullable|string|max:255',
-            'gambar_utama'        => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
-            'galeri.*'            => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
+            'judul'                 => 'required|string|max:255',
+            'deskripsi'             => 'required|string',
+            'event_type'            => 'required|in:upcoming,recurring',
 
-            // Recurring fields - hanya required jika is_recurring = true
-            'is_recurring'        => 'sometimes|boolean',
-            'recurrence_type'     => 'required_if:is_recurring,1|nullable|in:daily,weekly,monthly,yearly',
-            'recurrence_interval' => 'required_if:is_recurring,1|nullable|integer|min:1',
-            'recurrence_end_date' => 'nullable|date|after_or_equal:tanggal_mulai',
+            // Untuk upcoming → tanggal mulai wajib
+            'tanggal_mulai'         => 'required_if:event_type,upcoming|nullable|date',
+            'tanggal_selesai'       => 'nullable|date|after_or_equal:tanggal_mulai',
+            'jam_mulai'             => 'nullable|string|date_format:H:i',
+            'jam_selesai'           => 'nullable|string|date_format:H:i|after_or_equal:jam_mulai',
+
+            'lokasi'                => 'nullable|string|max:255',
+            'gambar_utama'          => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
+            'galeri.*'              => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
+
+            // Untuk recurring → keterangan jadwal wajib
+            'recurring_description' => 'required_if:event_type,recurring|nullable|string',
+
+            // Field lama recurring (opsional, bisa diisi jika ingin tetap pakai pola structured)
+            'is_recurring'          => 'sometimes|boolean',
+            'recurrence_type'       => 'nullable|in:daily,weekly,monthly,yearly',
+            'recurrence_interval'   => 'nullable|integer|min:1',
+            'recurrence_end_date'   => 'nullable|date',
         ]);
 
         // Handle upload gambar utama
@@ -78,10 +85,26 @@ class EventController extends Controller
         }
         $validated['slug'] = $slug;
 
-        // Set is_recurring & null-kan field recurring jika tidak aktif
-        $validated['is_recurring'] = $request->boolean('is_recurring', false);
+        // Logika utama berdasarkan event_type
+        if ($validated['event_type'] === 'recurring') {
+            $validated['is_recurring'] = true;
+            // Kosongkan field tanggal & jam karena tidak relevan
+            $validated['tanggal_mulai']   = null;
+            $validated['tanggal_selesai'] = null;
+            $validated['jam_mulai']       = null;
+            $validated['jam_selesai']     = null;
 
-        if (!$validated['is_recurring']) {
+            // Jika ingin tetap pakai pola structured → boleh diisi, tapi tidak wajib
+            // Jika hanya pakai recurring_description → bisa null-kan semuanya
+            if (empty($validated['recurrence_type'])) {
+                $validated['recurrence_type']     = null;
+                $validated['recurrence_interval'] = null;
+                $validated['recurrence_end_date'] = null;
+            }
+        } else {
+            // upcoming
+            $validated['is_recurring']        = false;
+            $validated['recurring_description'] = null;
             $validated['recurrence_type']     = null;
             $validated['recurrence_interval'] = null;
             $validated['recurrence_end_date'] = null;
@@ -95,13 +118,10 @@ class EventController extends Controller
     }
 
     /**
-     * Display the specified event.
-     * Catatan: Sebaiknya dipindahkan ke Frontend\EventController.
-     * Jika hanya untuk admin preview, bisa ditambahkan middleware auth + role check.
+     * Display the specified event (admin preview).
      */
     public function show(Event $event)
     {
-        // Alternatif: return redirect()->route('frontend.event.show', $event->slug);
         return view('frontend.event.show', compact('event'));
     }
 
@@ -119,20 +139,25 @@ class EventController extends Controller
     public function update(Request $request, Event $event)
     {
         $validated = $request->validate([
-            'judul'               => 'required|string|max:255',
-            'deskripsi'           => 'required|string',
-            'tanggal_mulai'       => 'required|date',
-            'tanggal_selesai'     => 'nullable|date|after_or_equal:tanggal_mulai',
-            'jam_mulai'           => 'nullable|string|date_format:H:i',
-            'jam_selesai'         => 'nullable|string|date_format:H:i|after_or_equal:jam_mulai',
-            'lokasi'              => 'nullable|string|max:255',
-            'gambar_utama'        => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
-            'galeri.*'            => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
+            'judul'                 => 'required|string|max:255',
+            'deskripsi'             => 'required|string',
+            'event_type'            => 'required|in:upcoming,recurring',
 
-            'is_recurring'        => 'sometimes|boolean',
-            'recurrence_type'     => 'required_if:is_recurring,1|nullable|in:daily,weekly,monthly,yearly',
-            'recurrence_interval' => 'required_if:is_recurring,1|nullable|integer|min:1',
-            'recurrence_end_date' => 'nullable|date|after_or_equal:tanggal_mulai',
+            'tanggal_mulai'         => 'required_if:event_type,upcoming|nullable|date',
+            'tanggal_selesai'       => 'nullable|date|after_or_equal:tanggal_mulai',
+            'jam_mulai'             => 'nullable|string|date_format:H:i',
+            'jam_selesai'           => 'nullable|string|date_format:H:i|after_or_equal:jam_mulai',
+
+            'lokasi'                => 'nullable|string|max:255',
+            'gambar_utama'          => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
+            'galeri.*'              => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
+
+            'recurring_description' => 'required_if:event_type,recurring|nullable|string',
+
+            'is_recurring'          => 'sometimes|boolean',
+            'recurrence_type'       => 'nullable|in:daily,weekly,monthly,yearly',
+            'recurrence_interval'   => 'nullable|integer|min:1',
+            'recurrence_end_date'   => 'nullable|date',
         ]);
 
         // Handle gambar utama - replace jika ada upload baru
@@ -164,10 +189,22 @@ class EventController extends Controller
             $validated['slug'] = $slug;
         }
 
-        // Penanganan recurring
-        $validated['is_recurring'] = $request->boolean('is_recurring', false);
+        // Logika utama berdasarkan event_type (sama seperti store)
+        if ($validated['event_type'] === 'recurring') {
+            $validated['is_recurring'] = true;
+            $validated['tanggal_mulai']   = null;
+            $validated['tanggal_selesai'] = null;
+            $validated['jam_mulai']       = null;
+            $validated['jam_selesai']     = null;
 
-        if (!$validated['is_recurring']) {
+            if (empty($validated['recurrence_type'])) {
+                $validated['recurrence_type']     = null;
+                $validated['recurrence_interval'] = null;
+                $validated['recurrence_end_date'] = null;
+            }
+        } else {
+            $validated['is_recurring']        = false;
+            $validated['recurring_description'] = null;
             $validated['recurrence_type']     = null;
             $validated['recurrence_interval'] = null;
             $validated['recurrence_end_date'] = null;
@@ -185,12 +222,10 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        // Hapus gambar utama jika ada
         if ($event->gambar_utama) {
             Storage::disk('public')->delete($event->gambar_utama);
         }
 
-        // Hapus semua gambar galeri jika ada
         $galeri = $event->galeri ?? [];
         foreach ($galeri as $path) {
             Storage::disk('public')->delete($path);
@@ -222,17 +257,15 @@ class EventController extends Controller
             ], 404);
         }
 
-        // Hapus file fisik
         Storage::disk('public')->delete($imagePath);
 
-        // Update array galeri (hapus path yang sesuai)
         $updatedGaleri = array_values(array_filter($galeri, fn($path) => $path !== $imagePath));
 
         $event->update(['galeri' => $updatedGaleri]);
 
         return response()->json([
-            'success' => true,
-            'message' => 'Foto galeri berhasil dihapus',
+            'success'   => true,
+            'message'   => 'Foto galeri berhasil dihapus',
             'remaining' => count($updatedGaleri)
         ]);
     }

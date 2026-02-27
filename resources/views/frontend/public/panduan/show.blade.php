@@ -61,16 +61,44 @@
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
 
+    /* ==============================
+       CONTACT CARD — DIPERBAIKI
+       ============================== */
     .contact-card {
         background: white;
         border-radius: 1rem;
         padding: 1.5rem;
         border: 1px solid #f3f4f6;
         transition: all 0.3s ease;
+        /* Cegah card meluber keluar grid */
+        min-width: 0;
+        overflow: hidden;
     }
     .contact-card:hover {
         transform: translateY(-6px);
         box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    }
+
+    /* Ikon agar tidak ikut menyusut */
+    .contact-card .icon-wrap {
+        flex-shrink: 0;
+    }
+
+    /* Teks konten: bungkus kata panjang agar tidak meluber */
+    .contact-card .contact-body {
+        min-width: 0;
+        overflow: hidden;
+    }
+    .contact-card .contact-body p,
+    .contact-card .contact-body a {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;    /* jaga newline tapi tetap wrap */
+        display: block;
+    }
+    /* URL/website perlu break-all agar titik-titik URL panjang tetap terpotong */
+    .contact-card .contact-body a {
+        word-break: break-all;
     }
 
     .title-gradient {
@@ -167,22 +195,29 @@
                          data-aos-duration="800"
                          data-aos-delay="300">
                         <h3 class="text-2xl font-bold text-slate-800 mb-8 flex items-center gap-3">
-                            <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-8 h-8 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
                             Informasi Kontak
                         </h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {{-- 
+                            Grid pakai auto-fill agar card tidak terlalu sempit di layar kecil.
+                            max-w di tiap card diganti min-w: 0 + overflow: hidden (via CSS .contact-card).
+                        --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
                             @if($panduan->alamat)
                                 <div class="contact-card">
                                     <div class="flex items-start gap-4">
-                                        <svg class="w-6 h-6 text-orange-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        </svg>
-                                        <div>
+                                        <span class="icon-wrap">
+                                            <svg class="w-6 h-6 text-orange-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                        </span>
+                                        <div class="contact-body">
                                             <h4 class="font-semibold text-slate-800 mb-1">Alamat</h4>
-                                            <p class="text-gray-700">{{ $panduan->alamat }}</p>
+                                            <p class="text-gray-700 text-sm leading-relaxed">{{ $panduan->alamat }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -191,12 +226,14 @@
                             @if($panduan->kontak)
                                 <div class="contact-card">
                                     <div class="flex items-start gap-4">
-                                        <svg class="w-6 h-6 text-orange-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                        </svg>
-                                        <div>
+                                        <span class="icon-wrap">
+                                            <svg class="w-6 h-6 text-orange-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                            </svg>
+                                        </span>
+                                        <div class="contact-body">
                                             <h4 class="font-semibold text-slate-800 mb-1">Kontak</h4>
-                                            <p class="text-gray-700 whitespace-pre-line">{{ $panduan->kontak }}</p>
+                                            <p class="text-gray-700 text-sm leading-relaxed">{{ $panduan->kontak }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -205,19 +242,22 @@
                             @if($panduan->website)
                                 <div class="contact-card">
                                     <div class="flex items-start gap-4">
-                                        <svg class="w-6 h-6 text-orange-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                                        </svg>
-                                        <div>
+                                        <span class="icon-wrap">
+                                            <svg class="w-6 h-6 text-orange-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                            </svg>
+                                        </span>
+                                        <div class="contact-body">
                                             <h4 class="font-semibold text-slate-800 mb-1">Website</h4>
                                             <a href="{{ $panduan->website }}" target="_blank" rel="noopener noreferrer"
-                                               class="text-orange-600 hover:text-orange-700 hover:underline break-all">
+                                               class="text-orange-600 hover:text-orange-700 hover:underline text-sm">
                                                 {{ $panduan->website }}
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                             @endif
+
                         </div>
 
                         <!-- WhatsApp Button -->
@@ -228,7 +268,7 @@
                                  data-aos-delay="400">
                                 <a href="https://wa.me/{{ preg_replace('/\D/', '', $panduan->kontak) }}" target="_blank"
                                    class="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M12 2C6.48 2 2 6.48 2 12c0 2.12.55 4.11 1.59 5.84L2 22l4.16-1.59C7.89 21.45 9.94 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm3.78 14.38c-.25.7-.92 1.24-1.62 1.24-.7 0-1.37-.54-1.62-1.24-.25-.7-.92-1.24-1.62-1.24-.7 0-1.37.54-1.62 1.24z"/>
                                     </svg>
                                     Hubungi via WhatsApp
@@ -270,7 +310,7 @@
         easing: 'ease-out-cubic',
     });
 
-    // Scroll progress bar (sama seperti di berita)
+    // Scroll progress bar
     window.addEventListener('scroll', function() {
         const scrollProgress = document.getElementById('scrollProgress');
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
