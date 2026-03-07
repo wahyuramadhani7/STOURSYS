@@ -30,48 +30,59 @@
                 Browser Anda tidak mendukung tag video.
             </video>
 
-            <!-- Credit sumber video - pojok kanan bawah -->
+            <!-- Credit sumber video -->
             <div class="video-credit">
                 Sumber: <a href="https://youtu.be/6DiEVUSrRqE" target="_blank" rel="noopener noreferrer">Studio Sunday</a> – Aerial Drone Videography Borobudur
             </div>
 
-            <!-- Dark Overlay -->
+            <!-- Overlay -->
             <div class="hero-overlay"></div>
 
             <!-- Content -->
             <div class="hero-content">
+                <p class="hero-eyebrow">Stoursys — Kawasan Borobudur</p>
                 <h1 class="hero-title">
                     SMART TOURISM SYSTEM<br>
                     KAWASAN WISATA BOROBUDUR
                 </h1>
+                <!-- Decorative line -->
+                <div class="hero-line"></div>
+                <p class="hero-sub">Warisan Dunia UNESCO</p>
             </div>
 
         </div>
     </section>
 
     <style>
-        /* x-app-layout harus mengisi penuh ruang <main> */
-        x-app-layout {
-            display: block;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+        :root {
+            --cream:    #faf6f0;
+            --sand:     #e8dcc8;
+            --terracota:#c45c2e;
+            --brick:    #9c3a1a;
+            --gold:     #c9952a;
+            --charcoal: #1c1917;
+            --ink:      #0d0b09;
         }
 
-        /* Hero section mengisi 100% tinggi <main> */
+        x-app-layout {
+            display: block;
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+        }
+
+        /* ========================
+           DESKTOP: full viewport fill, no scroll
+           ======================== */
         .hero-section {
             width: 100%;
             height: 100%;
             position: relative;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             display: block;
             line-height: 0;
             overflow: hidden;
         }
 
-        /* Hero container sama tinggi dengan section */
         .hero-container {
             position: relative;
             width: 100%;
@@ -81,13 +92,11 @@
             overflow: hidden;
         }
 
-        /* Video styling */
+        /* Videos */
         .hero-video {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             object-fit: cover;
             object-position: center;
             opacity: 0;
@@ -96,66 +105,46 @@
             display: block;
             vertical-align: bottom;
         }
-
-        .hero-video.active {
-            opacity: 1;
-            z-index: 2;
-        }
+        .hero-video.active { opacity: 1; z-index: 2; }
 
         /* Overlay */
         .hero-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: linear-gradient(
                 to bottom,
-                rgba(0, 0, 0, 0.2) 0%,
-                rgba(0, 0, 0, 0.3) 50%,
-                rgba(0, 0, 0, 0.4) 100%
+                rgba(13,11,9,0.25) 0%,
+                rgba(13,11,9,0.35) 50%,
+                rgba(13,11,9,0.65) 100%
             );
             z-index: 3;
             pointer-events: none;
         }
 
-        /* Credit text - pojok kanan bawah */
+        /* Video credit */
         .video-credit {
             position: absolute;
-            bottom: 1.25rem;
-            right: 1.5rem;
+            bottom: 1.25rem; right: 1.5rem;
             z-index: 5;
-            color: rgba(255, 255, 255, 0.80);
-            font-size: 0.875rem;
-            font-weight: 400;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            color: rgba(250,246,240,0.45);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
             pointer-events: auto;
             max-width: 80%;
             line-height: 1.4;
-            letter-spacing: 0.3px;
         }
-
         .video-credit a {
-            color: rgba(255, 255, 255, 0.95);
-            text-decoration: underline;
-            text-underline-offset: 2px;
+            color: rgba(250,246,240,0.7);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(250,246,240,0.3);
             transition: color 0.3s ease;
         }
+        .video-credit a:hover { color: var(--gold); }
 
-        .video-credit a:hover {
-            color: white;
-        }
-
-        @media (max-width: 640px) {
-            .video-credit {
-                font-size: 0.75rem;
-                bottom: 1rem;
-                right: 1rem;
-                max-width: 70%;
-            }
-        }
-
-        /* Content positioning */
+        /* Hero content */
         .hero-content {
             position: relative;
             z-index: 10;
@@ -165,40 +154,109 @@
             justify-content: center;
             height: 100%;
             text-align: center;
-            color: white;
-            padding: 1rem;
+            padding: 2rem;
         }
 
-        /* Title - responsive dengan clamp agar tidak overflow di layar kecil */
+        /* Eyebrow */
+        .hero-eyebrow {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(0.55rem, 1vw, 0.72rem);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0.9;
+        }
+        .hero-eyebrow::before,
+        .hero-eyebrow::after {
+            content: '';
+            display: block;
+            width: clamp(1rem, 3vw, 2.5rem);
+            height: 1px;
+            background: var(--gold);
+            opacity: 0.6;
+        }
+
+        /* Title */
         .hero-title {
-            font-weight: 800;
-            letter-spacing: -0.025em;
-            line-height: 1.2;
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            letter-spacing: -0.01em;
+            line-height: 1.1;
             margin: 0;
-            padding: 0 1rem;
-            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
-            text-shadow:
-                2px 2px 4px rgba(0, 0, 0, 0.8),
-                0 0 10px rgba(0, 0, 0, 0.5);
+            color: var(--cream);
+            text-shadow: 0 4px 24px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.8);
             word-wrap: break-word;
             max-width: 100%;
-            /* clamp: min 1.4rem, fluid 5vw+0.5rem, max 4.5rem */
-            font-size: clamp(1.4rem, 5vw + 0.5rem, 4.5rem);
+            font-size: clamp(1.6rem, 5vw + 0.5rem, 4.5rem);
+        }
+
+        /* Decorative line */
+        .hero-line {
+            width: clamp(2rem, 4vw, 4rem);
+            height: 2px;
+            background: linear-gradient(to right, var(--terracota), var(--gold));
+            margin: 1.5rem auto 1.25rem;
+            opacity: 0.8;
+        }
+
+        /* Sub-label */
+        .hero-sub {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(0.55rem, 0.9vw, 0.7rem);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: rgba(250,246,240,0.45);
+        }
+
+        /* ========================
+           MOBILE: allow slight scroll so footer peeks
+           ======================== */
+        @media (max-width: 768px) {
+            .hero-section {
+                height: auto;
+                min-height: 0;
+                overflow: visible;
+            }
+
+            .hero-container {
+                height: 64vh;
+                min-height: 320px;
+                overflow: hidden;
+            }
+
+            .hero-video {
+                height: 100%;
+            }
+
+            .hero-content {
+                height: 100%;
+                padding: 1.5rem 1.25rem;
+            }
+
+            .video-credit {
+                font-size: 0.58rem;
+                bottom: 1rem;
+                right: 1rem;
+                max-width: 70%;
+            }
         }
 
         /* Landscape / short screens */
         @media (max-height: 500px) and (orientation: landscape) {
-            .hero-title {
-                font-size: clamp(1rem, 4vw, 1.75rem) !important;
-            }
-            .hero-content {
-                padding: 0.5rem;
-            }
-            .video-credit {
-                font-size: 0.7rem;
-                bottom: 0.75rem;
-                right: 1rem;
-            }
+            .hero-title    { font-size: clamp(1rem, 4vw, 1.75rem) !important; }
+            .hero-content  { padding: 0.5rem; }
+            .video-credit  { font-size: 0.6rem; bottom: 0.75rem; right: 1rem; }
+            .hero-eyebrow  { display: none; }
+            .hero-line, .hero-sub { display: none; }
+        }
+
+        @media (max-width: 640px) {
+            .video-credit { font-size: 0.58rem; bottom: 1rem; right: 1rem; max-width: 70%; }
+            .hero-eyebrow { gap: 0.6rem; }
         }
     </style>
 
@@ -206,7 +264,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            /* ── Video Switcher ── */
             const video1 = document.getElementById('hero-video-1');
             const video2 = document.getElementById('hero-video-2');
 

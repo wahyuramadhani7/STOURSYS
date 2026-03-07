@@ -12,7 +12,6 @@
 <div class="space-y-8">
     <!-- Header Section -->
     <div class="relative overflow-hidden bg-gradient-to-br from-[var(--accent-bg)] to-[var(--surface)] rounded-[var(--radius)] p-8 border border-[var(--accent-border)] shadow-[var(--shadow-md)]">
-        <!-- Decorative blobs -->
         <div class="absolute -top-20 -right-20 w-96 h-96 bg-[var(--accent)]/10 rounded-full blur-3xl"></div>
         <div class="absolute -bottom-16 -left-16 w-64 h-64 bg-[var(--accent-light)]/15 rounded-full blur-3xl"></div>
 
@@ -25,12 +24,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-3xl sm:text-4xl font-bold text-[var(--text-1)]">
-                            Daftar Destinasi Wisata
-                        </h1>
-                        <p class="text-[var(--text-2)] mt-1">
-                            Kelola semua destinasi wisata di Kawasan Borobudur
-                        </p>
+                        <h1 class="text-3xl sm:text-4xl font-bold text-[var(--text-1)]">Daftar Destinasi Wisata</h1>
+                        <p class="text-[var(--text-2)] mt-1">Kelola semua destinasi wisata di Kawasan Borobudur</p>
                     </div>
                 </div>
 
@@ -48,14 +43,11 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Total Destinasi -->
         <div class="bg-[var(--surface)] rounded-[var(--radius)] p-6 border border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all group">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-semibold text-[var(--text-3)] uppercase tracking-wide">Total Destinasi</p>
-                    <p class="text-4xl font-black text-[var(--text-1)] mt-3 group-hover:text-[var(--accent)] transition-colors tabular-nums">
-                        {{ $totalDestinasi }}
-                    </p>
+                    <p class="text-4xl font-black text-[var(--text-1)] mt-3 group-hover:text-[var(--accent)] transition-colors tabular-nums">{{ $totalDestinasi }}</p>
                 </div>
                 <div class="bg-[var(--accent-bg)] p-4 rounded-[var(--radius-sm)] group-hover:scale-110 transition-transform">
                     <svg class="w-8 h-8 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -65,14 +57,11 @@
             </div>
         </div>
 
-        <!-- Total Views -->
         <div class="bg-[var(--surface)] rounded-[var(--radius)] p-6 border border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all group">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-semibold text-[var(--text-3)] uppercase tracking-wide">Total Views</p>
-                    <p class="text-4xl font-black text-[var(--text-1)] mt-3 group-hover:text-[var(--accent)] transition-colors tabular-nums">
-                        {{ number_format($totalViews) }}
-                    </p>
+                    <p class="text-4xl font-black text-[var(--text-1)] mt-3 group-hover:text-[var(--accent)] transition-colors tabular-nums">{{ number_format($totalViews) }}</p>
                 </div>
                 <div class="bg-[var(--accent-bg)] p-4 rounded-[var(--radius-sm)] group-hover:scale-110 transition-transform">
                     <svg class="w-8 h-8 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -82,14 +71,11 @@
             </div>
         </div>
 
-        <!-- Rata-rata Views -->
         <div class="bg-[var(--surface)] rounded-[var(--radius)] p-6 border border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all group">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-semibold text-[var(--text-3)] uppercase tracking-wide">Rata-rata Views</p>
-                    <p class="text-4xl font-black text-[var(--text-1)] mt-3 group-hover:text-[var(--accent)] transition-colors tabular-nums">
-                        {{ number_format($avgViews, 0) }}
-                    </p>
+                    <p class="text-4xl font-black text-[var(--text-1)] mt-3 group-hover:text-[var(--accent)] transition-colors tabular-nums">{{ number_format($avgViews, 0) }}</p>
                 </div>
                 <div class="bg-[var(--accent-bg)] p-4 rounded-[var(--radius-sm)] group-hover:scale-110 transition-transform">
                     <svg class="w-8 h-8 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -98,6 +84,48 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Filter & Search Section -->
+    <div class="bg-[var(--surface)] rounded-[var(--radius)] p-6 border border-[var(--border)] shadow-[var(--shadow-sm)]">
+        <form method="GET" action="{{ route('admin.destinasi.index') }}" class="flex flex-col lg:flex-row lg:items-end gap-4">
+            <!-- Search Input -->
+            <div class="flex-1 min-w-[220px]">
+                <label for="search" class="block text-sm font-medium text-[var(--text-2)] mb-2">Cari Nama Destinasi</label>
+                <input type="text" name="search" id="search" value="{{ request('search') }}"
+                       placeholder="Masukkan nama destinasi..." 
+                       class="w-full rounded-[var(--radius-sm)] border-[var(--border)] bg-[var(--bg)] text-[var(--text-1)] px-4 py-2.5 focus:border-[var(--accent)] focus:ring-[var(--accent)]/30">
+            </div>
+
+            <!-- Category Filter -->
+            <div class="flex-1 min-w-[220px]">
+                <label for="kategori" class="block text-sm font-medium text-[var(--text-2)] mb-2">Filter Kategori</label>
+                <select name="kategori" id="kategori"
+                        class="w-full rounded-[var(--radius-sm)] border-[var(--border)] bg-[var(--bg)] text-[var(--text-1)] px-4 py-2.5 focus:border-[var(--accent)] focus:ring-[var(--accent)]/30">
+                    <option value="">-- Semua Kategori --</option>
+                    @foreach($kategoriList as $kat)
+                        <option value="{{ $kat }}" {{ request('kategori') == $kat ? 'selected' : '' }}>
+                            {{ $kategoriMap[$kat] ?? ucwords(str_replace('_', ' ', $kat)) }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-center gap-3 flex-shrink-0">
+                <button type="submit"
+                        class="bg-[var(--accent)] text-white px-6 py-2.5 rounded-[var(--radius-sm)] hover:bg-[var(--accent-dark)] transition font-medium shadow-sm whitespace-nowrap">
+                    Terapkan
+                </button>
+
+                @if(request()->filled('search') || request()->filled('kategori'))
+                    <a href="{{ route('admin.destinasi.index') }}"
+                       class="text-[var(--text-2)] hover:text-[var(--accent)] transition underline text-sm whitespace-nowrap">
+                        Reset Filter
+                    </a>
+                @endif
+            </div>
+        </form>
     </div>
 
     <!-- Table Section -->
@@ -112,6 +140,9 @@
                 </h2>
                 <div class="text-sm text-[var(--text-2)]">
                     Total: <span class="font-bold text-[var(--accent)]">{{ $destinasi->total() }}</span> destinasi
+                    @if(request()->filled('search') || request()->filled('kategori'))
+                        <span class="ml-2 text-[var(--text-3)]">(filtered)</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -141,19 +172,8 @@
                             </td>
                             <td class="px-6 py-5">
                                 @php
-                                    $kategoriMap = [
-                                        'candi'          => 'Destinasi Candi',
-                                        'balkondes'      => 'Balkondes',
-                                        'kuliner'        => 'Kuliner',
-                                        'alam'           => 'Destinasi Alam',
-                                        'budaya'         => 'Destinasi Budaya',
-                                        'religi'         => 'Destinasi Religi',
-                                        'desa_wisata'    => 'Desa Wisata',
-                                        'wisata_edukasi' => 'Wisata Edukasi',
-                                    ];
                                     $kategoriDisplay = $kategoriMap[$item->kategori] ?? ucwords(str_replace('_', ' ', $item->kategori ?? '—'));
                                 @endphp
-
                                 @if($item->kategori)
                                     <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-border)]/50">
                                         {{ $kategoriDisplay }}
@@ -234,8 +254,15 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                     </div>
-                                    <h3 class="text-xl font-bold text-[var(--text-1)] mb-3">Belum ada destinasi wisata</h3>
-                                    <p class="text-[var(--text-2)] mb-8 max-w-md">Mulai tambahkan destinasi wisata pertama Anda di kawasan Borobudur</p>
+                                    <h3 class="text-xl font-bold text-[var(--text-1)] mb-3">Tidak ditemukan destinasi</h3>
+                                    <p class="text-[var(--text-2)] mb-8 max-w-md">
+                                        @if(request()->filled('search') || request()->filled('kategori'))
+                                            Tidak ada hasil yang cocok dengan pencarian/filter Anda.<br>
+                                            Coba ubah kata kunci atau hapus filter.
+                                        @else
+                                            Belum ada destinasi wisata yang ditambahkan.
+                                        @endif
+                                    </p>
                                     <a href="{{ route('admin.destinasi.create') }}"
                                        class="inline-flex items-center gap-3 bg-[var(--accent)] text-white px-8 py-4 rounded-[var(--radius)] hover:bg-[var(--accent-dark)] transition-all font-semibold shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)] hover:scale-[1.03]">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -271,7 +298,7 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Toast success message
+        // Toast success
         @if (session('success'))
             Swal.fire({
                 icon: 'success',
@@ -314,7 +341,7 @@
             });
         });
 
-        // Fade-in animation for table rows
+        // Fade-in rows
         document.querySelectorAll('tbody tr').forEach((row, index) => {
             row.style.opacity = '0';
             row.style.transform = 'translateY(15px)';

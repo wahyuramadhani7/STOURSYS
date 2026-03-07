@@ -5,632 +5,867 @@
 @push('styles')
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+
 <style>
-    /* Scroll progress bar */
-    .scroll-progress {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 0%;
-        height: 4px;
-        background: linear-gradient(90deg, #f97316, #fb923c);
-        z-index: 9999;
-        transition: width 0.1s ease-out;
-        box-shadow: 0 2px 8px rgba(249, 115, 22, 0.5);
-    }
-    
-    /* Hero parallax effect */
-    .hero-image {
-        transition: transform 0.3s ease-out;
-        will-change: transform;
-    }
-    
-    /* Shimmer effect */
-    @keyframes shimmer {
-        0% { background-position: -1000px 0; }
-        100% { background-position: 1000px 0; }
-    }
-    
-    .shimmer-effect {
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-        background-size: 1000px 100%;
-        animation: shimmer 2s infinite;
-    }
-    
-    /* Badge pulse animation */
-    @keyframes badgePulse {
-        0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
-    }
-    
-    .badge-pulse {
-        animation: badgePulse 2s ease-in-out infinite;
-    }
-    
-    /* Floating animation */
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    .animate-float {
-        animation: float 3s ease-in-out infinite;
-    }
-    
-    /* Fade slide animations */
-    @keyframes fadeSlideUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    /* Icon hover effects */
-    .info-icon {
-        transition: all 0.3s ease;
-    }
-    
-    .info-icon:hover {
-        transform: scale(1.2) rotate(10deg);
-        color: #ea580c;
-    }
-    
-    /* Info box animation */
-    .info-box {
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .info-box::before {
-        content: '';
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        background: linear-gradient(45deg, #f97316, #fb923c, #fdba74);
-        border-radius: 1rem;
-        opacity: 0;
-        transition: opacity 0.4s;
-        z-index: -1;
-        filter: blur(8px);
-    }
-    
-    .info-box:hover::before {
-        opacity: 0.4;
-    }
-    
-    .info-box:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 24px rgba(249, 115, 22, 0.2);
-    }
-    
-    /* Sidebar sticky */
-    .sidebar-sticky {
-        position: sticky;
-        top: 2rem;
-        transition: all 0.3s ease;
-    }
-    
-    /* Gallery hover effects */
-    .gallery-item {
-        position: relative;
-        overflow: hidden;
-        border-radius: 0.75rem;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-    }
-    
-    .gallery-item::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(45deg, rgba(249, 115, 22, 0.4), rgba(59, 130, 246, 0.4));
-        opacity: 0;
-        transition: opacity 0.4s;
-        z-index: 1;
-    }
-    
-    .gallery-item:hover::before {
-        opacity: 1;
-    }
-    
-    .gallery-item img {
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .gallery-item:hover img {
-        transform: scale(1.2) rotate(3deg);
-    }
-    
-    .gallery-item:hover {
-        transform: translateY(-4px) scale(1.05);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-    }
-    
-    .zoom-icon {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0);
-        z-index: 2;
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .gallery-item:hover .zoom-icon {
-        transform: translate(-50%, -50%) scale(1);
-    }
-    
-    /* Time box animation */
-    .time-box {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .time-box::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.1), transparent);
-        transition: left 0.6s;
-    }
-    
-    .time-box:hover::after {
-        left: 100%;
-    }
-    
-    /* Back button ripple */
-    .back-button {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .back-button::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-    
-    .back-button:hover::before {
-        width: 300px;
-        height: 300px;
-    }
-    
-    .back-button svg {
-        transition: transform 0.3s ease;
-    }
-    
-    .back-button:hover svg {
-        transform: translateX(-5px) scale(1.1);
-    }
-    
-    /* Description list hover */
-    dl div {
-        transition: all 0.3s ease;
-        padding: 0.75rem;
-        border-radius: 0.5rem;
-    }
-    
-    dl div:hover {
-        background: rgba(249, 115, 22, 0.05);
-        transform: translateX(5px);
-    }
-    
-    /* Status glow */
-    .status-ongoing {
-        box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
-    }
-    
-    .status-upcoming {
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-    }
-    
-    .status-ended {
-        box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
-    }
-    
-    /* Recurring highlight */
-    .recurring-highlight {
-        background: linear-gradient(to right, rgba(249, 115, 22, 0.08), rgba(251, 146, 60, 0.08));
-        border-left: 5px solid #f97316;
-        padding-left: 1.25rem;
-    }
+:root {
+    --cream:     #faf6f0;
+    --sand:      #e8dcc8;
+    --terracota: #c45c2e;
+    --brick:     #9c3a1a;
+    --gold:      #c9952a;
+    --moss:      #4a6741;
+    --charcoal:  #1c1917;
+    --ink:       #0d0b09;
+}
 
-    .recurring-badge {
-        background: linear-gradient(135deg, #f97316, #fb923c);
-        color: white;
-        box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
-    }
+/* ── Scroll progress ───────────────────────── */
+.scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--terracota), var(--gold), var(--moss));
+    z-index: 9998;
+    transition: width 0.1s linear;
+}
 
-    .recurring-icon {
-        animation: spin 10s linear infinite;
-    }
+/* ── HERO ──────────────────────────────────── */
+.detail-hero {
+    position: relative;
+    height: 78vh;
+    min-height: 520px;
+    overflow: hidden;
+    background: var(--ink);
+}
+.detail-hero img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: sepia(15%) contrast(1.1) brightness(0.58);
+    will-change: transform;
+}
+.hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(13,11,9,0.93) 0%,
+        rgba(13,11,9,0.4)  45%,
+        rgba(13,11,9,0.12) 100%
+    );
+}
 
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(360deg); }
-    }
+/* Content sits at bottom-left, max-width container */
+.hero-content-wrap {
+    position: absolute;
+    inset: 0;
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+    left: 0; right: 0;
+}
+.hero-content {
+    position: absolute;
+    bottom: 0; left: 0;
+    padding: 4rem 4rem 3.5rem;
+    max-width: 860px;
+}
+
+.hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 2.5rem; height: 1px;
+    background: var(--gold);
+}
+
+/* Status chips inside hero */
+.hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+.hero-chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.hero-chip.ongoing  { background: var(--moss);  color: var(--cream); }
+.hero-chip.upcoming { background: var(--gold);  color: var(--ink); }
+.hero-chip.past     { background: rgba(28,25,23,0.65); color: rgba(250,246,240,0.6); }
+.hero-chip.default  { background: var(--charcoal); color: var(--cream); }
+.hero-chip.recurring { background: var(--terracota); color: var(--cream); }
+
+.hero-chip.ongoing .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #86efac;
+    animation: livePulse 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+@keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+}
+
+.hero-chip svg {
+    animation: spinSlow 7s linear infinite;
+}
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.6rem, 5.5vw, 5rem);
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 0.97;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.75rem;
+}
+
+/* Hero meta row */
+.hero-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+}
+.hero-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(250,246,240,0.5);
+}
+.hero-meta-item svg { color: var(--terracota); flex-shrink: 0; }
+
+/* Top-right meta (decorative) */
+.hero-top-right {
+    position: absolute;
+    top: 2.5rem; right: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    z-index: 2;
+}
+.hero-top-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(250,246,240,0.3);
+}
+
+/* ── BODY ──────────────────────────────────── */
+.detail-body {
+    background: var(--cream);
+    padding: 5rem 0 7rem;
+}
+.detail-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 4rem;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 5rem;
+    align-items: start;
+}
+
+/* ── MAIN CONTENT ──────────────────────────── */
+.section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(201,149,42,0.3);
+}
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-bottom: 2rem;
+}
+
+.prose-editorial {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: rgba(28,25,23,0.72);
+}
+.prose-editorial p { margin-bottom: 1.25rem; }
+
+/* Recurring info block */
+.recurring-block {
+    background: var(--ink);
+    padding: 2rem 2.5rem;
+    margin: 3rem 0;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+    position: relative;
+    overflow: hidden;
+}
+.recurring-block::before {
+    content: '↻';
+    position: absolute;
+    right: 2rem; bottom: -1rem;
+    font-size: 9rem;
+    color: rgba(255,255,255,0.03);
+    font-family: monospace;
+    user-select: none;
+}
+.recurring-block-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.recurring-block-label svg { animation: spinSlow 7s linear infinite; }
+.recurring-block-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 0.75rem;
+}
+.recurring-block-desc {
+    font-size: 0.92rem;
+    color: rgba(250,246,240,0.5);
+    line-height: 1.7;
+}
+
+/* Waktu box */
+.time-block {
+    background: white;
+    border: 1.5px solid var(--sand);
+    padding: 2rem 2.5rem;
+    margin: 3rem 0;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+.time-block-icon {
+    width: 52px; height: 52px;
+    background: rgba(196,92,46,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+.time-block-icon svg { color: var(--terracota); width: 22px; height: 22px; }
+.time-block-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(28,25,23,0.35);
+    margin-bottom: 0.3rem;
+}
+.time-block-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+/* Foto utama */
+.foto-utama {
+    margin: 3rem 0 0;
+}
+.foto-utama-link {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    border: 1.5px solid var(--sand);
+}
+.foto-utama-link img {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: sepia(8%) contrast(1.05);
+    transition: transform 0.7s ease, filter 0.7s ease;
+}
+.foto-utama-link:hover img {
+    transform: scale(1.04);
+    filter: sepia(18%) contrast(1.1);
+}
+.foto-utama-hint {
+    position: absolute;
+    bottom: 1.25rem; right: 1.25rem;
+    background: rgba(13,11,9,0.75);
+    color: var(--cream);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ── SIDEBAR ───────────────────────────────── */
+.sidebar { position: sticky; top: 96px; }
+
+.sidebar-card {
+    background: white;
+    border: 1.5px solid var(--sand);
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+.sidebar-card-header {
+    padding: 1.25rem 1.75rem;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.sidebar-card-header-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+}
+.sidebar-card-body { padding: 1.75rem; }
+
+.sidebar-row {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--sand);
+}
+.sidebar-row:last-child { border-bottom: none; padding-bottom: 0; }
+.sidebar-row:first-child { padding-top: 0; }
+
+.sidebar-row-icon {
+    width: 36px; height: 36px;
+    background: rgba(196,92,46,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+}
+.sidebar-row-icon svg { width: 15px; height: 15px; color: var(--terracota); }
+.sidebar-row-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.57rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(28,25,23,0.38);
+    margin-bottom: 0.25rem;
+}
+.sidebar-row-value {
+    font-size: 0.9rem;
+    color: var(--charcoal);
+    font-weight: 500;
+    line-height: 1.45;
+}
+.sidebar-row-value.accent { color: var(--terracota); font-weight: 700; }
+
+/* Recurring sidebar block */
+.sidebar-recurring {
+    background: var(--ink);
+    padding: 1.25rem 1.5rem;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+.sidebar-recurring-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.sidebar-recurring-label svg { animation: spinSlow 7s linear infinite; }
+.sidebar-recurring-value {
+    font-size: 0.88rem;
+    color: rgba(250,246,240,0.55);
+    line-height: 1.65;
+}
+
+/* ── GALERI ─────────────────────────────────── */
+.galeri-card {
+    background: white;
+    border: 1.5px solid var(--sand);
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+    overflow: hidden;
+}
+.galeri-header {
+    padding: 1.25rem 1.75rem;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.galeri-header-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+}
+.galeri-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+.galeri-item {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    background: var(--charcoal);
+}
+.galeri-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: sepia(10%) contrast(1.05);
+    transition: transform 0.6s ease, filter 0.6s ease;
+}
+.galeri-item:hover img {
+    transform: scale(1.1);
+    filter: sepia(20%) contrast(1.1) brightness(0.7);
+}
+.galeri-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(13,11,9,0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.4s ease;
+}
+.galeri-item:hover .galeri-overlay { background: rgba(13,11,9,0.45); }
+.galeri-zoom {
+    color: var(--cream);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.35s ease;
+}
+.galeri-item:hover .galeri-zoom { opacity: 1; transform: scale(1); }
+
+/* ── BACK BUTTON ───────────────────────────── */
+.back-section {
+    max-width: 1440px;
+    margin: 4rem auto 0;
+    padding: 0 4rem;
+}
+.back-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--cream);
+    background: var(--ink);
+    padding: 1rem 2.25rem;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    transition: background 0.3s ease;
+}
+.back-cta:hover { background: var(--terracota); }
+.back-cta-line {
+    width: 1.5rem; height: 1px;
+    background: currentColor;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+}
+.back-cta:hover .back-cta-line { width: 2.5rem; }
+
+/* ── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 1100px) {
+    .detail-container { grid-template-columns: 1fr; gap: 3rem; padding: 0 2.5rem; }
+    .sidebar { position: static; }
+    .hero-content { padding: 3rem 2.5rem 2.5rem; }
+    .hero-top-right { right: 2.5rem; }
+    .back-section { padding: 0 2.5rem; }
+}
+@media (max-width: 640px) {
+    .detail-hero { height: 68vh; min-height: 400px; }
+    .hero-content { padding: 2.5rem 1.5rem 2rem; }
+    .hero-top-right { display: none; }
+    .detail-container { padding: 0 1.5rem; }
+    .detail-body { padding: 3rem 0 5rem; }
+    .back-section { padding: 0 1.5rem; }
+    .galeri-grid { grid-template-columns: 1fr 1fr; }
+}
 </style>
 @endpush
 
 @section('content')
 
-    <!-- Scroll Progress Bar -->
-    <div class="scroll-progress" id="scrollProgress"></div>
+<div class="scroll-progress" id="scrollProgress"></div>
 
-    <!-- Hero / Cover Image -->
-    <section class="relative h-[50vh] md:h-[60vh] min-h-[450px] overflow-hidden">
-        @if($event->gambar_utama)
-            <img 
-                src="{{ Storage::url($event->gambar_utama) }}" 
-                alt="{{ $event->judul }}"
-                class="hero-image absolute inset-0 w-full h-full object-cover"
-                id="heroImage"
-            >
-            <div class="absolute inset-0 shimmer-effect opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-        @else
-            <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-orange-950">
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <svg class="w-32 h-32 text-white/20 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                </div>
-            </div>
+{{-- ═══════════════ HERO ═══════════════ --}}
+@php
+    $isRecurring = $event->event_type === 'recurring';
+    $statusKey = match($event->status ?? '') {
+        'Sedang Berlangsung' => 'ongoing',
+        'Akan Datang'        => 'upcoming',
+        'Telah Berakhir'     => 'past',
+        default              => 'default',
+    };
+@endphp
+
+<section class="detail-hero">
+    @if($event->gambar_utama)
+        <img src="{{ Storage::url($event->gambar_utama) }}"
+             alt="{{ $event->judul }}"
+             id="heroImg"
+             loading="eager">
+    @else
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9rem;color:rgba(250,246,240,0.06);">📅</div>
+    @endif
+
+    <div class="hero-gradient"></div>
+
+    {{-- Top-right label --}}
+    <div class="hero-top-right">
+        <span class="hero-top-label">Event · STOURSYS</span>
+        @if($isRecurring)
+            <span class="hero-chip recurring" style="position:static;">
+                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Rutin
+            </span>
         @endif
+    </div>
 
-        <!-- Overlay gradient -->
-        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+    {{-- Bottom content --}}
+    <div class="hero-content-wrap">
+        <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+            <p class="hero-eyebrow">Event & Kegiatan · Kawasan Borobudur</p>
 
-        <div class="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-end pb-12 md:pb-16">
-            <div class="max-w-4xl hero-content">
-                <!-- Badge Status + Recurring -->
-                @php
-                    $statusClass = match ($event->status) {
-                        'Sedang Berlangsung' => 'bg-green-600 text-white status-ongoing badge-pulse',
-                        'Akan Datang'        => 'bg-blue-600 text-white status-upcoming',
-                        'Telah Berakhir'     => 'bg-red-600 text-white status-ended',
-                        default              => 'bg-gray-600 text-white',
-                    };
-
-                    $isRecurring = $event->event_type === 'recurring';
-                @endphp
-
-                <div class="flex flex-wrap items-center gap-3 mb-4" data-aos="fade-right" data-aos-duration="800">
-                    <span class="{{ $statusClass }} px-4 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm">
-                        {{ $event->status ?? 'Akan Datang' }}
-                    </span>
-
-                    @if($isRecurring)
-                        <span class="recurring-badge px-4 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm flex items-center gap-2 badge-pulse">
-                            <svg class="w-4 h-4 recurring-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                            </svg>
-                            Event Rutin
-                        </span>
-                    @endif
-                </div>
-
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight mb-4 drop-shadow-lg"
-                    data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
-                    {{ $event->judul }}
-                </h1>
-
-                <div class="flex flex-wrap gap-6 text-white/95 text-base md:text-lg"
-                     data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
-                    <div class="flex items-center gap-3 group">
-                        <svg class="info-icon w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            <div class="hero-chips">
+                <span class="hero-chip {{ $statusKey }}">
+                    @if($statusKey === 'ongoing')<span class="live-dot"></span>@endif
+                    {{ $event->status ?? 'Event' }}
+                </span>
+                @if($isRecurring)
+                    <span class="hero-chip recurring">
+                        <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
-                        <span>{{ $event->tanggal_range }}</span>
-                    </div>
-
-                    @if($event->jam_range && $event->jam_range !== '-')
-                        <div class="flex items-center gap-3 group">
-                            <svg class="info-icon w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>{{ $event->jam_range }}</span>
-                        </div>
-                    @endif
-
-                    @if($event->lokasi)
-                        <div class="flex items-center gap-3 group">
-                            <svg class="info-icon w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            <span>{{ $event->lokasi }}</span>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <section class="py-16 md:py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-3 gap-10 lg:gap-12">
-
-                <!-- Left: Deskripsi Utama -->
-                <div class="lg:col-span-2 prose prose-lg max-w-none prose-headings:text-slate-900 prose-a:text-orange-600">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-slate-900 relative inline-block"
-                        data-aos="fade-right" data-aos-duration="800">
-                        Deskripsi Event
-                        <span class="absolute bottom-0 left-0 w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></span>
-                    </h2>
-
-                    <div class="prose-animate" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
-                        {!! nl2br(e($event->deskripsi)) !!}
-                    </div>
-
-                    <!-- Informasi Rutin -->
-                    @if($event->event_type === 'recurring')
-                    <div class="recurring-highlight my-10 p-6 rounded-2xl border border-orange-200/50 shadow-sm"
-                         data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
-                        <h3 class="text-2xl font-bold text-orange-700 mb-4 flex items-center gap-3">
-                            <svg class="w-7 h-7 recurring-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                            </svg>
-                            Event Rutin / Berulang
-                        </h3>
-                        <div class="text-gray-700 leading-relaxed space-y-2">
-                            <p>
-                                Acara ini berlangsung secara rutin dan berulang.
-                            </p>
-                            @if($event->recurring_description)
-                                <p class="font-medium text-orange-800">
-                                    Jadwal: {{ $event->recurring_description }}
-                                </p>
-                            @else
-                                <p class="italic text-gray-600">
-                                    Jadwal rutin belum dijelaskan secara detail oleh penyelenggara.
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Waktu Pelaksanaan (non-rutin) -->
-                    @if(!$event->event_type === 'recurring' && ($event->jam_mulai || $event->jam_selesai))
-                    <div class="time-box my-10 p-6 bg-gradient-to-r from-orange-50 to-blue-50 rounded-2xl border border-orange-100/60 shadow-sm"
-                         data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
-                        <h3 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <svg class="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            Waktu Pelaksanaan
-                        </h3>
-                        <div class="text-lg text-gray-700">
-                            @if($event->jam_mulai) Mulai pukul <strong class="text-orange-600">{{ $event->jam_mulai->format('H:i') }}</strong> @endif
-                            @if($event->jam_selesai) s/d <strong class="text-orange-600">{{ $event->jam_selesai->format('H:i') }}</strong> @endif
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Gambar Utama Full -->
-                    @if($event->gambar_utama)
-                    <div class="my-10" data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
-                        <h3 class="text-2xl md:text-3xl font-bold mb-6 text-slate-900 relative inline-block">
-                            Foto Utama Event
-                            <span class="absolute bottom-0 left-0 w-20 h-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"></span>
-                        </h3>
-                        <a href="{{ Storage::url($event->gambar_utama) }}" 
-                           class="full-image-container glightbox block">
-                            <img 
-                                src="{{ Storage::url($event->gambar_utama) }}" 
-                                alt="{{ $event->judul }}"
-                                class="w-full h-auto"
-                            >
-                            <div class="full-image-overlay">
-                                <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center gap-2">
-                                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
-                                    </svg>
-                                    <span class="text-sm font-semibold text-slate-700">Klik untuk memperbesar</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    @endif
-                </div>
-
-                <!-- Right: Sidebar Info -->
-                <div class="space-y-8 lg:space-y-10">
-
-                    <!-- Informasi Singkat -->
-                    <div class="sidebar-sticky">
-                        <div class="info-box bg-gradient-to-br from-orange-50 via-white to-blue-50 p-7 rounded-2xl border border-orange-100/50 shadow-sm"
-                             data-aos="fade-left" data-aos-duration="800">
-                            <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                                <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                Informasi Event
-                            </h3>
-                            
-                            <dl class="space-y-5 text-gray-700">
-                                <div>
-                                    <dt class="font-semibold text-slate-800 flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                        Tanggal
-                                    </dt>
-                                    <dd class="mt-1 text-lg">
-                                        {{ $event->tanggal_range }}
-                                    </dd>
-                                </div>
-
-                                @if($event->jam_range && $event->jam_range !== '-')
-                                <div>
-                                    <dt class="font-semibold text-slate-800 flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        Waktu
-                                    </dt>
-                                    <dd class="mt-1 text-lg">
-                                        {{ $event->jam_range }}
-                                    </dd>
-                                </div>
-                                @endif
-
-                                @if($event->lokasi)
-                                <div>
-                                    <dt class="font-semibold text-slate-800 flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        </svg>
-                                        Lokasi
-                                    </dt>
-                                    <dd class="mt-1 text-lg">{{ $event->lokasi }}</dd>
-                                </div>
-                                @endif
-
-                                @if($isRecurring)
-                                <div class="bg-orange-50/50 p-4 rounded-xl mt-4">
-                                    <dt class="font-semibold text-orange-700 flex items-center gap-2">
-                                        <svg class="w-5 h-5 recurring-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                        </svg>
-                                        Tipe Event
-                                    </dt>
-                                    <dd class="mt-1 text-orange-700 font-medium">
-                                        Event Rutin / Berulang
-                                        @if($event->recurring_description)
-                                            <br><span class="text-sm text-orange-800/90 block mt-1">
-                                                {{ $event->recurring_description }}
-                                            </span>
-                                        @endif
-                                    </dd>
-                                </div>
-                                @endif
-                            </dl>
-                        </div>
-
-                        <!-- Galeri -->
-                        @if($event->galeri && count($event->galeri) > 0)
-                        <div class="rounded-2xl overflow-hidden border border-gray-200 shadow-sm mt-8"
-                             data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
-                            <h3 class="text-xl font-bold px-6 py-5 bg-gradient-to-r from-orange-500/10 to-blue-500/10 text-slate-800 flex items-center gap-2">
-                                <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                Galeri Event
-                            </h3>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4">
-                                @foreach($event->galeri as $index => $foto)
-                                    <a href="{{ Storage::url($foto) }}" 
-                                       class="gallery-item glightbox"
-                                       data-aos="zoom-in"
-                                       data-aos-duration="600"
-                                       data-aos-delay="{{ $index * 50 }}">
-                                        <img 
-                                            src="{{ Storage::url($foto) }}" 
-                                            alt="Galeri {{ $event->judul }} - {{ $index + 1 }}" 
-                                            class="w-full h-32 object-cover rounded-xl shadow-sm"
-                                        >
-                                        <div class="zoom-icon">
-                                            <svg class="w-10 h-10 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
-                                            </svg>
-                                        </div>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-
-                </div>
+                        Event Rutin
+                    </span>
+                @endif
             </div>
 
-            <!-- Tombol Kembali -->
-            <div class="mt-16 text-center" data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
-                <a href="{{ route('event.index') }}"
-                   class="back-button inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95 relative overflow-hidden">
-                    <svg class="w-5 h-5 rotate-180 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+            <h1 class="hero-title">{{ $event->judul }}</h1>
+
+            <div class="hero-meta-row">
+                <div class="hero-meta-item">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
                     </svg>
-                    <span class="relative z-10">Kembali ke Daftar Event</span>
-                </a>
+                    {{ $isRecurring ? ($event->recurring_description ?? 'Jadwal Rutin') : $event->tanggal_range }}
+                </div>
+                @if(!$isRecurring && $event->jam_range && $event->jam_range !== '-')
+                    <div class="hero-meta-item">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{ $event->jam_range }}
+                    </div>
+                @endif
+                @if($event->lokasi)
+                    <div class="hero-meta-item">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0zM19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                        </svg>
+                        {{ $event->lokasi }}
+                    </div>
+                @endif
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+{{-- ═══════════════ BODY ═══════════════ --}}
+<section class="detail-body">
+    <div class="detail-container">
+
+        {{-- ── MAIN ── --}}
+        <div>
+            <p class="section-label">Tentang Event</p>
+            <h2 class="section-title">Deskripsi</h2>
+
+            <div class="prose-editorial" data-aos="fade-up">
+                {!! nl2br(e($event->deskripsi)) !!}
+            </div>
+
+            {{-- Recurring block --}}
+            @if($isRecurring)
+                <div class="recurring-block" data-aos="fade-up">
+                    <p class="recurring-block-label">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Event Rutin / Berulang
+                    </p>
+                    <p class="recurring-block-title">Jadwal Pelaksanaan</p>
+                    <p class="recurring-block-desc">
+                        @if($event->recurring_description)
+                            {{ $event->recurring_description }}
+                        @else
+                            Acara ini berlangsung secara rutin dan berulang. Informasi jadwal lengkap tersedia di lokasi atau penyelenggara.
+                        @endif
+                    </p>
+                </div>
+            @endif
+
+            {{-- Waktu block (non-recurring) --}}
+            @if(!$isRecurring && ($event->jam_mulai || $event->jam_selesai))
+                <div class="time-block" data-aos="fade-up">
+                    <div class="time-block-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="time-block-label">Waktu Pelaksanaan</p>
+                        <p class="time-block-value">
+                            @if($event->jam_mulai) {{ $event->jam_mulai->format('H:i') }} @endif
+                            @if($event->jam_selesai) — {{ $event->jam_selesai->format('H:i') }} @endif
+                            WIB
+                        </p>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Foto utama --}}
+            @if($event->gambar_utama)
+                <div class="foto-utama" data-aos="fade-up">
+                    <p class="section-label" style="margin-top:0;">Foto Utama</p>
+                    <a href="{{ Storage::url($event->gambar_utama) }}"
+                       class="foto-utama-link glightbox">
+                        <img src="{{ Storage::url($event->gambar_utama) }}"
+                             alt="{{ $event->judul }}"
+                             loading="lazy">
+                        <div class="foto-utama-hint">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0zM10.5 7.5v6m3-3h-6"/>
+                            </svg>
+                            Perbesar
+                        </div>
+                    </a>
+                </div>
+            @endif
+        </div>
+
+        {{-- ── SIDEBAR ── --}}
+        <div class="sidebar" data-aos="fade-left" data-aos-duration="900">
+
+            {{-- Info card --}}
+            <div class="sidebar-card">
+                <div class="sidebar-card-header">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="color:var(--gold);">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/>
+                    </svg>
+                    <span class="sidebar-card-header-title">Informasi Event</span>
+                </div>
+                <div class="sidebar-card-body">
+
+                    {{-- Tanggal --}}
+                    <div class="sidebar-row">
+                        <div class="sidebar-row-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="sidebar-row-label">Tanggal</p>
+                            <p class="sidebar-row-value">
+                                {{ $isRecurring ? ($event->recurring_description ?? 'Jadwal Rutin') : $event->tanggal_range }}
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Waktu --}}
+                    @if(!$isRecurring && $event->jam_range && $event->jam_range !== '-')
+                    <div class="sidebar-row">
+                        <div class="sidebar-row-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="sidebar-row-label">Waktu</p>
+                            <p class="sidebar-row-value">{{ $event->jam_range }}</p>
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Lokasi --}}
+                    @if($event->lokasi)
+                    <div class="sidebar-row">
+                        <div class="sidebar-row-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0zM19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="sidebar-row-label">Lokasi</p>
+                            <p class="sidebar-row-value">{{ $event->lokasi }}</p>
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Status --}}
+                    <div class="sidebar-row">
+                        <div class="sidebar-row-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.789M12 12h.008v.008H12V12z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="sidebar-row-label">Status</p>
+                            <p class="sidebar-row-value accent">{{ $event->status ?? '—' }}</p>
+                        </div>
+                    </div>
+
+                    {{-- Recurring info --}}
+                    @if($isRecurring)
+                    <div class="sidebar-row" style="border:none;padding-top:1rem;">
+                        <div style="width:100%;">
+                            <div class="sidebar-recurring">
+                                <p class="sidebar-recurring-label">
+                                    <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                    Event Rutin
+                                </p>
+                                <p class="sidebar-recurring-value">
+                                    {{ $event->recurring_description ?? 'Berlangsung secara rutin dan berulang.' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                </div>
+            </div>
+
+            {{-- Galeri sidebar --}}
+            @if($event->galeri && count($event->galeri) > 0)
+                <div class="galeri-card" data-aos="fade-left" data-aos-delay="150">
+                    <div class="galeri-header">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="color:var(--gold);">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+                        </svg>
+                        <span class="galeri-header-title">Galeri Event</span>
+                    </div>
+                    <div class="galeri-grid">
+                        @foreach($event->galeri as $idx => $foto)
+                            <a href="{{ Storage::url($foto) }}"
+                               class="galeri-item glightbox"
+                               data-aos="fade-up"
+                               data-aos-delay="{{ $idx * 50 }}">
+                                <img src="{{ Storage::url($foto) }}"
+                                     alt="Galeri {{ $event->judul }} {{ $idx + 1 }}"
+                                     loading="lazy">
+                                <div class="galeri-overlay">
+                                    <div class="galeri-zoom">
+                                        <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0zM10.5 7.5v6m3-3h-6"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- Quick back --}}
+            <a href="{{ route('event.index') }}" class="back-cta" style="width:100%;justify-content:center;display:flex;margin-top:0.25rem;">
+                <span class="back-cta-line"></span>
+                Semua Event
+            </a>
+
+        </div>
+    </div>
+
+    {{-- Back full --}}
+    <div class="back-section" data-aos="fade-up">
+        <a href="{{ route('event.index') }}" class="back-cta">
+            <span class="back-cta-line"></span>
+            Kembali ke Daftar Event
+        </a>
+    </div>
+</section>
 
 @endsection
 
 @push('scripts')
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
 <script>
-    // Initialize AOS
-    AOS.init({
-        once: true,
-        mirror: false,
-        duration: 800,
-        easing: 'ease-out-cubic',
-    });
-    
-    // Initialize GLightbox
-    const lightbox = GLightbox({
-        touchNavigation: true,
-        loop: true,
-        autoplayVideos: true,
-        closeButton: true,
-        zoomable: true,
-    });
-    
-    // Scroll progress bar
-    window.addEventListener('scroll', function() {
-        const scrollProgress = document.getElementById('scrollProgress');
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrollPercentage = (scrollTop / scrollHeight) * 100;
-        scrollProgress.style.width = scrollPercentage + '%';
-    });
-    
-    // Parallax hero image
-    const heroImage = document.getElementById('heroImage');
-    if (heroImage) {
-        window.addEventListener('scroll', function() {
-            const scrolled = window.pageYOffset;
-            const rate = scrolled * 0.3;
-            heroImage.style.transform = 'translateY(' + rate + 'px) scale(1.05)';
-        });
-    }
-    
-    // Live pulse indicator
-    const statusBadge = document.querySelector('.badge-pulse');
-    if (statusBadge && statusBadge.textContent.includes('Sedang Berlangsung')) {
-        const liveDot = document.createElement('span');
-        liveDot.className = 'inline-block w-2.5 h-2.5 bg-white rounded-full mr-2.5 animate-pulse';
-        statusBadge.prepend(liveDot);
-    }
-    
-    // Smooth scroll for anchors
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href'))?.scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
+AOS.init({ once: true, duration: 800, easing: 'ease-out-cubic' });
+GLightbox({ touchNavigation: true, loop: true, zoomable: true });
+
+// Scroll progress
+const bar = document.getElementById('scrollProgress');
+window.addEventListener('scroll', () => {
+    const pct = window.pageYOffset / (document.documentElement.scrollHeight - document.documentElement.clientHeight) * 100;
+    bar.style.width = pct + '%';
+}, { passive: true });
+
+// Parallax hero
+const heroImg = document.getElementById('heroImg');
+if (heroImg) {
+    window.addEventListener('scroll', () => {
+        heroImg.style.transform = `translateY(${window.pageYOffset * 0.35}px)`;
+    }, { passive: true });
+}
 </script>
 @endpush

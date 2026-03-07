@@ -4,457 +4,696 @@
 
 @push('styles')
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
-    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); } 50% { box-shadow: 0 0 35px rgba(249, 115, 22, 0.65); } }
-    @keyframes shimmer { 0% { background-position: -1200px 0; } 100% { background-position: 1200px 0; } }
+:root {
+    --cream:     #faf6f0;
+    --sand:      #e8dcc8;
+    --terracota: #c45c2e;
+    --brick:     #9c3a1a;
+    --gold:      #c9952a;
+    --moss:      #4a6741;
+    --charcoal:  #1c1917;
+    --ink:       #0d0b09;
+}
 
-    .animate-float { animation: float 3.5s ease-in-out infinite; }
-    .animate-pulse-glow { animation: pulseGlow 2.5s ease-in-out infinite; }
-    .shimmer-effect {
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-        background-size: 1200px 100%;
-        animation: shimmer 2.5s infinite;
-    }
+/* ── GLOBAL RESET & BASE ─────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--charcoal); }
 
-    .card-hover-scale {
-        transition: all 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .card-hover-scale:hover {
-        transform: translateY(-16px) scale(1.065);
-    }
+/* ── NOISE TEXTURE ────────────────────────────────────── */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.55;
+}
 
-    .kategori-card {
-        background: white;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.09);
-        transition: all 0.5s ease;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    .kategori-card:hover {
-        transform: translateY(-16px);
-        box-shadow: 0 30px 60px rgba(0,0,0,0.18);
-    }
+/* ── HERO ─────────────────────────────────────────────── */
+.hero {
+    position: relative;
+    background: var(--ink);
+    padding: 7rem 0 5rem;
+    overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 15% 50%, rgba(196,92,46,0.15) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 80% at 85% 20%, rgba(74,103,65,0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+.hero-bg-text {
+    position: absolute;
+    right: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 13rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.025);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    white-space: nowrap;
+}
 
-    .kategori-image-wrapper {
-        position: relative;
-        height: 240px;
-        overflow: hidden;
-        flex-shrink: 0;
-    }
-    .kategori-image-wrapper img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.9s ease;
-    }
-    .kategori-card:hover .kategori-image-wrapper img {
-        transform: scale(1.15) rotate(1.6deg);
-    }
+.hero-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 4rem;
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 4rem;
+}
+.hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--gold);
+}
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+}
+.hero-title em {
+    font-style: italic;
+    color: var(--terracota);
+}
+.hero-desc {
+    font-size: 1.05rem;
+    color: rgba(250,246,240,0.5);
+    line-height: 1.8;
+    max-width: 44ch;
+}
+.hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--terracota);
+    color: var(--cream);
+    padding: 1rem 2.2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    transition: all 0.3s ease;
+}
+.hero-cta:hover {
+    background: var(--brick);
+    gap: 1.4rem;
+}
 
-    .kategori-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.04), rgba(0,0,0,0.48));
-        transition: background 0.6s ease;
-    }
-    .kategori-card:hover .kategori-overlay {
-        background: linear-gradient(to bottom, rgba(0,0,0,0.06), rgba(0,0,0,0.58));
-    }
+/* ── MARQUEE ──────────────────────────────────────────── */
+.marquee-strip {
+    background: var(--terracota);
+    padding: 0.8rem 0;
+    overflow: hidden;
+}
+.marquee-track {
+    display: flex;
+    animation: marquee 30s linear infinite;
+    width: max-content;
+}
+.marquee-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(250,246,240,0.85);
+    padding: 0 3rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+.marquee-dot {
+    width: 4px; height: 4px;
+    background: rgba(250,246,240,0.4);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+@keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
 
-    .kategori-content {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem 1.5rem;
-        text-align: center;
-    }
+/* ── CONTAINER & SECTION ──────────────────────────────── */
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 4rem;
+}
 
-    .kategori-icon {
-        font-size: 6.5rem;
-        margin-bottom: 1rem;
-        opacity: 0.9;
-        transition: all 0.6s ease;
-    }
-    .kategori-card:hover .kategori-icon {
-        transform: scale(1.12);
-        opacity: 1;
-    }
+/* ── KATEGORI SECTION (Bento) ─────────────────────────── */
+.kategori-section {
+    background: var(--cream);
+    padding: 5rem 0 7rem;
+}
+.section-header {
+    margin-bottom: 3.5rem;
+}
+.section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--terracota);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.section-label::before {
+    content: '';
+    width: 2.2rem;
+    height: 1px;
+    background: var(--terracota);
+}
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.8rem);
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+}
 
-    .kategori-title {
-        font-size: 1.9rem;
-        font-weight: 900;
-        color: #0f172a;
-        margin-bottom: 1rem;
-        line-height: 1.1;
-    }
+/* Bento grid */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1.5px solid var(--sand);
+}
+.bento-card {
+    position: relative;
+    border-right: 1.5px solid var(--sand);
+    border-bottom: 1.5px solid var(--sand);
+    background: white;
+    text-decoration: none;
+    overflow: hidden;
+    transition: background 0.3s ease;
+}
+.bento-card:nth-child(3n) { border-right: none; }
+.bento-card:hover { background: var(--cream); }
 
-    @media (min-width: 1024px) {
-        .kategori-title { font-size: 2.3rem; }
-        .kategori-icon   { font-size: 7.5rem; }
-    }
+.bento-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--sand);
+    transition: background 0.3s ease;
+}
+.bento-card:hover::before { background: var(--terracota); }
 
-    @media (min-width: 1280px) {
-        .category-grid-wide {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            max-width: 1280px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-    }
+.bento-card-img {
+    height: 240px;
+    overflow: hidden;
+    background: var(--charcoal);
+}
+.bento-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(10%) contrast(1.05);
+    transition: transform 0.7s ease, filter 0.7s ease;
+}
+.bento-card:hover .bento-card-img img {
+    transform: scale(1.07);
+    filter: sepia(20%) contrast(1.1);
+}
 
-    .search-container {
-        max-width: 480px;
-        margin: 0 auto;
-    }
+.bento-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(13,11,9,0.65) 100%);
+}
 
-    .search-input {
-        height: 52px;
-        font-size: 1.05rem;
-        padding-left: 1.75rem;
-        padding-right: 9rem;
-        border: 2px solid #e5e7eb;
-    }
+.bento-content {
+    position: absolute;
+    inset: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: white;
+}
 
-    .search-btn {
-        height: 44px;
-        right: 0.5rem;
-        padding: 0 1.75rem;
-        font-size: 0.95rem;
-    }
+.bento-number {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.5rem;
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.08);
+    line-height: 1;
+}
+.bento-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+}
+.bento-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+.bento-card:hover .bento-title { color: var(--terracota); }
 
-    .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        background-color: white;
-        border: 2px solid #fb923c;
-        border-radius: 9999px;
-        color: #ea580c;
-        font-weight: 600;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(251, 146, 60, 0.15);
-    }
+/* ── DAFTAR DESTINASI ─────────────────────────────────── */
+.dest-section {
+    background: var(--cream);
+    padding: 5rem 0 7rem;
+}
 
-    .back-btn:hover {
-        background-color: #fff7ed;
-        color: #c2410c;
-        border-color: #f97316;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(251, 146, 60, 0.25);
-    }
+/* Result bar mirip event */
+.result-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1.5px solid var(--sand);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.result-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(28,25,23,0.35);
+}
+.result-label strong {
+    color: var(--terracota);
+    font-weight: 700;
+}
+.result-count {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+}
 
-    .back-btn svg {
-        width: 1.4rem;
-        height: 1.4rem;
-    }
+/* Search mirip event */
+.search-wrap {
+    position: relative;
+    width: 280px;
+    flex-shrink: 0;
+}
+.search-wrap input {
+    width: 100%;
+    height: 40px;
+    background: var(--cream);
+    border: 1.5px solid var(--sand);
+    padding: 0 5.5rem 0 1.25rem;
+    font-size: 0.88rem;
+    color: var(--ink);
+    outline: none;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    transition: border-color 0.25s ease;
+}
+.search-wrap input:focus { border-color: var(--terracota); }
+.search-wrap input::placeholder { color: rgba(28,25,23,0.3); }
+.search-wrap button {
+    position: absolute;
+    right: 0; top: 0;
+    height: 100%;
+    padding: 0 1.1rem;
+    background: var(--terracota);
+    color: var(--cream);
+    border: none;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+}
+.search-wrap button:hover { background: var(--brick); }
+.reset-link {
+    position: absolute;
+    right: 5.5rem; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(28,25,23,0.35);
+    text-decoration: none;
+}
+.reset-link:hover { color: var(--terracota); }
 
-    /* Tambahan untuk tabs filter sub-kuliner */
-    .sub-filter-tabs {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        justify-content: center;
-        margin-bottom: 2.5rem;
-    }
+/* Destinasi grid — mirip event grid */
+.dest-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1.5px solid var(--sand);
+}
+.dest-card {
+    position: relative;
+    border-right: 1.5px solid var(--sand);
+    border-bottom: 1.5px solid var(--sand);
+    background: white;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.3s ease;
+}
+.dest-card:nth-child(3n) { border-right: none; }
+.dest-card:hover { background: var(--cream); }
 
-    .sub-filter-btn {
-        padding: 0.65rem 1.5rem;
-        border-radius: 9999px;
-        font-weight: 600;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-    }
+.dest-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--sand);
+    transition: background 0.3s ease;
+}
+.dest-card:hover::before { background: var(--terracota); }
 
-    .sub-filter-btn.active {
-        background-color: #ea580c;
-        color: white;
-        border-color: #ea580c;
-        box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
-    }
+.dest-card-img {
+    height: 210px;
+    overflow: hidden;
+    background: var(--charcoal);
+    flex-shrink: 0;
+}
+.dest-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(10%) contrast(1.05);
+    transition: transform 0.7s ease, filter 0.7s ease;
+}
+.dest-card:hover .dest-card-img img {
+    transform: scale(1.07);
+    filter: sepia(20%) contrast(1.1);
+}
 
-    .sub-filter-btn:hover:not(.active) {
-        background-color: #fff7ed;
-        border-color: #f97316;
-        color: #c2410c;
-    }
+.dest-card-body {
+    padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    border-top: 2px solid var(--sand);
+    transition: border-color 0.3s ease;
+}
+.dest-card:hover .dest-card-body { border-top-color: var(--terracota); }
 
-    /* Badge status event */
-    .status-badge {
-        padding: 0.35rem 0.9rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        border-radius: 9999px;
+.dest-card-cat {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.65rem;
+}
+.dest-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 0.85rem;
+    transition: color 0.3s ease;
+}
+.dest-card:hover .dest-card-name { color: var(--terracota); }
+
+.dest-card-desc {
+    font-size: 0.88rem;
+    color: rgba(28,25,23,0.55);
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.dest-card-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--terracota);
+    margin-top: auto;
+    transition: gap 0.3s ease;
+}
+.dest-card-link-line {
+    height: 1px;
+    width: 1.5rem;
+    background: currentColor;
+    transition: width 0.3s ease;
+}
+.dest-card:hover .dest-card-link-line { width: 3rem; }
+
+/* ── EMPTY STATE & PAGINATION ─────────────────────────── */
+.empty-state, .pagination-wrap {
+    /* sama persis seperti di event */
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .bento-grid, .dest-grid { grid-template-columns: repeat(2, 1fr); }
+    .bento-card:nth-child(3n), .dest-card:nth-child(3n) { border-right: 1.5px solid var(--sand); }
+    .bento-card:nth-child(2n), .dest-card:nth-child(2n) { border-right: none; }
+    .container, .hero-inner { padding: 0 2.5rem; }
+}
+
+@media (max-width: 768px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; padding: 0 1.5rem; }
+    .hero { padding: 5rem 0 4rem; }
+    .hero-bg-text { font-size: 8rem; }
+    .search-wrap { width: 100%; }
+    .container { padding: 0 1.5rem; }
+}
+
+@media (max-width: 600px) {
+    .bento-grid, .dest-grid { grid-template-columns: 1fr; border: none; }
+    .bento-card, .dest-card {
+        border: 1.5px solid var(--sand);
+        margin-bottom: 1.2rem;
     }
+    .bento-card:nth-child(n), .dest-card:nth-child(n) { border-right: 1.5px solid var(--sand); }
+}
 </style>
 @endpush
 
 @section('content')
 
-    <!-- Hero Section -->
-    <section class="py-16 md:py-20 bg-gradient-to-r from-orange-50 via-white to-blue-50">
-        <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
-            <div data-aos="fade-up" data-aos-duration="1000">
-                <div class="inline-block mb-5 px-6 py-3 bg-orange-100 rounded-full border border-orange-200 animate-pulse-glow">
-                    <span class="text-orange-600 font-semibold text-lg">Jelajahi Borobudur</span>
-                </div>
-                <h1 class="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black text-slate-900 mb-5 tracking-tight leading-tight">
-                    Destinasi Wisata <span class="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 bg-clip-text text-transparent">Kawasan Borobudur</span>
-                </h1>
-                <p class="text-lg md:text-xl lg:text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
-                    Temukan keajaiban candi, alam, kesenian & budaya, kuliner, religi, dan desa wisata terbaik di sekitar Candi Borobudur
-                </p>
+<!-- HERO -->
+<section class="hero">
+    <span class="hero-bg-text" aria-hidden="true">Borobudur</span>
+    <div class="hero-inner">
+        <div data-aos="fade-right" data-aos-duration="1000">
+            <p class="hero-eyebrow">Stoursys · Kawasan Borobudur</p>
+            <h1 class="hero-title">
+                Jelajahi<br><em>Keajaiban</em><br>Borobudur
+            </h1>
+            <p class="hero-desc">
+                Warisan dunia yang hidup — candi megah, desa tersembunyi, kesenian, kuliner autentik, dan cerita spiritual yang masih bernapas.
+            </p>
+            <a href="#destinasi" class="hero-cta">
+                Mulai Jelajah
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip" aria-hidden="true">
+    <div class="marquee-track">
+        @foreach(array_fill(0, 2, null) as $_)
+            <span class="marquee-item">Candi Borobudur<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Desa Wisata<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Kesenian & Budaya<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Kuliner Lokal<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Wisata Alam<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Religi & Spiritual<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Balkondes<span class="marquee-dot"></span></span>
+        @endforeach
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="destinasi" class="container">
+
+@if(!request()->has('kategori') && !request()->has('search'))
+
+    <section class="kategori-section">
+        <div class="section-header" data-aos="fade-up">
+            <div>
+                <p class="section-label">Kategori Destinasi</p>
+                <h2 class="section-title">Pilih Kategori<em>Favoritmu</em></h2>
             </div>
+        </div>
+
+        <div class="bento-grid">
+            @foreach($kategoriList as $idx => $kat)
+                @php
+                    $slug = strtolower($kat['slug'] ?? '');
+                    $namaDisplay = match($slug) {
+                        'budaya' => 'Kesenian & Budaya',
+                        'kuliner' => 'Kuliner',
+                        default => ucwords(str_replace(['_','-'], ' ', $slug)),
+                    };
+                @endphp
+                <a href="{{ route('destinasi.index', ['kategori' => $slug]) }}"
+                   class="bento-card" data-aos="fade-up" data-aos-delay="{{ $idx * 80 }}">
+                    @if(!empty($kat['gambar_kategori']))
+                        <img src="{{ $kat['gambar_kategori'] }}" alt="{{ $namaDisplay }}" loading="lazy">
+                    @endif
+                    <div class="bento-overlay"></div>
+                    <div class="bento-content">
+                        <span class="bento-number">{{ str_pad($idx + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                        <p class="bento-tag">{{ $namaDisplay }}</p>
+                        <h3 class="bento-title">{{ $namaDisplay }}</h3>
+                    </div>
+                </a>
+            @endforeach
         </div>
     </section>
 
-    <!-- Kategori Section (halaman awal tanpa filter) -->
-    @if(!request()->has('kategori') && !request()->has('search'))
-        <section class="py-16 md:py-20 bg-gray-50/70">
-            <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12">
-                <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-center mb-12 lg:mb-16 text-slate-900" data-aos="fade-up">
-                    Pilih Kategori Favoritmu
-                </h2>
+@else
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10 category-grid-wide">
-                    @foreach($kategoriList as $kat)
-                        <a href="{{ route('destinasi.index', ['kategori' => $kat['slug']]) }}"
-                           class="kategori-card group card-hover-scale" 
-                           data-aos="fade-up" 
-                           data-aos-delay="{{ $loop->index * 100 }}"
-                           aria-label="Jelajahi kategori {{ $kat['nama'] }}">
-                            
-                            <div class="kategori-image-wrapper">
-                                @if($kat['gambar_kategori'])
-                                    <img src="{{ $kat['gambar_kategori'] }}" 
-                                         alt="{{ $kat['nama'] }}" 
-                                         loading="lazy"
-                                         class="transition-transform duration-800 group-hover:scale-110">
-                                    <div class="kategori-overlay"></div>
-                                @else
-                                    <div class="w-full h-full bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950 flex items-center justify-center">
-                                        <span class="kategori-icon">
-                                            @switch(strtolower($kat['slug'] ?? ''))
-                                                @case('candi')      🏯 @break
-                                                @case('balkondes')  🏡 @break
-                                                @case('kuliner')    🍲 @break
-                                                @case('alam')       🌄 @break
-                                                @case('budaya')     🎭 @break
-                                                @case('religi')     🙏 @break
-                                                @case('desa_wisata')🌾 @break
-                                                @default            🌟
-                                            @endswitch
-                                        </span>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="kategori-content">
-                                <h3 class="kategori-title">
-                                    @if(strtolower($kat['slug']) === 'budaya')
-                                        Kesenian dan Budaya
-                                    @else
-                                        {{ $kat['nama'] }}
-                                    @endif
-                                </h3>
-                                <span class="inline-block px-7 py-3.5 bg-white text-orange-700 rounded-full font-bold text-base shadow-xl transform group-hover:scale-110 group-hover:shadow-2xl transition-all duration-400">
-                                    Jelajahi →
-                                </span>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-    @else
-        <!-- Daftar Destinasi (ketika ada filter kategori atau search) -->
-        <section class="py-16 md:py-20">
-            <div class="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12">
-
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-                    <div data-aos="fade-right">
-                        <a href="{{ route('destinasi.index') }}" 
-                           class="back-btn"
-                           aria-label="Kembali ke halaman semua kategori">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                            </svg>
-                            Kembali ke Semua Kategori
-                        </a>
-                    </div>
-
-                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 text-center md:text-left" data-aos="fade-left">
+    <section class="dest-section">
+        <div class="result-bar" data-aos="fade-up">
+            <div>
+                <p class="result-label">
+                    Menampilkan <strong>
                         @if(request('kategori'))
-                            @php
-                                $kategoriInput = request('kategori');
-                                $judul = ucwords(str_replace(['_', '-'], ' ', $kategoriInput));
-                                
-                                if (str_starts_with($kategoriInput, 'kuliner')) {
-                                    $judul = 'Kuliner';
-                                } elseif ($kategoriInput === 'budaya') {
-                                    $judul = 'Kesenian dan Budaya';
-                                }
-                            @endphp
-                            {{ $judul }}
+                            {{ ucwords(str_replace(['_','-'], ' ', request('kategori'))) }}
                         @elseif(request('search'))
-                            Hasil Pencarian: "{{ request('search') }}"
+                            Pencarian "{{ request('search') }}"
+                        @else
+                            Semua Destinasi
                         @endif
-                        <span class="text-gray-500 text-2xl font-normal ml-3">({{ $destinasi->total() }} destinasi)</span>
-                    </h2>
-                </div>
-
-                <!-- Filter sub-kategori khusus untuk Kuliner -->
-                @if(request('kategori') && (request('kategori') === 'kuliner' || str_starts_with(request('kategori'), 'kuliner')))
-                    <div class="sub-filter-tabs" data-aos="fade-up" data-aos-duration="800">
-                        <a href="{{ route('destinasi.index', ['kategori' => 'kuliner'] + request()->only('search')) }}"
-                           class="sub-filter-btn {{ !request('sub') ? 'active' : '' }}">
-                            Semua Kuliner
-                        </a>
-                        <a href="{{ route('destinasi.index', ['kategori' => 'kuliner', 'sub' => 'kuliner'] + request()->only('search')) }}"
-                           class="sub-filter-btn {{ request('sub') === 'kuliner' ? 'active' : '' }}">
-                            Warung / Street Food / Jajanan
-                        </a>
-                        <a href="{{ route('destinasi.index', ['kategori' => 'kuliner', 'sub' => 'restoran'] + request()->only('search')) }}"
-                           class="sub-filter-btn {{ request('sub') === 'restoran' ? 'active' : '' }}">
-                            Restoran / Cafe
-                        </a>
-                    </div>
-                @endif
-
-                <!-- Search bar -->
-                <div class="search-container mb-12" data-aos="fade-up">
-                    <form method="GET" action="{{ route('destinasi.index') }}" class="relative">
-                        <input type="hidden" name="kategori" value="{{ request('kategori') }}">
-                        <input type="hidden" name="sub" value="{{ request('sub') }}">
-                        <input type="text" name="search" value="{{ request('search') }}" 
-                               placeholder="Cari destinasi..." 
-                               class="search-input w-full rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400 shadow-md transition-all">
-                        <button type="submit" 
-                                class="search-btn absolute top-1/2 -translate-y-1/2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-all font-semibold shadow-md">
-                            Cari
-                        </button>
-                    </form>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-                    @forelse ($destinasi as $index => $item)
-                        <div class="group relative bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-200/40 card-hover-scale"
-                             data-aos="fade-up" 
-                             data-aos-duration="900" 
-                             data-aos-delay="{{ $index * 100 }}">
-
-                            <div class="relative h-72 overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
-                                @if($item->gambar_utama)
-                                    <img src="{{ $item->gambar_utama_url }}" 
-                                         alt="{{ $item->nama }} - Kawasan Borobudur"
-                                         loading="lazy"
-                                         class="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-[2.5deg] transition-all duration-800">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"></div>
-                                    <div class="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-75 transition-opacity duration-700"></div>
-                                @else
-                                    <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 via-blue-950 to-orange-950">
-                                        <svg class="w-28 h-28 text-white/35 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                    </div>
-                                @endif
-
-                                @if($item->views >= 50)
-                                    <div class="absolute top-5 right-5 bg-orange-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-xl transform group-hover:scale-110 group-hover:rotate-6 transition-all">
-                                        Populer
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="p-7">
-                                @if($item->kategori)
-                                    <span class="inline-block px-5 py-2 bg-orange-100 text-orange-800 rounded-full text-base font-semibold mb-3">
-                                        @php
-                                            $katDisplay = $item->kategori;
-                                            if (str_starts_with($katDisplay, 'kuliner_') || $katDisplay === 'kuliner') {
-                                                $katDisplay = 'Kuliner';
-                                            } elseif ($katDisplay === 'budaya') {
-                                                $katDisplay = 'Kesenian dan Budaya';
-                                            } else {
-                                                $katDisplay = ucwords(str_replace(['_', '-'], ' ', $katDisplay));
-                                            }
-                                        @endphp
-                                        {{ $katDisplay }}
-                                    </span>
-                                @endif
-
-                            
-
-                                <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-orange-600 transition-colors">
-                                    {{ $item->nama }}
-                                </h3>
-
-                                <p class="text-gray-600 mb-6 line-clamp-3 text-base leading-relaxed">
-                                    {{ Str::limit(strip_tags($item->deskripsi ?? ''), 110) }}
-                                </p>
-
-                                <a href="{{ route('destinasi.show', $item) }}"
-                                   class="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-7 py-4 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl hover:-translate-y-1.5 group/btn text-base">
-                                    <span>Jelajahi Detail</span>
-                                    <svg class="w-6 h-6 group-hover/btn:translate-x-1.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="col-span-full text-center py-24" data-aos="fade-up">
-                            <div class="max-w-lg mx-auto">
-                                <div class="w-32 h-32 bg-gradient-to-br from-orange-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-8 animate-float">
-                                    <span class="text-7xl">🏯</span>
-                                </div>
-                                <h3 class="text-4xl font-bold text-slate-900 mb-6">
-                                    Tidak ditemukan
-                                </h3>
-                                <p class="text-gray-700 text-xl mb-10">
-                                    @if(request('kategori'))
-                                        Belum ada destinasi di kategori ini.
-                                    @elseif(request('search'))
-                                        Tidak ada hasil untuk "{{ request('search') }}".
-                                    @endif
-                                </p>
-                                <a href="{{ route('destinasi.index') }}" 
-                                   class="inline-block bg-orange-600 text-white px-10 py-5 rounded-2xl font-bold hover:bg-orange-700 transition-all shadow-xl transform hover:scale-105 text-lg">
-                                    Kembali ke Kategori
-                                </a>
-                            </div>
-                        </div>
-                    @endforelse
-                </div>
-
-                @if($destinasi->hasPages())
-                    <div class="mt-16 flex justify-center" data-aos="fade-up">
-                        {{ $destinasi->links('pagination::tailwind') }}
-                    </div>
-                @endif
+                    </strong>
+                </p>
             </div>
-        </section>
-    @endif
+            <span class="result-count">{{ $destinasi->total() }} destinasi ditemukan</span>
+        </div>
+
+        <div class="search-wrap" data-aos="fade-up" data-aos-delay="100">
+            <form method="GET" action="{{ route('destinasi.index') }}">
+                <input type="hidden" name="kategori" value="{{ request('kategori') }}">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari destinasi...">
+                @if(request('search') || request('kategori'))
+                    <a href="{{ route('destinasi.index') }}" class="reset-link">×</a>
+                @endif
+                <button type="submit">Cari</button>
+            </form>
+        </div>
+
+        <div class="dest-grid">
+            @forelse($destinasi as $idx => $item)
+                <a href="{{ route('destinasi.show', $item) }}"
+                   class="dest-card"
+                   data-aos="fade-up"
+                   data-aos-delay="{{ ($idx % 3) * 80 }}">
+
+                    <div class="dest-card-img">
+                        @if($item->gambar_utama)
+                            <img src="{{ $item->gambar_utama_url ?? Storage::url($item->gambar_utama) }}"
+                                 alt="{{ $item->nama }}" loading="lazy">
+                        @else
+                            <div class="dest-no-img">🏯</div>
+                        @endif
+                    </div>
+
+                    <div class="dest-card-body">
+                        @if($item->kategori)
+                            <p class="dest-card-cat">
+                                {{ match($item->kategori) {
+                                    'budaya' => 'Kesenian & Budaya',
+                                    default => ucwords(str_replace(['_','-'], ' ', $item->kategori))
+                                } }}
+                            </p>
+                        @endif
+                        <h3 class="dest-card-name">{{ $item->nama }}</h3>
+                        <p class="dest-card-desc">{{ Str::limit(strip_tags($item->deskripsi ?? ''), 100) }}</p>
+
+                        <div class="dest-card-link">
+                            <span class="dest-card-link-line"></span>
+                            Lihat Detail
+                        </div>
+                    </div>
+                </a>
+            @empty
+                <div class="empty-state">
+                    <div class="empty-icon">🏯</div>
+                    <h3 class="empty-title">Tidak Ditemukan</h3>
+                    <p class="empty-desc">
+                        @if(request('search') || request('kategori'))
+                            Coba ubah kata kunci atau kategori lain.
+                        @else
+                            Belum ada destinasi saat ini.
+                        @endif
+                    </p>
+                    <a href="{{ route('destinasi.index') }}" class="empty-cta">Lihat Semua Kategori</a>
+                </div>
+            @endforelse
+        </div>
+
+        @if($destinasi->hasPages())
+            <div class="pagination-wrap" data-aos="fade-up">
+                {{ $destinasi->links('pagination::tailwind') }}
+            </div>
+        @endif
+
+    </section>
+
+@endif
+
+</div>
 
 @endsection
 
 @push('scripts')
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    AOS.init({
-        once: true,
-        mirror: false,
-        duration: 900,
-        easing: 'ease-out-cubic',
-    });
+AOS.init({ once: true, duration: 800, easing: 'ease-out-cubic' });
+
+document.querySelector('.hero-cta')?.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector('#destinasi')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 </script>
 @endpush

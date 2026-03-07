@@ -8,27 +8,61 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
-
 class DestinasiController extends Controller
 {
     /**
-     * Display a listing of the destinations (dengan paginasi + statistik global).
+     * Display a listing of the destinations with pagination, global stats, category filter, and search.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $destinasi = Destinasi::latest()->paginate(15);
+        $query = Destinasi::query()->latest();
 
+        // Filter by category
+        $query->when($request->filled('kategori'), function ($q) use ($request) {
+            $q->where('kategori', $request->kategori);
+        });
+
+        // Search by name (case-insensitive partial match)
+        $query->when($request->filled('search'), function ($q) use ($request) {
+            $search = trim($request->search);
+            $q->where('nama', 'LIKE', "%{$search}%");
+        });
+
+        $destinasi = $query->paginate(15)->withQueryString();
+
+        // Global statistics (not affected by filters)
         $totalDestinasi = Destinasi::count();
         $totalViews     = Destinasi::sum('views');
         $avgViews       = $totalDestinasi > 0 ? round(Destinasi::avg('views'), 0) : 0;
+
+        // Unique categories for dropdown + display mapping
+        $kategoriList = Destinasi::distinct()->pluck('kategori')->filter()->values()->all();
+
+        $kategoriMap = [
+            'candi'             => 'Destinasi Candi',
+            'balkondes'         => 'Balkondes',
+            'kuliner_kuliner'   => 'Kuliner - Warung / Street Food',
+            'kuliner_restoran'  => 'Kuliner - Restoran / Cafe',
+            'alam'              => 'Destinasi Alam',
+            'budaya'            => 'Destinasi Budaya',
+            'religi'            => 'Destinasi Religi',
+            'desa_wisata'       => 'Desa Wisata',
+            'wisata_edukasi'    => 'Wisata Edukasi',
+        ];
 
         return view('backend.destinasi.index', compact(
             'destinasi',
             'totalDestinasi',
             'totalViews',
-            'avgViews'
+            'avgViews',
+            'kategoriList',
+            'kategoriMap'
         ));
     }
+
+    // ──────────────────────────────────────────────
+    // Method create, store, edit, update, destroy tetap sama seperti sebelumnya
+    // Saya sertakan full agar lengkap dan tidak ada yang terlewat
 
     /**
      * Show the form for creating a new destination.
@@ -45,11 +79,7 @@ class DestinasiController extends Controller
     {
         $validated = $request->validate([
             'nama'              => 'required|string|max:255',
-            'kategori'          => [
-                'required',
-                'string',
-                'max:50',
-            ],
+            'kategori'          => 'required|string|max:50',
             'sub_kategori'      => 'nullable|string|in:kuliner,restoran',
             'deskripsi'         => 'required|string',
             'lokasi'            => 'nullable|string|max:255',
@@ -64,30 +94,22 @@ class DestinasiController extends Controller
             'galeri.*'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        // Logika khusus kategori kuliner
         if ($request->kategori === 'kuliner') {
             if (!$request->sub_kategori) {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->withErrors(['sub_kategori' => 'Pilih tipe Kuliner: Warung/Street Food atau Restoran/Cafe']);
+                return redirect()->back()->withInput()->withErrors(['sub_kategori' => 'Pilih tipe Kuliner: Warung/Street Food atau Restoran/Cafe']);
             }
             $validated['kategori'] = 'kuliner_' . $request->sub_kategori;
         }
 
         try {
-            // Proses fasilitas (gabungkan checkbox + custom)
             $fasilitasChecked = $request->input('fasilitas', []);
             $customString     = trim($request->input('fasilitas_custom', ''));
             $customArray      = $customString ? array_filter(explode('|||', $customString)) : [];
-            
             $allFasilitas = array_unique(array_merge($fasilitasChecked, $customArray));
             $validated['fasilitas'] = json_encode($allFasilitas);
 
-            // Upload gambar utama
             $validated['gambar_utama'] = $request->file('gambar_utama')->store('destinasi/utama', 'public');
 
-            // Upload galeri (opsional)
             $galeriPaths = [];
             if ($request->hasFile('galeri') && is_array($request->file('galeri'))) {
                 foreach ($request->file('galeri') as $file) {
@@ -100,9 +122,7 @@ class DestinasiController extends Controller
 
             Destinasi::create($validated);
 
-            return redirect()
-                ->route('admin.destinasi.index')
-                ->with('success', 'Destinasi berhasil ditambahkan.');
+            return redirect()->route('admin.destinasi.index')->with('success', 'Destinasi berhasil ditambahkan.');
         } catch (\Exception $e) {
             Log::error('Gagal menyimpan destinasi baru', [
                 'error' => $e->getMessage(),
@@ -110,10 +130,7 @@ class DestinasiController extends Controller
                 'input' => $request->except(['_token', 'gambar_utama', 'galeri']),
             ]);
 
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'Gagal menyimpan destinasi. Silakan coba lagi.');
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan destinasi. Silakan coba lagi.');
         }
     }
 
@@ -132,11 +149,7 @@ class DestinasiController extends Controller
     {
         $validated = $request->validate([
             'nama'              => 'required|string|max:255',
-            'kategori'          => [
-                'required',
-                'string',
-                'max:50',
-            ],
+            'kategori'          => 'required|string|max:50',
             'sub_kategori'      => 'nullable|string|in:kuliner,restoran',
             'deskripsi'         => 'required|string',
             'lokasi'            => 'nullable|string|max:255',
@@ -151,27 +164,20 @@ class DestinasiController extends Controller
             'galeri.*'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        // Logika khusus kategori kuliner
         if ($request->kategori === 'kuliner') {
             if (!$request->sub_kategori) {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->withErrors(['sub_kategori' => 'Pilih tipe Kuliner: Warung/Street Food atau Restoran/Cafe']);
+                return redirect()->back()->withInput()->withErrors(['sub_kategori' => 'Pilih tipe Kuliner: Warung/Street Food atau Restoran/Cafe']);
             }
             $validated['kategori'] = 'kuliner_' . $request->sub_kategori;
         }
 
         try {
-            // Proses fasilitas
             $fasilitasChecked = $request->input('fasilitas', []);
             $customString     = trim($request->input('fasilitas_custom', ''));
             $customArray      = $customString ? array_filter(explode('|||', $customString)) : [];
-            
             $allFasilitas = array_unique(array_merge($fasilitasChecked, $customArray));
             $validated['fasilitas'] = json_encode($allFasilitas);
 
-            // Update gambar utama jika ada file baru
             if ($request->hasFile('gambar_utama') && $request->file('gambar_utama')->isValid()) {
                 if ($destinasi->gambar_utama && Storage::disk('public')->exists($destinasi->gambar_utama)) {
                     Storage::disk('public')->delete($destinasi->gambar_utama);
@@ -181,7 +187,6 @@ class DestinasiController extends Controller
                 $validated['gambar_utama'] = $destinasi->gambar_utama;
             }
 
-            // Galeri: append gambar baru
             $galeriBaru = [];
             if ($request->hasFile('galeri') && is_array($request->file('galeri'))) {
                 foreach ($request->file('galeri') as $file) {
@@ -197,9 +202,7 @@ class DestinasiController extends Controller
 
             $destinasi->update($validated);
 
-            return redirect()
-                ->route('admin.destinasi.index')
-                ->with('success', 'Destinasi berhasil diperbarui.');
+            return redirect()->route('admin.destinasi.index')->with('success', 'Destinasi berhasil diperbarui.');
         } catch (\Exception $e) {
             Log::error('Gagal memperbarui destinasi', [
                 'id'    => $destinasi->id,
@@ -207,10 +210,7 @@ class DestinasiController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'Gagal memperbarui destinasi. Silakan coba lagi.');
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui destinasi. Silakan coba lagi.');
         }
     }
 
@@ -220,12 +220,10 @@ class DestinasiController extends Controller
     public function destroy(Destinasi $destinasi)
     {
         try {
-            // Hapus gambar utama
             if ($destinasi->gambar_utama && Storage::disk('public')->exists($destinasi->gambar_utama)) {
                 Storage::disk('public')->delete($destinasi->gambar_utama);
             }
 
-            // Hapus galeri
             $galeri = json_decode($destinasi->galeri ?? '[]', true) ?? [];
             foreach ($galeri as $path) {
                 if (Storage::disk('public')->exists($path)) {
@@ -235,18 +233,14 @@ class DestinasiController extends Controller
 
             $destinasi->delete();
 
-            return redirect()
-                ->route('admin.destinasi.index')
-                ->with('success', 'Destinasi berhasil dihapus.');
+            return redirect()->route('admin.destinasi.index')->with('success', 'Destinasi berhasil dihapus.');
         } catch (\Exception $e) {
             Log::error('Gagal menghapus destinasi', [
                 'id'    => $destinasi->id,
                 'error' => $e->getMessage(),
             ]);
 
-            return redirect()
-                ->route('admin.destinasi.index')
-                ->with('error', 'Gagal menghapus destinasi. Silakan coba lagi.');
+            return redirect()->route('admin.destinasi.index')->with('error', 'Gagal menghapus destinasi. Silakan coba lagi.');
         }
     }
 }

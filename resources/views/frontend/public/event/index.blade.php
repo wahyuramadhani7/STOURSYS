@@ -4,734 +4,819 @@
 
 @push('styles')
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
 <style>
-    /* Floating animation */
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-12px); }
-    }
-    
-    /* Pulse glow animation */
-    @keyframes pulseGlow {
-        0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); }
-        50% { box-shadow: 0 0 30px rgba(249, 115, 22, 0.6); }
-    }
-    
-    /* Shimmer effect */
-    @keyframes shimmer {
-        0% { background-position: -1000px 0; }
-        100% { background-position: 1000px 0; }
-    }
-    
-    /* Gradient animation */
-    @keyframes gradientShift {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-    }
-    
-    /* Status badge pulse */
-    @keyframes badgePulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-    }
-    
-    /* Bounce subtle */
-    @keyframes bounceSubtle {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-    }
+:root {
+    --cream:     #faf6f0;
+    --sand:      #e8dcc8;
+    --terracota: #c45c2e;
+    --brick:     #9c3a1a;
+    --gold:      #c9952a;
+    --moss:      #4a6741;
+    --charcoal:  #1c1917;
+    --ink:       #0d0b09;
+    --ongoing:   #2d6a4f;
+    --upcoming:  #1d4e89;
+}
 
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(360deg); }
-    }
-    
-    .animate-float {
-        animation: float 3s ease-in-out infinite;
-    }
-    
-    .animate-pulse-glow {
-        animation: pulseGlow 2s ease-in-out infinite;
-    }
-    
-    .shimmer-effect {
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        background-size: 1000px 100%;
-        animation: shimmer 2s infinite;
-    }
-    
-    .animate-gradient {
-        background-size: 200% 200%;
-        animation: gradientShift 3s ease infinite;
-    }
-    
-    .badge-pulse {
-        animation: badgePulse 2s ease-in-out infinite;
-    }
+/* ── HERO ──────────────────────────────────── */
+.event-hero {
+    position: relative;
+    background: var(--ink);
+    padding: 7rem 0 5rem;
+    overflow: hidden;
+}
+.event-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 15% 50%, rgba(196,92,46,0.15) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 80% at 85% 20%, rgba(74,103,65,0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+.event-hero-bg-text {
+    position: absolute;
+    right: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 14rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.025);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    white-space: nowrap;
+}
 
-    /* ==============================
-       EVENT CARD
-    ============================== */
-    .event-card {
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-    }
-    
-    .event-card::before {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        background: linear-gradient(45deg, #f97316, #fb923c, #fdba74);
-        border-radius: 1rem;
-        opacity: 0;
-        transition: opacity 0.4s;
-        z-index: -1;
-        filter: blur(10px);
-    }
-    
-    @media (hover: hover) {
-        .event-card:hover::before {
-            opacity: 0.5;
-        }
-        
-        .event-card:hover {
-            transform: translateY(-12px) scale(1.02);
-        }
+.event-hero-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 4rem;
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 4rem;
+}
+.event-hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.event-hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--gold);
+}
+.event-hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+}
+.event-hero-title em {
+    font-style: italic;
+    color: var(--terracota);
+}
+.event-hero-desc {
+    font-size: 1.05rem;
+    color: rgba(250,246,240,0.5);
+    line-height: 1.8;
+    max-width: 44ch;
+}
+.event-hero-stat {
+    text-align: right;
+    flex-shrink: 0;
+}
+.event-hero-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 1;
+    display: block;
+}
+.event-hero-stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 0.4rem;
+    display: block;
+}
 
-        .event-card:hover .image-zoom {
-            transform: scale(1.15) rotateZ(2deg);
-        }
+/* ── MARQUEE ───────────────────────────────── */
+.marquee-strip {
+    background: var(--terracota);
+    padding: 0.8rem 0;
+    overflow: hidden;
+}
+.marquee-track {
+    display: flex;
+    animation: marquee 30s linear infinite;
+    width: max-content;
+}
+.marquee-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(250,246,240,0.85);
+    padding: 0 3rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+.marquee-dot {
+    width: 4px; height: 4px;
+    background: rgba(250,246,240,0.4);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+@keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
 
-        .event-card:hover .status-badge {
-            transform: scale(1.15) rotate(5deg);
-        }
+/* ── FILTER BAR ────────────────────────────── */
+.filter-bar {
+    background: white;
+    border-bottom: 1.5px solid var(--sand);
+    position: sticky;
+    top: 72px;
+    z-index: 100;
+}
+.filter-bar-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    height: 68px;
+}
 
-        .info-item:hover .info-icon {
-            transform: scale(1.2) rotate(10deg);
-        }
+/* Filter tabs */
+.filter-tabs {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    height: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.filter-tabs::-webkit-scrollbar { display: none; }
 
-        .info-item:hover {
-            color: #f97316;
-            transform: translateX(3px);
-        }
+.filter-tab {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(28,25,23,0.4);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1.5px;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+.filter-tab:hover { color: var(--terracota); }
+.filter-tab.active {
+    color: var(--terracota);
+    border-bottom-color: var(--terracota);
+    font-weight: 700;
+}
+.filter-tab-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
 
-        .info-item:hover .date-display::after {
-            width: 100%;
-        }
+/* Search */
+.search-wrap {
+    position: relative;
+    flex-shrink: 0;
+    width: 280px;
+}
+.search-wrap input {
+    width: 100%;
+    height: 40px;
+    background: var(--cream);
+    border: 1.5px solid var(--sand);
+    padding: 0 5.5rem 0 1.25rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--ink);
+    outline: none;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    transition: border-color 0.25s ease;
+}
+.search-wrap input:focus { border-color: var(--terracota); }
+.search-wrap input::placeholder { color: rgba(28,25,23,0.3); }
+.search-wrap button {
+    position: absolute;
+    right: 0; top: 0;
+    height: 100%;
+    padding: 0 1.1rem;
+    background: var(--terracota);
+    color: var(--cream);
+    border: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+    transition: background 0.25s ease;
+}
+.search-wrap button:hover { background: var(--brick); }
+.reset-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(28,25,23,0.35);
+    text-decoration: none;
+    position: absolute;
+    right: 5.5rem; top: 50%;
+    transform: translateY(-50%);
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+.reset-link:hover { color: var(--terracota); }
 
-        .info-item:hover .location-pin {
-            animation: float 1s ease-in-out;
-        }
+/* ── CONTENT AREA ──────────────────────────── */
+.events-section {
+    background: var(--cream);
+    padding: 5rem 0 7rem;
+}
+.events-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 4rem;
+}
 
-        .event-card:hover .event-title {
-            background: linear-gradient(90deg, #f97316, #fb923c);
-            -webkit-text-fill-color: transparent;
-        }
+/* Result info bar */
+.result-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1.5px solid var(--sand);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.result-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(28,25,23,0.35);
+}
+.result-label strong {
+    color: var(--terracota);
+    font-weight: 700;
+}
+.result-count {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+}
 
-        .filter-btn:hover:not(.active) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
+/* ── EVENT GRID ────────────────────────────── */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1.5px solid var(--sand);
+}
 
-        .pagination-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
-        }
-    }
-    
-    .image-container {
-        perspective: 1000px;
-    }
-    
-    .image-zoom {
-        transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .status-badge {
-        transition: all 0.3s ease;
-    }
-    
-    .info-icon {
-        transition: all 0.3s ease;
-    }
-    
-    .info-item {
-        transition: all 0.3s ease;
-    }
-    
-    .detail-button {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .detail-button::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-    
-    @media (hover: hover) {
-        .detail-button:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-    }
-    
-    .search-input {
-        transition: all 0.3s ease;
-    }
-    
-    @media (hover: hover) {
-        .search-input:focus {
-            transform: scale(1.02);
-        }
-    }
-    
-    .empty-icon {
-        animation: bounceSubtle 2s ease-in-out infinite;
-    }
-    
-    .date-display {
-        position: relative;
-        display: inline-block;
-    }
-    
-    .date-display::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: linear-gradient(90deg, #f97316, #fb923c);
-        transition: width 0.3s ease;
-    }
-    
-    .glow-green {
-        box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-    }
-    
-    .glow-blue {
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-    }
-    
-    .pagination-link {
-        transition: all 0.3s ease;
-    }
+/* ── EVENT CARD ────────────────────────────── */
+.event-card {
+    position: relative;
+    border-right: 1.5px solid var(--sand);
+    border-bottom: 1.5px solid var(--sand);
+    background: white;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.3s ease;
+    overflow: hidden;
+}
+.event-card:nth-child(3n) { border-right: none; }
+.event-card:hover { background: var(--cream); }
 
-    .recurring-badge {
-        background: linear-gradient(135deg, #f97316, #fb923c);
-        color: white;
-        font-weight: bold;
-        box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
-    }
+/* Left accent bar — color-coded by status */
+.event-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--sand);
+    transition: background 0.3s ease;
+}
+.event-card:hover::before { background: var(--terracota); }
+.event-card.status-ongoing::before { background: var(--moss); }
+.event-card.status-upcoming::before { background: var(--gold); }
+.event-card.status-past::before { background: rgba(28,25,23,0.15); }
+.event-card.status-recurring::before {
+    background: linear-gradient(to bottom, var(--terracota), var(--gold), var(--moss));
+}
 
-    .recurring-icon {
-        animation: spin 8s linear infinite;
-    }
+/* Image */
+.event-card-img {
+    position: relative;
+    height: 210px;
+    overflow: hidden;
+    background: var(--charcoal);
+    flex-shrink: 0;
+}
+.event-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(10%) contrast(1.05);
+    transition: transform 0.7s ease, filter 0.7s ease;
+}
+.event-card:hover .event-card-img img {
+    transform: scale(1.07);
+    filter: sepia(20%) contrast(1.1);
+}
+.event-card-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(13,11,9,0.5) 100%);
+}
+.event-no-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--charcoal), #2c2420);
+    font-size: 4rem;
+    opacity: 0.15;
+}
 
-    .is-recurring {
-        border: 2px solid #f97316;
-        background: linear-gradient(to bottom right, rgba(249, 115, 22, 0.03), rgba(251, 146, 60, 0.03));
-    }
+/* Status badge */
+.status-chip {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.85rem;
+    font-weight: 700;
+}
+.status-chip.ongoing  { background: var(--moss);      color: var(--cream); }
+.status-chip.upcoming { background: var(--gold);      color: var(--ink); }
+.status-chip.past     { background: rgba(28,25,23,0.6); color: rgba(250,246,240,0.6); }
+.status-chip.default  { background: var(--charcoal);  color: var(--cream); }
 
-    .is-recurring .event-title {
-        background: linear-gradient(90deg, #f97316, #fb923c, #fdba74);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+/* Recurring badge */
+.recurring-chip {
+    position: absolute;
+    top: 1rem; left: 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    background: var(--terracota);
+    color: var(--cream);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.recurring-chip svg {
+    animation: spinSlow 6s linear infinite;
+}
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
 
-    .event-title {
-        background: linear-gradient(90deg, #1e293b, #1e293b);
-        background-clip: text;
-        -webkit-background-clip: text;
-        transition: all 0.4s ease;
-    }
+/* Card body */
+.event-card-body {
+    padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    border-top: 2px solid var(--sand);
+    transition: border-color 0.3s ease;
+}
+.event-card:hover .event-card-body { border-top-color: var(--terracota); }
 
-    .filter-btn {
-        transition: all 0.3s ease;
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
+.event-card-cat {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.65rem;
+}
+.event-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 0.85rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s ease;
+}
+.event-card:hover .event-card-title { color: var(--terracota); }
 
-    .filter-btn.active {
-        background: linear-gradient(to right, #f97316, #fb923c) !important;
-        color: white !important;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35) !important;
-    }
+.event-card-desc {
+    font-size: 0.88rem;
+    color: rgba(28,25,23,0.55);
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 
-    .filter-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        margin-left: -1rem;
-        margin-right: -1rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
+/* Meta info rows */
+.event-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--sand);
+}
+.event-meta-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+    color: rgba(28,25,23,0.5);
+}
+.event-meta-row svg {
+    width: 13px; height: 13px;
+    color: var(--terracota);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
 
-    .filter-container::-webkit-scrollbar {
-        display: none;
-    }
+/* CTA link */
+.event-card-cta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--terracota);
+    margin-top: auto;
+    transition: gap 0.3s ease;
+}
+.event-card-cta-line {
+    height: 1px;
+    width: 1.5rem;
+    background: currentColor;
+    transition: width 0.3s ease;
+    flex-shrink: 0;
+}
+.event-card:hover .event-card-cta-line { width: 3rem; }
 
-    @media (min-width: 1024px) {
-        .filter-container {
-            scrollbar-width: thin;
-            margin-left: 0;
-            margin-right: 0;
-            padding-left: 0;
-            padding-right: 0;
-        }
-        .filter-container::-webkit-scrollbar {
-            display: block;
-            height: 4px;
-        }
-        .filter-container::-webkit-scrollbar-thumb {
-            background: rgba(249, 115, 22, 0.4);
-            border-radius: 3px;
-        }
-    }
+/* ── EMPTY STATE ───────────────────────────── */
+.empty-state {
+    grid-column: 1/-1;
+    padding: 8rem 2rem;
+    text-align: center;
+}
+.empty-icon {
+    font-size: 5rem;
+    margin-bottom: 2rem;
+    opacity: 0.25;
+}
+.empty-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 1rem;
+}
+.empty-desc {
+    font-size: 0.95rem;
+    color: rgba(28,25,23,0.45);
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+}
+.empty-cta {
+    display: inline-block;
+    padding: 0.9rem 2.25rem;
+    background: var(--terracota);
+    color: var(--cream);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    transition: background 0.3s ease;
+}
+.empty-cta:hover { background: var(--brick); }
 
-    .search-wrapper {
-        position: relative;
-        width: 100%;
-    }
+/* ── PAGINATION ────────────────────────────── */
+.pagination-wrap {
+    margin-top: 4rem;
+    display: flex;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+}
 
-    .search-input {
-        width: 100%;
-        padding: 0.75rem 1.25rem;
-        padding-right: 7rem;
-        border-radius: 9999px;
-        border: 1px solid #d1d5db;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
+/* ── RESPONSIVE ────────────────────────────── */
+@media (max-width: 1100px) {
+    .events-grid { grid-template-columns: repeat(2, 1fr); }
+    .event-card:nth-child(3n) { border-right: 1.5px solid var(--sand); }
+    .event-card:nth-child(2n) { border-right: none; }
+    .filter-bar-inner, .events-container { padding: 0 2.5rem; }
+    .event-hero-inner { padding: 0 2.5rem; }
+}
 
-    .search-input:focus {
-        outline: none;
-        border-color: #fb923c;
-        box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
-    }
+@media (max-width: 768px) {
+    .event-hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .event-hero-stat { text-align: left; }
+    .event-hero-bg-text { font-size: 8rem; }
+    .filter-bar-inner { height: auto; padding: 1rem 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .filter-tabs { width: 100%; }
+    .search-wrap { width: 100%; }
+    .filter-bar { position: static; }
+    .events-container { padding: 0 1.5rem; }
+    .event-hero-inner { padding: 0 1.5rem; }
+    .event-hero { padding: 5rem 0 4rem; }
+}
 
-    .search-actions {
-        position: absolute;
-        right: 6px;
-        top: 50%;
-        transform: translateY(-50%);
-        display: flex;
-        align-items: center;
-        gap: 2px;
-    }
-
-    .search-btn {
-        background: linear-gradient(to right, #f97316, #ea580c);
-        color: white;
-        border: none;
-        border-radius: 9999px;
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-    }
-
-    .search-btn:hover {
-        background: linear-gradient(to right, #ea580c, #c2410c);
-    }
-
-    .reset-link {
-        color: #6b7280;
-        text-decoration: none;
-        font-size: 0.78rem;
-        padding: 0.4rem 0.5rem;
-        border-radius: 9999px;
-        transition: color 0.2s;
-        white-space: nowrap;
-    }
-
-    .reset-link:hover {
-        color: #f97316;
-    }
-
-    .card-image {
-        height: 200px;
-    }
-
-    @media (min-width: 640px) {
-        .card-image {
-            height: 220px;
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .card-image {
-            height: 240px;
-        }
-    }
-
-    .card-body {
-        padding: 1rem;
-    }
-
-    @media (min-width: 640px) {
-        .card-body {
-            padding: 1.25rem;
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .card-body {
-            padding: 1.5rem;
-        }
-    }
-
-    .event-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        line-height: 1.3;
-        margin-bottom: 0.5rem;
-        color: #1e293b;
-    }
-
-    @media (min-width: 640px) {
-        .event-title {
-            font-size: 1.2rem;
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .event-title {
-            font-size: 1.35rem;
-        }
-    }
-
-    .status-badge,
-    .recurring-badge {
-        font-size: 0.65rem;
-        padding: 0.25rem 0.6rem;
-        line-height: 1.4;
-    }
-
-    @media (min-width: 640px) {
-        .status-badge,
-        .recurring-badge {
-            font-size: 0.7rem;
-            padding: 0.3rem 0.75rem;
-        }
-    }
+@media (max-width: 600px) {
+    .events-grid { grid-template-columns: 1fr; border: none; }
+    .event-card { border: 1.5px solid var(--sand); margin-bottom: 1rem; }
+    .event-card:nth-child(n) { border-right: 1.5px solid var(--sand); }
+}
 </style>
 @endpush
 
 @section('content')
-    <!-- HEADER -->
-    <section class="py-10 md:py-16 bg-gradient-to-r from-orange-50 via-white to-blue-50 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
-                <div class="flex-1" data-aos="fade-right" data-aos-duration="1000">
-                    <div class="inline-block mb-3 px-3 py-1.5 md:px-4 md:py-2 bg-orange-100 rounded-full border border-orange-200 animate-pulse-glow">
-                        <span class="text-orange-600 text-xs md:text-sm font-semibold">Event & Kegiatan</span>
-                    </div>
-                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-slate-900 mb-2 md:mb-3 tracking-tight leading-tight">
-                        Event & Kegiatan
-                        <span class="block sm:inline bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 bg-clip-text text-transparent animate-gradient">
-                            Kawasan Borobudur
-                        </span>
-                    </h1>
-                </div>
-                <div class="flex-shrink-0 md:max-w-sm lg:max-w-md" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-                    <p class="text-gray-600 text-sm md:text-base lg:text-lg leading-relaxed">
-                        Ikuti berbagai acara budaya, festival, yoga, dan kegiatan menarik di sekitar Candi Borobudur
-                    </p>
-                </div>
-            </div>
+
+{{-- ════════════ HERO ════════════ --}}
+<section class="event-hero">
+    <span class="event-hero-bg-text" aria-hidden="true">Event</span>
+    <div class="event-hero-inner">
+        <div data-aos="fade-right" data-aos-duration="1000">
+            <p class="event-hero-eyebrow">Stoursys · Kawasan Borobudur</p>
+            <h1 class="event-hero-title">
+                Event &<br><em>Kegiatan</em>
+            </h1>
+            <p class="event-hero-desc">
+                Festival budaya, pertunjukan seni, ritual religi, dan beragam kegiatan di jantung peradaban Jawa.
+            </p>
         </div>
-    </section>
-
-    <!-- FILTER + SEARCH -->
-    <section class="py-5 md:py-8 bg-white border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-4 lg:gap-6">
-
-                <!-- Filter Buttons -->
-                <div class="filter-container">
-                    <div class="flex gap-2 sm:gap-3 pb-1">
-                        <a href="{{ route('event.index') }}"
-                           class="filter-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all {{ !request()->has('filter') ? 'active' : '' }}">
-                            Semua Event
-                        </a>
-
-                        <a href="{{ route('event.index', ['filter' => 'rutin'] + request()->except('filter')) }}"
-                           class="filter-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium bg-orange-50 text-orange-700 hover:bg-orange-100 transition-all {{ request('filter') === 'rutin' ? 'active' : '' }}">
-                            Event Rutin
-                        </a>
-
-                        <a href="{{ route('event.index', ['filter' => 'ongoing'] + request()->except('filter')) }}"
-                           class="filter-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium bg-green-50 text-green-700 hover:bg-green-100 transition-all {{ request('filter') === 'ongoing' ? 'active' : '' }}">
-                            Sedang Berlangsung
-                        </a>
-
-                        <a href="{{ route('event.index', ['filter' => 'upcoming'] + request()->except('filter')) }}"
-                           class="filter-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all {{ request('filter') === 'upcoming' ? 'active' : '' }}">
-                            Akan Datang
-                        </a>
-
-                        <a href="{{ route('event.index', ['filter' => 'past'] + request()->except('filter')) }}"
-                           class="filter-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium bg-gray-50 text-gray-700 hover:bg-gray-200 transition-all {{ request('filter') === 'past' ? 'active' : '' }}">
-                            Sudah Berakhir
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Search + Filter Info -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    @if(request('filter') || request('search'))
-                        <div class="text-gray-600 text-xs sm:text-sm order-2 sm:order-1">
-                            Menampilkan:
-                            <span class="font-medium text-orange-600">
-                                @if(request('filter') === 'rutin') Event Rutin
-                                @elseif(request('filter') === 'ongoing') Sedang Berlangsung
-                                @elseif(request('filter') === 'upcoming') Akan Datang
-                                @elseif(request('filter') === 'past') Sudah Berakhir
-                                @else Semua Event @endif
-                            </span>
-                            @if(request('search'))
-                                untuk <strong>"{{ request('search') }}"</strong>
-                            @endif
-                            <span class="text-gray-400">({{ $events->total() }} event)</span>
-                        </div>
-                    @else
-                        <div class="hidden sm:block order-1"></div>
-                    @endif
-
-                    <div class="w-full sm:w-auto sm:min-w-[280px] lg:min-w-[340px] order-1 sm:order-2" data-aos="fade-left" data-aos-duration="800">
-                        <form method="GET" action="{{ route('event.index') }}">
-                            <input type="hidden" name="filter" value="{{ request('filter') }}">
-                            <div class="search-wrapper">
-                                <input
-                                    type="text"
-                                    name="search"
-                                    value="{{ request('search') }}"
-                                    placeholder="Cari event, lokasi, atau kegiatan..."
-                                    class="search-input"
-                                >
-                                <div class="search-actions">
-                                    @if(request('search') || request('filter'))
-                                        <a href="{{ route('event.index') }}" class="reset-link">Reset</a>
-                                    @endif
-                                    <button type="submit" class="search-btn">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                        </svg>
-                                        Cari
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-            </div>
+        <div class="event-hero-stat" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+            <span class="event-hero-stat-num">{{ $events->total() }}</span>
+            <span class="event-hero-stat-label">Total Event</span>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- DAFTAR EVENT -->
-    <section class="py-8 md:py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7 lg:gap-8">
-                @forelse ($events as $index => $event)
-                    @php
-                        $statusClass = match ($event->status) {
-                            'Sedang Berlangsung' => 'bg-green-600 text-white',
-                            'Akan Datang'        => 'bg-blue-600 text-white',
-                            'Telah Berakhir'     => 'bg-red-600 text-white',
-                            default              => 'bg-gray-600 text-white',
-                        };
+{{-- Marquee --}}
+<div class="marquee-strip" aria-hidden="true">
+    <div class="marquee-track">
+        @foreach(array_fill(0, 2, null) as $_)
+            <span class="marquee-item">Festival Budaya<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Pertunjukan Seni<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Ritual Religi<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Event Rutin<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Pameran Lokal<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Workshop Budaya<span class="marquee-dot"></span></span>
+            <span class="marquee-item">Yoga Sunrise<span class="marquee-dot"></span></span>
+        @endforeach
+    </div>
+</div>
 
-                        $cardGlow = match ($event->status) {
-                            'Sedang Berlangsung' => 'glow-green',
-                            'Akan Datang'        => 'glow-blue',
-                            default              => '',
-                        };
+{{-- ════════════ FILTER BAR ════════════ --}}
+<div class="filter-bar">
+    <div class="filter-bar-inner">
+        <nav class="filter-tabs">
+            <a href="{{ route('event.index') }}"
+               class="filter-tab {{ !request()->has('filter') ? 'active' : '' }}">
+                Semua
+            </a>
+            <a href="{{ route('event.index', ['filter' => 'rutin'] + request()->except('filter')) }}"
+               class="filter-tab {{ request('filter') === 'rutin' ? 'active' : '' }}">
+                <span class="filter-tab-dot" style="background:var(--terracota)"></span>
+                Rutin
+            </a>
+            <a href="{{ route('event.index', ['filter' => 'ongoing'] + request()->except('filter')) }}"
+               class="filter-tab {{ request('filter') === 'ongoing' ? 'active' : '' }}">
+                <span class="filter-tab-dot" style="background:var(--moss)"></span>
+                Berlangsung
+            </a>
+            <a href="{{ route('event.index', ['filter' => 'upcoming'] + request()->except('filter')) }}"
+               class="filter-tab {{ request('filter') === 'upcoming' ? 'active' : '' }}">
+                <span class="filter-tab-dot" style="background:var(--gold)"></span>
+                Akan Datang
+            </a>
+            <a href="{{ route('event.index', ['filter' => 'past'] + request()->except('filter')) }}"
+               class="filter-tab {{ request('filter') === 'past' ? 'active' : '' }}">
+                <span class="filter-tab-dot" style="background:rgba(28,25,23,0.2)"></span>
+                Berakhir
+            </a>
+        </nav>
 
-                        $isRecurring = $event->event_type === 'recurring';
-                    @endphp
+        <div class="search-wrap">
+            <form method="GET" action="{{ route('event.index') }}">
+                <input type="hidden" name="filter" value="{{ request('filter') }}">
+                <input type="text"
+                       name="search"
+                       value="{{ request('search') }}"
+                       placeholder="Cari event...">
+                @if(request('search') || request('filter'))
+                    <a href="{{ route('event.index') }}" class="reset-link">×</a>
+                @endif
+                <button type="submit">Cari</button>
+            </form>
+        </div>
+    </div>
+</div>
 
-                    <div class="event-card {{ $cardGlow }} {{ $isRecurring ? 'is-recurring' : '' }} group relative bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-200/50"
-                         data-aos="fade-up"
-                         data-aos-duration="800"
-                         data-aos-delay="{{ min($index * 80, 400) }}">
+{{-- ════════════ DAFTAR EVENT ════════════ --}}
+<section class="events-section">
+    <div class="events-container">
 
-                        <!-- Gambar -->
-                        <div class="image-container card-image relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
-                            @if($event->gambar_utama)
-                                <img
-                                    src="{{ Storage::url($event->gambar_utama) }}"
-                                    alt="{{ $event->judul }}"
-                                    class="image-zoom w-full h-full object-cover transition-transform duration-700"
-                                    loading="lazy"
-                                >
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                                <div class="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                            @else
-                                <div class="w-full h-full bg-gradient-to-br from-slate-800 via-blue-900 to-orange-900 flex items-center justify-center">
-                                    <svg class="w-16 h-16 md:w-20 md:h-20 text-white/20 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                </div>
-                            @endif
+        {{-- Result info --}}
+        <div class="result-bar" data-aos="fade-up">
+            <div>
+                <p class="result-label">
+                    Menampilkan
+                    <strong>
+                        @if(request('filter') === 'rutin') Event Rutin
+                        @elseif(request('filter') === 'ongoing') Sedang Berlangsung
+                        @elseif(request('filter') === 'upcoming') Akan Datang
+                        @elseif(request('filter') === 'past') Sudah Berakhir
+                        @else Semua Event
+                        @endif
+                    </strong>
+                    @if(request('search'))· "{{ request('search') }}"@endif
+                </p>
+            </div>
+            <span class="result-count">{{ $events->total() }} event ditemukan</span>
+        </div>
 
-                            <!-- Status Badge -->
-                            <div class="status-badge absolute top-3 right-3 sm:top-4 sm:right-4 {{ $statusClass }} rounded-full font-bold shadow-lg {{ $event->status === 'Sedang Berlangsung' ? 'badge-pulse' : '' }}">
-                                {{ $event->status }}
-                            </div>
+        {{-- Grid --}}
+        <div class="events-grid">
+            @forelse($events as $index => $event)
+                @php
+                    $isRecurring = $event->event_type === 'recurring';
+                    $statusKey = match($event->status) {
+                        'Sedang Berlangsung' => 'ongoing',
+                        'Akan Datang'        => 'upcoming',
+                        'Telah Berakhir'     => 'past',
+                        default              => 'default',
+                    };
+                    $cardClass = 'status-' . $statusKey . ($isRecurring ? ' status-recurring' : '');
+                @endphp
 
-                            <!-- Recurring Badge -->
-                            @if($isRecurring)
-                                <div class="recurring-badge absolute top-3 left-3 sm:top-4 sm:left-4 rounded-full shadow-lg flex items-center gap-1 badge-pulse">
-                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 recurring-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                    </svg>
-                                    Rutin
-                                </div>
-                            @endif
-                        </div>
+                <a href="{{ route('event.show', $event->slug) }}"
+                   class="event-card {{ $cardClass }}"
+                   data-aos="fade-up"
+                   data-aos-delay="{{ ($index % 3) * 80 }}">
 
-                        <!-- Konten -->
-                        <div class="card-body p-5 sm:p-6">
-                            <h3 class="event-title text-lg sm:text-xl font-bold mb-3 line-clamp-2">
-                                {{ $event->judul }}
-                            </h3>
+                    {{-- Image --}}
+                    <div class="event-card-img">
+                        @if($event->gambar_utama)
+                            <img src="{{ Storage::url($event->gambar_utama) }}"
+                                 alt="{{ $event->judul }}"
+                                 loading="lazy">
+                            <div class="event-card-img-overlay"></div>
+                        @else
+                            <div class="event-no-img">📅</div>
+                        @endif
 
-                            <p class="text-gray-600 mb-4 line-clamp-2 text-sm leading-relaxed">
-                                {{ Str::limit($event->deskripsi ?? '', 90) }}
-                            </p>
+                        {{-- Status chip --}}
+                        <span class="status-chip {{ $statusKey }}">{{ $event->status }}</span>
 
-                            <!-- Info -->
-                            <div class="space-y-2.5 text-sm text-gray-600 mb-5">
-                                <!-- Tanggal / Jadwal -->
-                                <div class="info-item flex items-start gap-2">
-                                    <svg class="info-icon w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                    <span class="date-display">
-                                        @if($isRecurring)
-                                            {{ Str::limit($event->recurring_description ?? 'Jadwal rutin', 70) }}
-                                        @else
-                                            {{ $event->tanggal_range }}
-                                            @if($event->jam_range && $event->jam_range !== '-')
-                                                • {{ $event->jam_range }}
-                                            @endif
-                                        @endif
-                                    </span>
-                                </div>
-
-                                <!-- Lokasi -->
-                                @if($event->lokasi)
-                                    <div class="info-item flex items-start gap-2">
-                                        <svg class="info-icon location-pin w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        </svg>
-                                        <span class="line-clamp-1">{{ $event->lokasi }}</span>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <!-- Tombol Detail -->
-                            <a href="{{ route('event.show', $event->slug) }}"
-                               class="detail-button w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 group/btn text-sm relative overflow-hidden">
-                                <span class="relative z-10">Lihat Detail Event</span>
-                                <svg class="relative z-10 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        {{-- Recurring chip --}}
+                        @if($isRecurring)
+                            <span class="recurring-chip">
+                                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                                 </svg>
-                            </a>
-                        </div>
+                                Rutin
+                            </span>
+                        @endif
                     </div>
-                @empty
-                    <div class="col-span-full text-center py-16 md:py-24 px-4" data-aos="fade-up" data-aos-duration="1000">
-                        <div class="max-w-md mx-auto">
-                            <div class="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-orange-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 empty-icon">
-                                <span class="text-5xl md:text-6xl">📅</span>
+
+                    {{-- Body --}}
+                    <div class="event-card-body">
+                        <p class="event-card-cat">
+                            {{ $isRecurring ? 'Event Rutin' : 'Event' }}
+                        </p>
+                        <h3 class="event-card-title">{{ $event->judul }}</h3>
+                        <p class="event-card-desc">{{ Str::limit($event->deskripsi ?? '', 100) }}</p>
+
+                        <div class="event-meta">
+                            {{-- Tanggal --}}
+                            <div class="event-meta-row">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                                </svg>
+                                <span>
+                                    @if($isRecurring)
+                                        {{ Str::limit($event->recurring_description ?? 'Jadwal rutin', 55) }}
+                                    @else
+                                        {{ $event->tanggal_range }}
+                                        @if($event->jam_range && $event->jam_range !== '-')
+                                            · {{ $event->jam_range }}
+                                        @endif
+                                    @endif
+                                </span>
                             </div>
 
-                            <h3 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
-                                @if(request('search') || request('filter'))
-                                    Tidak ada event yang cocok
-                                @else
-                                    Belum Ada Event Saat Ini
-                                @endif
-                            </h3>
+                            {{-- Lokasi --}}
+                            @if($event->lokasi)
+                            <div class="event-meta-row">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0zM19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                                </svg>
+                                <span>{{ $event->lokasi }}</span>
+                            </div>
+                            @endif
+                        </div>
 
-                            <p class="text-gray-600 text-base mb-6 md:mb-8">
-                                @if(request('search') || request('filter'))
-                                    Coba ubah kata kunci atau hapus filter untuk melihat event lainnya.
-                                @else
-                                    Saat ini belum ada event atau kegiatan yang dijadwalkan. Silakan pantau kembali nanti!
-                                @endif
-                            </p>
-
-                            <a href="{{ route('event.index') }}"
-                               class="inline-block bg-orange-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-orange-700 transition-all shadow-lg text-base transform hover:scale-105 active:scale-95">
-                                Reset & Lihat Semua
-                            </a>
+                        <div class="event-card-cta">
+                            <span class="event-card-cta-line"></span>
+                            Lihat Detail
                         </div>
                     </div>
-                @endforelse
-            </div>
+                </a>
 
-            <!-- Pagination -->
-            @if($events->hasPages())
-                <div class="mt-12 flex justify-center" data-aos="fade-up" data-aos-duration="800">
-                    {{ $events->links('pagination::tailwind') }}
+            @empty
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <h3 class="empty-title">
+                        @if(request('search') || request('filter'))
+                            Tidak Ada Hasil
+                        @else
+                            Belum Ada Event
+                        @endif
+                    </h3>
+                    <p class="empty-desc">
+                        @if(request('search') || request('filter'))
+                            Coba ubah kata kunci atau filter untuk melihat event lainnya.
+                        @else
+                            Saat ini belum ada event yang dijadwalkan. Pantau kembali nanti!
+                        @endif
+                    </p>
+                    <a href="{{ route('event.index') }}" class="empty-cta">Lihat Semua Event</a>
                 </div>
-            @endif
+            @endforelse
         </div>
-    </section>
+
+        @if($events->hasPages())
+            <div class="pagination-wrap" data-aos="fade-up">
+                {{ $events->links('pagination::tailwind') }}
+            </div>
+        @endif
+
+    </div>
+</section>
+
 @endsection
 
 @push('scripts')
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    AOS.init({
-        once: true,
-        mirror: false,
-        duration: 800,
-        easing: 'ease-out-cubic',
-    });
-
-    // Highlight ongoing cards dynamically
-    document.querySelectorAll('.event-card').forEach(card => {
-        const badge = card.querySelector('.status-badge');
-        if (badge && badge.textContent.includes('Sedang Berlangsung')) {
-            card.classList.add('glow-green');
-        }
-    });
-
-    // Smooth scroll to top when pagination clicked
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    });
-
-    // Z-index on hover for overlapping cards
-    document.querySelectorAll('.event-card').forEach(card => {
-        card.addEventListener('mouseenter', () => card.style.zIndex = '10');
-        card.addEventListener('mouseleave', () => card.style.zIndex = '1');
-    });
+AOS.init({ once: true, duration: 800, easing: 'ease-out-cubic' });
 </script>
 @endpush
